@@ -1,41 +1,46 @@
+"use client"
+
 import { Card } from "@/components/ui/card"
 import { Trophy, Coins, Calendar, Gift } from "lucide-react"
-
-const stats = [
-  {
-    icon: Trophy,
-    label: "Всего призов",
-    value: "1,247",
-    color: "text-warning",
-    bg: "bg-warning/20",
-  },
-  {
-    icon: Coins,
-    label: "Разыграно",
-    value: "₽842K",
-    color: "text-success",
-    bg: "bg-success/20",
-  },
-  {
-    icon: Calendar,
-    label: "За месяц",
-    value: "₽127K",
-    color: "text-primary",
-    bg: "bg-primary/20",
-  },
-  {
-    icon: Gift,
-    label: "Активных",
-    value: "23",
-    color: "text-accent",
-    bg: "bg-accent/20",
-  },
-]
+import { useI18n } from "@/lib/i18n"
 
 export function Statistics() {
+  const { t } = useI18n()
+
+  const stats = [
+    {
+      icon: Trophy,
+      label: t.totalPrizes,
+      value: "1,247",
+      color: "text-warning",
+      bg: "bg-warning/20",
+    },
+    {
+      icon: Coins,
+      label: t.totalAmount,
+      value: "₽842K",
+      color: "text-success",
+      bg: "bg-success/20",
+    },
+    {
+      icon: Calendar,
+      label: t.monthlyAmount,
+      value: "₽127K",
+      color: "text-primary",
+      bg: "bg-primary/20",
+    },
+    {
+      icon: Gift,
+      label: t.items,
+      value: "23",
+      color: "text-accent",
+      bg: "bg-accent/20",
+    },
+  ]
+
   return (
     <div>
-      <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">Статистика</h2>
+      <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.statistics}</h2>
       <div className="grid grid-cols-2 gap-3">
         {stats.map((stat) => (
           <Card key={stat.label} className="border-border/50 bg-card/80 backdrop-blur-sm p-4">

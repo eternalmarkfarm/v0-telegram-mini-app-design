@@ -1,34 +1,39 @@
+"use client"
+
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Radio } from "lucide-react"
+import { useI18n } from "@/lib/i18n"
 
 const liveStreamers = [
   {
     name: "silvername",
     game: "CS2",
     viewers: "12.4K",
-    avatar: "/gamer-avatar-blue.jpg",
+    avatar: "/gamer-avatar-blue-esports.jpg",
   },
   {
     name: "donbass",
     game: "Dota 2",
     viewers: "8.2K",
-    avatar: "/gamer-avatar-red.jpg",
+    avatar: "/gamer-avatar-red-gaming.jpg",
   },
   {
     name: "arthas",
     game: "World of Warcraft",
     viewers: "5.1K",
-    avatar: "/purple-gamer-avatar.png",
+    avatar: "/gamer-avatar-purple-wow.jpg",
   },
 ]
 
 export function LiveStreamers() {
+  const { t } = useI18n()
+
   return (
     <div>
       <div className="flex items-center gap-2 mb-3 px-1">
         <Radio className="h-4 w-4 text-destructive animate-pulse" />
-        <h2 className="text-sm font-medium text-muted-foreground">Сейчас стримят</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">{t.liveStreamers}</h2>
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
         {liveStreamers.map((streamer) => (

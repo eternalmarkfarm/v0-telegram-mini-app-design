@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, Link2 } from "lucide-react"
+import { Check, Link2, HelpCircle } from "lucide-react"
+import { useI18n } from "@/lib/i18n"
+import { useState } from "react"
 
 // Twitch icon component
 function TwitchIcon({ className }: { className?: string }) {
@@ -24,9 +25,15 @@ function SteamIcon({ className }: { className?: string }) {
   )
 }
 
-export function AccountLinking() {
-  const [twitchLinked, setTwitchLinked] = useState(false)
-  const [steamLinked, setSteamLinked] = useState(false)
+interface AccountLinkingProps {
+  twitchLinked: boolean
+  steamLinked: boolean
+  onTwitchLink: () => void
+  onSteamLink: (url: string) => void
+}
+
+export function AccountLinking({ twitchLinked, steamLinked, onTwitchLink, onSteamLink }: AccountLinkingProps) {
+  const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
 
   return (
@@ -34,25 +41,21 @@ export function AccountLinking() {
       {/* Twitch Account */}
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
         <div className="p-4">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#9146ff]/20">
               <TwitchIcon className="h-5 w-5 text-[#9146ff]" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-foreground">Twitch аккаунт</p>
-              <p className="text-xs text-muted-foreground">{twitchLinked ? "streamer_name" : "Не привязан"}</p>
+              <p className="font-medium text-foreground">{t.twitchAccount}</p>
+              <p className="text-xs text-muted-foreground">{twitchLinked ? "streamer_name" : t.notLinked}</p>
             </div>
             {twitchLinked ? (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
                 <Check className="h-4 w-4 text-success" />
               </div>
             ) : (
-              <Button
-                size="sm"
-                onClick={() => setTwitchLinked(true)}
-                className="bg-[#9146ff] hover:bg-[#7c3aed] text-white"
-              >
-                Привязать
+              <Button size="sm" onClick={onTwitchLink} className="bg-[#9146ff] hover:bg-[#7c3aed] text-white">
+                {t.link}
               </Button>
             )}
           </div>
@@ -67,8 +70,8 @@ export function AccountLinking() {
               <SteamIcon className="h-5 w-5 text-[#66c0f4]" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-foreground">Steam Trade URL</p>
-              <p className="text-xs text-muted-foreground">{steamLinked ? "Привязан" : "Не привязан"}</p>
+              <p className="font-medium text-foreground">{t.steamTradeUrl}</p>
+              <p className="text-xs text-muted-foreground">{steamLinked ? t.linked : t.notLinked}</p>
             </div>
             {steamLinked && (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
@@ -79,10 +82,16 @@ export function AccountLinking() {
 
           {!steamLinked && (
             <div className="space-y-2">
+              <div className="flex items-start gap-2 p-2 rounded-lg bg-[#1b2838]/30 border border-[#66c0f4]/20">
+                <HelpCircle className="h-4 w-4 text-[#66c0f4] mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="text-[#66c0f4]">{t.whereToFind}</span> {t.steamPath}
+                </p>
+              </div>
               <div className="relative">
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Вставьте ссылку обмена Steam"
+                  placeholder={t.pasteSteamLink}
                   value={tradeUrl}
                   onChange={(e) => setTradeUrl(e.target.value)}
                   className="pl-10 bg-input border-border/50"
@@ -90,11 +99,11 @@ export function AccountLinking() {
               </div>
               <Button
                 className="w-full bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4]"
-                onClick={() => setSteamLinked(true)}
+                onClick={() => onSteamLink(tradeUrl)}
                 disabled={!tradeUrl}
               >
                 <SteamIcon className="h-4 w-4 mr-2" />
-                Привязать Steam
+                {t.linkSteam}
               </Button>
             </div>
           )}
