@@ -38,7 +38,6 @@ export function AccountLinking({ twitchLinked, steamLinked, onTwitchLink, onStea
 
   return (
     <div className="space-y-3">
-      {/* Twitch Account */}
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
         <div className="p-4">
           <div className="flex items-center gap-3">
@@ -47,14 +46,14 @@ export function AccountLinking({ twitchLinked, steamLinked, onTwitchLink, onStea
             </div>
             <div className="flex-1">
               <p className="font-medium text-foreground">{t.twitchAccount}</p>
-              <p className="text-xs text-muted-foreground">{twitchLinked ? "streamer_name" : t.notLinked}</p>
+              <p className="text-xs text-muted-foreground">{twitchLinked ? t.linked : t.notLinked}</p>
             </div>
             {twitchLinked ? (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
                 <Check className="h-4 w-4 text-success" />
               </div>
             ) : (
-              <Button size="sm" onClick={onTwitchLink} className="bg-[#9146ff] hover:bg-[#7c3aed] text-white">
+              <Button size="sm" className="bg-[#9146ff] hover:bg-[#7c3aed] text-white" onClick={onTwitchLink}>
                 {t.link}
               </Button>
             )}

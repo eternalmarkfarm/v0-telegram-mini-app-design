@@ -25,12 +25,9 @@ export function GiveawayStatus({ isTwitchLinked, isSteamLinked }: GiveawayStatus
           >
             <Gift className="h-7 w-7" />
             {!isParticipating && (
-              <>
-                {/* Crossed-out line overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Ban className="h-14 w-14 text-destructive/60" />
-                </div>
-              </>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Ban className="h-14 w-14 text-destructive/60" />
+              </div>
             )}
           </div>
           <div className="flex-1">

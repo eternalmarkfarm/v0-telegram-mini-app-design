@@ -2,15 +2,11 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Settings, MessageCircle, Radio, User, ChevronRight } from "lucide-react"
+import { Settings, MessageCircle, Radio, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
 
-interface BottomActionsProps {
-  isTwitchLinked?: boolean
-}
-
-export function BottomActions({ isTwitchLinked = false }: BottomActionsProps) {
+export function BottomActions() {
   const { t } = useI18n()
 
   const actions = [
@@ -26,21 +22,13 @@ export function BottomActions({ isTwitchLinked = false }: BottomActionsProps) {
       description: t.helpAndFaq,
       href: "#support",
     },
-    isTwitchLinked
-      ? {
-          icon: User,
-          label: t.personalCabinet,
-          description: t.streamerCabinet,
-          highlight: true,
-          href: "/streamer",
-        }
-      : {
-          icon: Radio,
-          label: t.startStreaming,
-          description: t.linkTwitch,
-          highlight: true,
-          href: "#twitch-link",
-        },
+    {
+      icon: Radio,
+      label: t.startStreaming,
+      description: t.streamerCabinet,
+      highlight: true,
+      href: "/streamer",
+    },
   ]
 
   return (

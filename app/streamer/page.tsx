@@ -8,6 +8,15 @@ import { ArrowLeft, Download, Trophy, Coins, Calendar, Gift, Send, ChevronRight 
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
 
+// Twitch icon component
+function TwitchIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+    </svg>
+  )
+}
+
 // Event configuration list with translations
 const eventsList = [
   { id: "pick_hero", label: "Pick HERO", descRu: "Выбор героя", descEn: "Hero picked" },
@@ -44,6 +53,8 @@ const sentSkins = [
 export default function StreamerDashboard() {
   const { t, language } = useI18n()
 
+  const [isTwitchLinked, setIsTwitchLinked] = useState(false)
+
   const [events, setEvents] = useState<Record<string, boolean>>(() => {
     return eventsList.reduce(
       (acc, event) => {
@@ -56,6 +67,11 @@ export default function StreamerDashboard() {
 
   const toggleEvent = (eventId: string) => {
     setEvents((prev) => ({ ...prev, [eventId]: !prev[eventId] }))
+  }
+
+  const handleTwitchLink = () => {
+    // In real app, this would open Twitch OAuth
+    setIsTwitchLinked(true)
   }
 
   // Personal statistics with translations
@@ -84,6 +100,86 @@ export default function StreamerDashboard() {
     },
   ]
 
+  if (!isTwitchLinked) {
+    return (
+      <main className="min-h-screen bg-background">
+        <div className="mx-auto max-w-md px-4 py-4 space-y-6">
+          {/* Header */}
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" asChild className="shrink-0">
+              <Link href="/">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t.startStreaming}</h1>
+              <p className="text-xs text-muted-foreground">
+                {language === "ru" ? "Подключение аккаунта" : "Account connection"}
+              </p>
+            </div>
+          </div>
+
+          {/* Twitch Linking Card */}
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+            {/* Hero section */}
+            <div className="bg-gradient-to-br from-[#9146ff]/20 to-[#9146ff]/5 p-6 text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#9146ff]/20 mx-auto mb-4">
+                <TwitchIcon className="h-10 w-10 text-[#9146ff]" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground mb-2">
+                {language === "ru" ? "Станьте стримером" : "Become a Streamer"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {language === "ru"
+                  ? "Привяжите Twitch аккаунт, чтобы получить доступ к личному кабинету стримера"
+                  : "Link your Twitch account to access the streamer dashboard"}
+              </p>
+            </div>
+
+            {/* Features list */}
+            <div className="p-4 space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+                  <Gift className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-sm text-foreground">
+                  {language === "ru" ? "Автоматические розыгрыши на стриме" : "Automatic giveaways on stream"}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success/20">
+                  <Trophy className="h-4 w-4 text-success" />
+                </div>
+                <p className="text-sm text-foreground">
+                  {language === "ru" ? "Настройка событий для розыгрышей" : "Configure events for giveaways"}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/20">
+                  <Coins className="h-4 w-4 text-warning" />
+                </div>
+                <p className="text-sm text-foreground">
+                  {language === "ru" ? "Статистика и история отправок" : "Statistics and sending history"}
+                </p>
+              </div>
+            </div>
+
+            {/* Link button */}
+            <div className="p-4 pt-0">
+              <Button
+                className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
+                onClick={handleTwitchLink}
+              >
+                <TwitchIcon className="h-5 w-5 mr-2" />
+                {language === "ru" ? "Привязать Twitch" : "Link Twitch"}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
@@ -94,11 +190,16 @@ export default function StreamerDashboard() {
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-bold text-foreground">{t.streamerDashboard}</h1>
             <p className="text-xs text-muted-foreground">
               {language === "ru" ? "Управление стримом" : "Stream management"}
             </p>
+          </div>
+          {/* Twitch connected badge */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#9146ff]/20">
+            <TwitchIcon className="h-4 w-4 text-[#9146ff]" />
+            <span className="text-xs font-medium text-[#9146ff]">{language === "ru" ? "Подключен" : "Connected"}</span>
           </div>
         </div>
 
