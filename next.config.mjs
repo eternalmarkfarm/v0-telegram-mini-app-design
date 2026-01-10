@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  output: 'export',  // <--- САМОЕ ВАЖНОЕ: Говорит Next.js создать статику
   images: {
-    unoptimized: true,
+    unoptimized: true, // Нужно, чтобы картинки работали без сервера
   },
- 
-}
+  // Если сайт будет открываться не в корне домена, раскомментируйте и измените:
+  // basePath: '/v0-telegram-mini-app-design', 
+};
 
-export default nextConfig
+export default nextConfig;
