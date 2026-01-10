@@ -1,11 +1,11 @@
 name: Deploy Next.js to GitHub Pages
 
 on:
-  # Запускать сборку, когда вы что-то пушите в ветку main
+  # Запускаем при обновлении ветки main
   push:
     branches: ["main"]
 
-  # Разрешить ручной запуск
+  # Возможность запустить вручную
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Работа по сборке
+  # Шаг сборки
   build:
     runs-on: ubuntu-latest
     steps:
@@ -28,21 +28,23 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20" # Версия Node.js
-          cache: 'npm'
+          node-version: "20"
+          # cache удален, так как нет package-lock.json
 
       - name: Install dependencies
-        run: npm ci # Устанавливаем библиотеки
+        # Используем install вместо ci, так как нет lock-файла
+        run: npm install
 
       - name: Build
-        run: npm run build # Собираем проект (превращаем в HTML)
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out # Next.js складывает готовый сайт в папку 'out'
+          # Next.js сохраняет статику в папку out
+          path: ./out
 
-  # Работа по публикации
+  # Шаг публикации
   deploy:
     environment:
       name: github-pages
