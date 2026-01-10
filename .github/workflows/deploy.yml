@@ -1,0 +1,38 @@
+name: Build and Test TMA
+
+on:
+  push:
+    branches: [ "main", "master" ] # Запуск при пуше в основную ветку
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Рекомендуемая версия для 2026 года
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: npm run lint --if-present # Проверка стиля кода
+
+      - name: Build project
+        run: npm run build # Сборка продакшн-версии
+
+      # Опционально: Шаг для деплоя на GitHub Pages
+      # Если вы хотите, чтобы приложение само публиковалось на GitHub Pages:
+      - name: Upload artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # Или ./build, в зависимости от вашего конфига Vite/Next
