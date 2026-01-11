@@ -20,6 +20,9 @@ export default function Home() {
   const [backendErr, setBackendErr] = useState<string | null>(null);
   const [me, setMe] = useState<any>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [streamer, setStreamer] = useState<any>(null);
+  const [events, setEvents] = useState<Array<{ event_key: string; enabled: boolean }>>([]);
+  const [streamerErr, setStreamerErr] = useState<string | null>(null);
 
   const devLogin = async () => {
     setAuthError(null);
@@ -36,8 +39,43 @@ export default function Home() {
     try {
       const r = await apiGet("/me");
       setMe(r);
+      await loadStreamer();
     } catch (e: any) {
       setAuthError(String(e?.message ?? e));
+    }
+  };
+
+  const loadStreamer = async () => {
+    setStreamerErr(null);
+    try {
+      const r = await apiGet("/streamer/me");
+      setStreamer(r.streamer);
+      setEvents(r.events ?? []);
+    } catch (e: any) {
+      setStreamerErr(String(e?.message ?? e));
+    }
+  };
+
+  const becomeStreamer = async () => {
+    setStreamerErr(null);
+    try {
+      const name = me?.first_name ?? me?.username ?? "Streamer";
+      await apiPost("/streamer/me", { display_name: name });
+      await loadStreamer();
+    } catch (e: any) {
+      setStreamerErr(String(e?.message ?? e));
+    }
+  };
+
+  const toggleEvent = async (event_key: string, enabled: boolean) => {
+    setStreamerErr(null);
+    try {
+      await apiPost("/streamer/events", { event_key, enabled });
+      setEvents((prev) =>
+        prev.map((x) => (x.event_key === event_key ? { ...x, enabled } : x))
+      );
+    } catch (e: any) {
+      setStreamerErr(String(e?.message ?? e));
     }
   };
 
@@ -69,6 +107,7 @@ export default function Home() {
         setToken(r.token);
         const meData = await apiGet("/me");
         setMe(meData);
+        await loadStreamer();
       } catch (e: any) {
         setAuthError(String(e?.message ?? e));
       }
@@ -117,6 +156,36 @@ export default function Home() {
 
           {authError && <div className="text-xs text-red-600">{authError}</div>}
           {me && <pre className="text-xs">{JSON.stringify(me, null, 2)}</pre>}
+          <div className="mt-2 border rounded p-2">
+            <div className="font-medium text-xs">Streamer settings</div>
+
+            {!streamer ? (
+              <button className="border px-2 py-1 rounded mt-2 text-xs" onClick={becomeStreamer}>
+                Become streamer
+              </button>
+            ) : (
+              <div className="text-xs opacity-80 mt-1">
+                Streamer: {streamer.display_name} (id={streamer.id})
+              </div>
+            )}
+
+            {streamerErr && <div className="text-xs text-red-600 mt-1">{streamerErr}</div>}
+
+            {!!events.length && (
+              <div className="mt-2 space-y-1">
+                {events.map((e) => (
+                  <label key={e.event_key} className="flex items-center justify-between text-xs">
+                    <span>{e.event_key}</span>
+                    <input
+                      type="checkbox"
+                      checked={e.enabled}
+                      onChange={(ev) => toggleEvent(e.event_key, ev.target.checked)}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <GiveawayStatus isTwitchLinked={isTwitchLinked} isSteamLinked={isSteamLinked} />
