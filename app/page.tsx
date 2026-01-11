@@ -17,6 +17,7 @@ export default function Home() {
 
   // статус бекенда для теста связи фронт -> бекенд
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
+  const [backendErr, setBackendErr] = useState<string | null>(null);
   const [me, setMe] = useState<any>(null);
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -76,8 +77,14 @@ export default function Home() {
 
   useEffect(() => {
     apiGet("/health")
-      .then((r) => setBackendOk(Boolean(r?.ok)))
-      .catch(() => setBackendOk(false));
+      .then((r) => {
+        setBackendOk(Boolean(r?.ok));
+        setBackendErr(null);
+      })
+      .catch((e) => {
+        setBackendOk(false);
+        setBackendErr(String(e?.message ?? e));
+      });
   }, []);
 
   const handleTwitchLink = () => {
@@ -95,6 +102,7 @@ export default function Home() {
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
         <div className="text-xs opacity-70">
           Backend: {backendOk === null ? "checking..." : backendOk ? "OK" : "ERROR"}
+          {backendErr && <div className="text-xs text-red-600">{backendErr}</div>}
           <div className="flex gap-2">
             <button className="border px-2 py-1 rounded" onClick={devLogin}>
               Dev login
