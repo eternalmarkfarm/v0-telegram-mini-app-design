@@ -11,28 +11,24 @@ export function Statistics() {
     {
       icon: Trophy,
       label: t.totalPrizes,
-      value: "1,247",
       color: "text-warning",
       bg: "bg-warning/20",
     },
     {
       icon: Coins,
       label: t.totalAmount,
-      value: "₽842K",
       color: "text-success",
       bg: "bg-success/20",
     },
     {
       icon: Calendar,
       label: t.monthlyAmount,
-      value: "₽127K",
       color: "text-primary",
       bg: "bg-primary/20",
     },
     {
       icon: Gift,
       label: t.items,
-      value: "23",
       color: "text-accent",
       bg: "bg-accent/20",
     },
@@ -49,13 +45,14 @@ export function Statistics() {
                 <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                <p className="text-lg font-bold text-muted-foreground/70">—</p>
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
             </div>
           </Card>
         ))}
       </div>
+      <p className="text-xs text-muted-foreground/80 mt-2 px-1">{t.noStatistics}</p>
     </div>
   )
 }

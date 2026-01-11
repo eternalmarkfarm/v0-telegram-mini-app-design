@@ -5,24 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Gift, ChevronRight, Sparkles } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 
-const prizes = [
-  {
-    id: 1,
-    name: "AK-47 | Asiimov",
-    game: "CS2",
-    date: { ru: "2 дня назад", en: "2 days ago" },
-    status: "pending",
-    value: "₽4,500",
-  },
-  {
-    id: 2,
-    name: "Arcana Pudge",
-    game: "Dota 2",
-    date: { ru: "1 неделю назад", en: "1 week ago" },
-    status: "claimed",
-    value: "₽2,800",
-  },
-]
+const prizes: Array<{
+  id: number
+  name: string
+  game: string
+  date: { ru: string; en: string }
+  status: "pending" | "claimed"
+  value: string
+}> = []
 
 export function MyPrizes() {
   const { t, language } = useI18n()

@@ -4,28 +4,11 @@ import { Card } from "@/components/ui/card"
 import { Users } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 
-const trackedStreamers = [
-  {
-    name: "welovegames",
-    status: "offline",
-    avatar: "/gamer-avatar-green.jpg",
-  },
-  {
-    name: "jove",
-    status: "offline",
-    avatar: "/gamer-avatar-orange.jpg",
-  },
-  {
-    name: "maddyson",
-    status: "offline",
-    avatar: "/gamer-avatar-yellow.jpg",
-  },
-  {
-    name: "evelone",
-    status: "offline",
-    avatar: "/gamer-avatar-cyan.jpg",
-  },
-]
+const trackedStreamers: Array<{
+  name: string
+  status: "online" | "offline"
+  avatar?: string
+}> = []
 
 export function TrackedStreamers() {
   const { t } = useI18n()
@@ -37,20 +20,29 @@ export function TrackedStreamers() {
         <h2 className="text-sm font-medium text-muted-foreground">{t.trackedStreamers}</h2>
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3">
-        <div className="flex items-center gap-3 overflow-x-auto pb-1">
-          {trackedStreamers.map((streamer) => (
-            <div key={streamer.name} className="flex flex-col items-center gap-1.5 shrink-0">
-              <div className="relative">
-                <img
-                  src={streamer.avatar || "/placeholder.svg"}
-                  alt={streamer.name}
-                  className="h-12 w-12 rounded-full object-cover ring-2 ring-border/50 opacity-60"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground truncate max-w-[60px]">{streamer.name}</p>
+        {trackedStreamers.length === 0 ? (
+          <div className="flex items-center gap-3 p-2 text-muted-foreground">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/40">
+              <Users className="h-5 w-5 text-muted-foreground/70" />
             </div>
-          ))}
-        </div>
+            <p className="text-sm">{t.noTrackedStreamers}</p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 overflow-x-auto pb-1">
+            {trackedStreamers.map((streamer) => (
+              <div key={streamer.name} className="flex flex-col items-center gap-1.5 shrink-0">
+                <div className="relative">
+                  <img
+                    src={streamer.avatar || "/placeholder.svg"}
+                    alt={streamer.name}
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-border/50 opacity-60"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground truncate max-w-[60px]">{streamer.name}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   )

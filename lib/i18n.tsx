@@ -29,11 +29,13 @@ interface Translations {
   monthlyAmount: string
   totalAmount: string
   thisMonth: string
+  noStatistics: string
 
   // Live Streamers
   liveStreamers: string
   viewers: string
   noLiveStreamers: string
+  noTrackedStreamers: string
 
   // Tracked Streamers
   trackedStreamers: string
@@ -95,10 +97,12 @@ const translations: Record<Language, Translations> = {
     monthlyAmount: "За месяц",
     totalAmount: "Всего разыграно",
     thisMonth: "этот месяц",
+    noStatistics: "Данные появятся после первых розыгрышей",
 
     liveStreamers: "Сейчас стримят",
     viewers: "зрителей",
     noLiveStreamers: "Нет активных стримов",
+    noTrackedStreamers: "Пока нет отслеживаемых стримеров",
 
     trackedStreamers: "Отслеживаемые стримеры",
     online: "онлайн",
@@ -153,10 +157,12 @@ const translations: Record<Language, Translations> = {
     monthlyAmount: "This Month",
     totalAmount: "Total Given Away",
     thisMonth: "this month",
+    noStatistics: "Data will appear after the first giveaways",
 
     liveStreamers: "Live Now",
     viewers: "viewers",
     noLiveStreamers: "No active streams",
+    noTrackedStreamers: "No tracked streamers yet",
 
     trackedStreamers: "Tracked Streamers",
     online: "online",
