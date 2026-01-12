@@ -12,6 +12,7 @@ import { MyPrizes } from "@/components/my-prizes";
 import { BottomActions } from "@/components/bottom-actions";
 
 export default function Home() {
+  const [debug, setDebug] = useState(false);
   const [isTwitchLinked, setIsTwitchLinked] = useState(false);
   const [isSteamLinked, setIsSteamLinked] = useState(false);
 
@@ -23,6 +24,12 @@ export default function Home() {
   const [streamer, setStreamer] = useState<any>(null);
   const [events, setEvents] = useState<Array<{ event_key: string; enabled: boolean }>>([]);
   const [streamerErr, setStreamerErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setDebug(params.get("debug") === "1");
+  }, []);
 
   const devLogin = async () => {
     setAuthError(null);
@@ -139,54 +146,57 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
-        <div className="text-xs opacity-70">
-          Backend: {backendOk === null ? "checking..." : backendOk ? "OK" : "ERROR"}
-          {backendErr && <div className="text-xs text-red-600">{backendErr}</div>}
-          <div className="flex gap-2">
-            <button className="border px-2 py-1 rounded" onClick={devLogin}>
-              Dev login
-            </button>
-            <button className="border px-2 py-1 rounded" onClick={loadMe}>
-              Load me
-            </button>
-            <button className="border px-2 py-1 rounded" onClick={telegramLogin}>
-              Telegram login
-            </button>
-          </div>
-
-          {authError && <div className="text-xs text-red-600">{authError}</div>}
-          {me && <pre className="text-xs">{JSON.stringify(me, null, 2)}</pre>}
-          <div className="mt-2 border rounded p-2">
-            <div className="font-medium text-xs">Streamer settings</div>
-
-            {!streamer ? (
-              <button className="border px-2 py-1 rounded mt-2 text-xs" onClick={becomeStreamer}>
-                Become streamer
+        {debug && (
+          <div className="text-xs opacity-70">
+            Backend: {backendOk === null ? "checking..." : backendOk ? "OK" : "ERROR"}
+            {backendErr && <div className="text-xs text-red-600">{backendErr}</div>}
+            <div className="flex gap-2">
+              <button className="border px-2 py-1 rounded" onClick={devLogin}>
+                Dev login
               </button>
-            ) : (
-              <div className="text-xs opacity-80 mt-1">
-                Streamer: {streamer.display_name} (id={streamer.id})
-              </div>
-            )}
+              <button className="border px-2 py-1 rounded" onClick={loadMe}>
+                Load me
+              </button>
+              <button className="border px-2 py-1 rounded" onClick={telegramLogin}>
+                Telegram login
+              </button>
+            </div>
 
-            {streamerErr && <div className="text-xs text-red-600 mt-1">{streamerErr}</div>}
+            {authError && <div className="text-xs text-red-600">{authError}</div>}
+            {me && <pre className="text-xs">{JSON.stringify(me, null, 2)}</pre>}
 
-            {!!events.length && (
-              <div className="mt-2 space-y-1">
-                {events.map((e) => (
-                  <label key={e.event_key} className="flex items-center justify-between text-xs">
-                    <span>{e.event_key}</span>
-                    <input
-                      type="checkbox"
-                      checked={e.enabled}
-                      onChange={(ev) => toggleEvent(e.event_key, ev.target.checked)}
-                    />
-                  </label>
-                ))}
-              </div>
-            )}
+            <div className="mt-2 border rounded p-2">
+              <div className="font-medium text-xs">Streamer settings</div>
+
+              {!streamer ? (
+                <button className="border px-2 py-1 rounded mt-2 text-xs" onClick={becomeStreamer}>
+                  Become streamer
+                </button>
+              ) : (
+                <div className="text-xs opacity-80 mt-1">
+                  Streamer: {streamer.display_name} (id={streamer.id})
+                </div>
+              )}
+
+              {streamerErr && <div className="text-xs text-red-600 mt-1">{streamerErr}</div>}
+
+              {!!events.length && (
+                <div className="mt-2 space-y-1">
+                  {events.map((e) => (
+                    <label key={e.event_key} className="flex items-center justify-between text-xs">
+                      <span>{e.event_key}</span>
+                      <input
+                        type="checkbox"
+                        checked={e.enabled}
+                        onChange={(ev) => toggleEvent(e.event_key, ev.target.checked)}
+                      />
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         <GiveawayStatus isTwitchLinked={isTwitchLinked} isSteamLinked={isSteamLinked} />
 
