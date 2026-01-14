@@ -135,28 +135,7 @@ export default function Home() {
 
         // 2. Parallel Fetching: Load all data at once
         // This makes it 3x faster than sequential waiting
-        const [meData, streamerRes, viewerRes] = await Promise.allSettled([
-          apiGet("/me"),
-          apiGet("/streamer/me"), // loadStreamer logic inlined or called
-          apiGet("/viewer/me")    // loadViewerData logic inlined or called
-        ]);
-
-        // Process ME
-        if (meData.status === "fulfilled") {
-          setMe(meData.value);
-        }
-
-        // Process Streamer
-        // Note: We need to adapt loadStreamer to just return promise or use the response
-        // Re-using existing functions for simplicity if they return promises, 
-        // but loadStreamer sets state internally. 
-        // Better approach: Call the functions themselves but don't await sequentially.
-
-        // Actually, loadStreamer and loadViewerData set state. 
-        // We can just call them without await, or await Promise.all([..., ...])
-
-        // Let's restart the fetching strategy properly:
-
+        // 2. Parallel Fetching: Load all data at once
         const fetchAll = async () => {
           // We initiate all requests efficiently
           const p1 = apiGet("/me").then(setMe);
