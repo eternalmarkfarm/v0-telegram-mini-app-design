@@ -216,16 +216,7 @@ export default function StreamerDashboard() {
           </div>
         )}
 
-        {!loading && !streamer && (
-          <Card className="p-4 space-y-2">
-            <div className="text-sm">You are not a streamer yet.</div>
-            <Button onClick={becomeStreamer} className="w-full">
-              Become streamer
-            </Button>
-          </Card>
-        )}
-
-        {!loading && streamer && !twitchLinked && (
+        {!loading && (!streamer || (streamer && !twitchLinked)) && (
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
             <div className="bg-gradient-to-br from-[#9146ff]/20 to-[#9146ff]/5 p-6 text-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#9146ff]/20 mx-auto mb-4">
@@ -269,14 +260,25 @@ export default function StreamerDashboard() {
             </div>
 
             <div className="p-4 pt-0">
-              <Button
-                className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
-                onClick={startTwitchLink}
-                disabled={linking}
-              >
-                <TwitchIcon className="h-5 w-5 mr-2" />
-                {linking ? "Redirecting..." : language === "ru" ? "Привязать Twitch" : "Link Twitch"}
-              </Button>
+              {streamer ? (
+                <Button
+                  className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
+                  onClick={startTwitchLink}
+                  disabled={linking}
+                >
+                  <TwitchIcon className="h-5 w-5 mr-2" />
+                  {linking ? "Redirecting..." : language === "ru" ? "Привязать Twitch" : "Link Twitch"}
+                </Button>
+              ) : (
+                <Button
+                  className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
+                  onClick={becomeStreamer}
+                  disabled={linking}
+                >
+                  <TwitchIcon className="h-5 w-5 mr-2" />
+                  {language === "ru" ? "Стать стримером" : "Become Streamer"}
+                </Button>
+              )}
             </div>
           </Card>
         )}
