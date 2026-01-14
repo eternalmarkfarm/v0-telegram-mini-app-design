@@ -137,10 +137,11 @@ export default function Home() {
         // This makes it 3x faster than sequential waiting
         // 2. Parallel Fetching: Load all data at once
         const fetchAll = async () => {
-          // We initiate all requests efficiently
-          const p1 = apiGet("/me").then(setMe);
-          const p2 = loadStreamer();
-          const p3 = loadViewerData();
+          // We initiate all requests efficiently, catching individual errors
+          // so one failure (e.g. streamer 404) doesn't break everything else.
+          const p1 = apiGet("/me").then(setMe).catch(e => console.error("Me load error:", e));
+          const p2 = loadStreamer().catch(e => console.error("Streamer load error:", e));
+          const p3 = loadViewerData().catch(e => console.error("Viewer load error:", e));
 
           await Promise.all([p1, p2, p3]);
         };
