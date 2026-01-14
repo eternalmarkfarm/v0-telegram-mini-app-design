@@ -11,6 +11,10 @@ export function setToken(token: string) {
   localStorage.setItem("token", token);
 }
 
+export function removeToken() {
+  localStorage.removeItem("token");
+}
+
 async function apiRequest(path: string, opts: RequestInit = {}) {
   const headers = new Headers(opts.headers);
 
