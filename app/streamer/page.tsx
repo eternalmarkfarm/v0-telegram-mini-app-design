@@ -209,10 +209,12 @@ export default function StreamerDashboard() {
           )}
         </div>
 
-        <div className="text-xs opacity-70">
-          Backend: {loading ? "checking..." : err ? "ERROR" : "OK"}
-          {err && <div className="text-xs text-red-600 break-words">{err}</div>}
-        </div>
+        {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1" && (
+          <div className="text-xs opacity-70">
+            Backend: {loading ? "checking..." : err ? "ERROR" : "OK"}
+            {err && <div className="text-xs text-red-600 break-words">{err}</div>}
+          </div>
+        )}
 
         {!loading && !streamer && (
           <Card className="p-4 space-y-2">
@@ -220,9 +222,6 @@ export default function StreamerDashboard() {
             <Button onClick={becomeStreamer} className="w-full">
               Become streamer
             </Button>
-            <div className="text-xs opacity-70">
-              (Если получишь 401 — значит нет токена: залогинься на главной странице через Telegram login / Dev login.)
-            </div>
           </Card>
         )}
 

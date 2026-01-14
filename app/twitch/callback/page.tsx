@@ -2,53 +2,93 @@
 
 import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { apiPost, getToken } from "@/lib/api";
+import { apiPost } from "@/lib/api";
+import { ensureAuth } from "@/lib/ensureAuth";
+import { Card } from "@/components/ui/card";
 
 function CallbackInner() {
   const sp = useSearchParams();
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
+  const [message, setMessage] = useState("Processing Twitch OAuth...");
 
   useEffect(() => {
-    const code = sp.get("code");
-    const state = sp.get("state");
-
-    const token = getToken();
-    if (!token) {
-      setError("Нет токена приложения. Сначала залогинься (Telegram login или Dev login).");
-      return;
-    }
-
-    if (!code || !state) {
-      setError("В URL нет code/state. Проверь, что Twitch редиректит на /twitch/callback");
-      return;
-    }
-
-    (async () => {
+    const handleCallback = async () => {
       try {
-        await apiPost("/twitch/exchange", { code, state });
-        router.replace("/streamer");
+        // Ensure user is authenticated
+        await ensureAuth();
+
+        // Get parameters from URL
+        const code = sp.get("code");
+        const state = sp.get("state");
+        const error = sp.get("error");
+        const type = sp.get("type"); // 'viewer' or 'streamer'
+
+        if (error) {
+          throw new Error(`Twitch OAuth error: ${error}`);
+        }
+
+        if (!code || !state) {
+          throw new Error("Missing code or state parameter");
+        }
+
+        // Determine which endpoint to use
+        if (type === "streamer") {
+          // Streamer OAuth flow
+          await apiPost("/twitch/exchange", { code, state });
+          setStatus("success");
+          setMessage("✅ Twitch account linked successfully!");
+          setTimeout(() => router.push("/streamer"), 2000);
+        } else {
+          // Viewer OAuth flow (default)
+          await apiPost("/twitch/exchange-viewer", { code, state });
+          setStatus("success");
+          setMessage("✅ Twitch account linked successfully!");
+          setTimeout(() => router.push("/"), 2000);
+        }
       } catch (e: any) {
-        setError(e?.message ?? String(e));
+        setStatus("error");
+        setMessage(`❌ Error: ${e?.message ?? e}`);
       }
-    })();
+    };
+
+    handleCallback();
   }, [sp, router]);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h1>Привязка Twitch…</h1>
-      {error ? (
-        <pre style={{ whiteSpace: "pre-wrap" }}>{error}</pre>
-      ) : (
-        <p>Жди, выполняю обмен кода…</p>
-      )}
-    </div>
+    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="max-w-md w-full p-6 text-center">
+        <div className="mb-4">
+          {status === "processing" && (
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          )}
+          {status === "success" && <div className="text-6xl">✅</div>}
+          {status === "error" && <div className="text-6xl">❌</div>}
+        </div>
+        <p className="text-lg text-foreground">{message}</p>
+        {status === "success" && (
+          <p className="text-sm text-muted-foreground mt-2">Redirecting...</p>
+        )}
+        {status === "error" && (
+          <button
+            onClick={() => router.push("/")}
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md"
+          >
+            Return to Home
+          </button>
+        )}
+      </Card>
+    </main>
   );
 }
 
 export default function TwitchCallbackPage() {
   return (
-    <Suspense fallback={<div style={{ padding: 16 }}>Загрузка…</div>}>
+    <Suspense fallback={
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <p>Loading...</p>
+      </main>
+    }>
       <CallbackInner />
     </Suspense>
   );

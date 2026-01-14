@@ -9,7 +9,7 @@ export async function ensureAuth(): Promise<string> {
   const initData = (window as any)?.Telegram?.WebApp?.initData;
   if (!initData) {
     throw new Error(
-      "Нет токена и нет Telegram initData. Открой миниапп внутри Telegram или используй Dev login.",
+      "Нет токена и нет Telegram initData. Пожалуйста, откройте приложение внутри Telegram.",
     );
   }
 

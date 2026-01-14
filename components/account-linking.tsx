@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Check, Link2, HelpCircle } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useState } from "react"
+import { apiGet } from "@/lib/api"
+import { ensureAuth } from "@/lib/ensureAuth"
 
 // Twitch icon component
 function TwitchIcon({ className }: { className?: string }) {
@@ -28,13 +30,37 @@ function SteamIcon({ className }: { className?: string }) {
 interface AccountLinkingProps {
   twitchLinked: boolean
   steamLinked: boolean
-  onTwitchLink: () => void
+  twitchLogin?: string | null
+  onTwitchLink?: () => void
   onSteamLink: (url: string) => void
 }
 
-export function AccountLinking({ twitchLinked, steamLinked, onTwitchLink, onSteamLink }: AccountLinkingProps) {
+export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, onTwitchLink, onSteamLink }: AccountLinkingProps) {
   const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
+  const [linking, setLinking] = useState(false)
+
+  const handleTwitchLink = async () => {
+    if (onTwitchLink) {
+      onTwitchLink()
+      return
+    }
+
+    setLinking(true)
+    try {
+      await ensureAuth()
+      const response = await apiGet("/twitch/authorize-viewer")
+      const url = response?.url
+      if (url) {
+        window.location.href = url
+      } else {
+        throw new Error("No Twitch authorize URL received")
+      }
+    } catch (e: any) {
+      alert(`Error: ${e?.message ?? e}`)
+      setLinking(false)
+    }
+  }
 
   return (
     <div className="space-y-3">
@@ -46,15 +72,22 @@ export function AccountLinking({ twitchLinked, steamLinked, onTwitchLink, onStea
             </div>
             <div className="flex-1">
               <p className="font-medium text-foreground">{t.twitchAccount}</p>
-              <p className="text-xs text-muted-foreground">{twitchLinked ? t.linked : t.notLinked}</p>
+              <p className="text-xs text-muted-foreground">
+                {twitchLinked ? (twitchLogin ? `@${twitchLogin}` : t.linked) : t.notLinked}
+              </p>
             </div>
             {twitchLinked ? (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
                 <Check className="h-4 w-4 text-success" />
               </div>
             ) : (
-              <Button size="sm" className="bg-[#9146ff] hover:bg-[#7c3aed] text-white" onClick={onTwitchLink}>
-                {t.link}
+              <Button
+                size="sm"
+                className="bg-[#9146ff] hover:bg-[#7c3aed] text-white"
+                onClick={handleTwitchLink}
+                disabled={linking}
+              >
+                {linking ? "..." : t.link}
               </Button>
             )}
           </div>

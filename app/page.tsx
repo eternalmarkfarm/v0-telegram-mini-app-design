@@ -15,8 +15,9 @@ export default function Home() {
   const [debug, setDebug] = useState(false);
   const [isTwitchLinked, setIsTwitchLinked] = useState(false);
   const [isSteamLinked, setIsSteamLinked] = useState(false);
+  const [twitchLogin, setTwitchLogin] = useState<string | null>(null);
 
-  // статус бекенда для теста связи фронт -> бекенд
+  // статус бекенда для теста связи фронт -> бэкенд
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const [backendErr, setBackendErr] = useState<string | null>(null);
   const [me, setMe] = useState<any>(null);
@@ -24,6 +25,7 @@ export default function Home() {
   const [streamer, setStreamer] = useState<any>(null);
   const [events, setEvents] = useState<Array<{ event_key: string; enabled: boolean }>>([]);
   const [streamerErr, setStreamerErr] = useState<string | null>(null);
+  const [viewerData, setViewerData] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -102,6 +104,18 @@ export default function Home() {
     }
   };
 
+  const loadViewerData = async () => {
+    try {
+      const r = await apiGet("/viewer/me");
+      setViewerData(r);
+      setIsTwitchLinked(Boolean(r.twitch_user_id));
+      setTwitchLogin(r.twitch_login);
+    } catch (e: any) {
+      // Ignore errors if user not authenticated yet
+      console.log("Viewer data load error:", e);
+    }
+  };
+
   useEffect(() => {
     const tg = (window as any)?.Telegram?.WebApp;
     const initData = tg?.initData;
@@ -115,6 +129,7 @@ export default function Home() {
         const meData = await apiGet("/me");
         setMe(meData);
         await loadStreamer();
+        await loadViewerData();
       } catch (e: any) {
         setAuthError(String(e?.message ?? e));
       }
@@ -203,7 +218,7 @@ export default function Home() {
         <AccountLinking
           twitchLinked={isTwitchLinked}
           steamLinked={isSteamLinked}
-          onTwitchLink={handleTwitchLink}
+          twitchLogin={twitchLogin}
           onSteamLink={handleSteamLink}
         />
 
