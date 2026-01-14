@@ -52,7 +52,12 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, onTwitc
       const response = await apiGet("/twitch/authorize-viewer")
       const url = response?.url
       if (url) {
-        window.location.href = url
+        const tg = (window as any).Telegram?.WebApp;
+        if (tg?.openLink) {
+          tg.openLink(url);
+        } else {
+          window.location.href = url;
+        }
       } else {
         throw new Error("No Twitch authorize URL received")
       }

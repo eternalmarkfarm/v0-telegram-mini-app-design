@@ -15,8 +15,13 @@ function CallbackInner() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Ensure user is authenticated
-        await ensureAuth();
+        // We try ensureAuth, but if it fails (external browser), we proceed anyway
+        // because the backend now trusts the 'state' parameter for identification.
+        try {
+          await ensureAuth();
+        } catch (e) {
+          console.log("Not in Telegram or no initData, proceeding with state-based auth...");
+        }
 
         // Get parameters from URL
         const code = sp.get("code");
@@ -37,14 +42,14 @@ function CallbackInner() {
           // Streamer OAuth flow
           await apiPost("/twitch/exchange", { code, state });
           setStatus("success");
-          setMessage("✅ Twitch account linked successfully!");
-          setTimeout(() => router.push("/streamer"), 2000);
+          setMessage("✅ Twitch account linked successfully! You can close this window and return to Telegram.");
+          // No redirect back to mini-app because we are in external browser
         } else {
           // Viewer OAuth flow (default)
           await apiPost("/twitch/exchange-viewer", { code, state });
           setStatus("success");
-          setMessage("✅ Twitch account linked successfully!");
-          setTimeout(() => router.push("/"), 2000);
+          setMessage("✅ Twitch account linked successfully! You can close this window and return to Telegram.");
+          // No redirect
         }
       } catch (e: any) {
         setStatus("error");

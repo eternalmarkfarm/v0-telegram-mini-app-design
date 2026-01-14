@@ -138,7 +138,13 @@ export default function StreamerDashboard() {
       const r = await apiGet("/twitch/authorize");
       const url = r?.url ?? r;
       if (!url) throw new Error("No Twitch authorize URL.");
-      window.location.href = url;
+
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.openLink) {
+        tg.openLink(url);
+      } else {
+        window.location.href = url;
+      }
     } catch (e: any) {
       setErr(String(e?.message ?? e));
       setLinking(false);
@@ -147,6 +153,11 @@ export default function StreamerDashboard() {
 
   useEffect(() => {
     refresh();
+
+    // Refresh when returning from external browser
+    const onFocus = () => refresh();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   const twitchLinked = Boolean(streamer?.twitch_linked_at);

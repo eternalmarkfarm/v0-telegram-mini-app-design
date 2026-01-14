@@ -134,6 +134,15 @@ export default function Home() {
         setAuthError(String(e?.message ?? e));
       }
     })();
+
+    // Refresh data when user returns to the tab (e.g. from external browser auth)
+    const onFocus = () => {
+      loadMe();
+      loadStreamer();
+      loadViewerData();
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   useEffect(() => {
