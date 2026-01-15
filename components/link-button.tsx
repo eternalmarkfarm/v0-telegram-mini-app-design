@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Check } from "lucide-react"
+import { useI18n } from "@/lib/i18n"
 
 interface LinkButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean
@@ -18,7 +19,9 @@ function TwitchIcon({ className }: { className?: string }) {
     )
 }
 
-export function LinkButton({ className, isLoading, isLinked, loadingText = "Synchronizing...", ...props }: LinkButtonProps) {
+export function LinkButton({ className, isLoading, isLinked, loadingText, ...props }: LinkButtonProps) {
+    const { t } = useI18n()
+    
     if (isLinked) {
         return (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20 animate-in fade-in zoom-in duration-300">
@@ -55,7 +58,7 @@ export function LinkButton({ className, isLoading, isLinked, loadingText = "Sync
 
                 {isLoading ? (
                     <span className="text-xs font-medium flex items-center">
-                        Syncing
+                        {t.syncing}
                         <span className="flex w-3 text-left ml-0.5">
                             <span className="animate-[bounce_1.4s_infinite_0ms]">.</span>
                             <span className="animate-[bounce_1.4s_infinite_200ms]">.</span>
@@ -63,7 +66,7 @@ export function LinkButton({ className, isLoading, isLinked, loadingText = "Sync
                         </span>
                     </span>
                 ) : (
-                    <span>Link</span>
+                    <span>{t.link}</span>
                 )}
             </div>
         </Button>

@@ -16,6 +16,7 @@ interface Translations {
   notLinked: string
   linked: string
   link: string
+  syncing: string
   steamTradeUrl: string
   whereToFind: string
   steamPath: string
@@ -85,6 +86,7 @@ const translations: Record<Language, Translations> = {
     notLinked: "Не привязан",
     linked: "Привязан",
     link: "Привязать",
+    syncing: "Синхронизация",
     steamTradeUrl: "Steam Trade URL",
     whereToFind: "Где найти:",
     steamPath: "Steam → Инвентарь → Предложения обмена → «Кто может присылать мне предложения?»",
@@ -145,6 +147,7 @@ const translations: Record<Language, Translations> = {
     notLinked: "Not linked",
     linked: "Linked",
     link: "Link",
+    syncing: "Syncing",
     steamTradeUrl: "Steam Trade URL",
     whereToFind: "Where to find:",
     steamPath: 'Steam → Inventory → Trade Offers → "Who can send me Trade Offers?"',
