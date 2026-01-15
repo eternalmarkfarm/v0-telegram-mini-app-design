@@ -9,8 +9,9 @@ import { apiGet } from "@/lib/api"
 
 interface LiveStreamer {
   id: number
-  display_name: string
   twitch_login: string
+  twitch_display_name?: string
+  profile_image_url?: string
   is_live: boolean
   game_name?: string
   title?: string
@@ -79,13 +80,21 @@ export function LiveStreamers() {
               className="flex items-center gap-3 p-3 hover:bg-secondary/30 transition-colors"
             >
               <div className="relative">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#9146ff] to-[#6441a5] flex items-center justify-center text-white font-bold text-sm ring-2 ring-destructive animate-pulse">
-                  {streamer.display_name.charAt(0).toUpperCase()}
-                </div>
+                {streamer.profile_image_url ? (
+                  <img
+                    src={streamer.profile_image_url}
+                    alt={streamer.twitch_login}
+                    className="h-10 w-10 rounded-full object-cover ring-2 ring-destructive"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#9146ff] to-[#6441a5] flex items-center justify-center text-white font-bold text-sm ring-2 ring-destructive">
+                    {streamer.twitch_login.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-destructive ring-2 ring-card animate-pulse" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">{streamer.display_name}</p>
+                <p className="font-medium text-foreground truncate">{streamer.twitch_login}</p>
                 <p className="text-xs text-muted-foreground truncate">
                   {streamer.game_name || "Streaming"}
                 </p>
