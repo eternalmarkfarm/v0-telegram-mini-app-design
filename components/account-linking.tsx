@@ -130,7 +130,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
                   placeholder={t.pasteSteamLink}
                   value={tradeUrl}
                   onChange={(e) => setTradeUrl(e.target.value)}
-                  className="pl-10 bg-input border-border/50"
+                  className="pl-10 bg-input border-border/50 caret-foreground"
                 />
               </div>
               <Button
