@@ -206,9 +206,13 @@ export default function Home() {
     setIsTwitchLinked(true);
   };
 
-  const handleSteamLink = (url: string) => {
-    if (url) {
+  const handleSteamLink = async (url: string) => {
+    if (!url) return;
+    try {
+      await apiPost("/viewer/steam", { trade_url: url });
       setIsSteamLinked(true);
+    } catch (e: any) {
+      alert(`Ошибка сохранения Steam URL: ${e?.message ?? e}`);
     }
   };
 
