@@ -27,7 +27,17 @@ async function apiRequest(path: string, opts: RequestInit = {}) {
 }
 
 export function apiGet(path: string) {
-  return apiRequest(path, { method: "GET" });
+  // Add timestamp to prevent caching (aggressive cache busting)
+  const separator = path.includes("?") ? "&" : "?";
+  const pathWithTs = `${path}${separator}_t=${Date.now()}`;
+
+  return apiRequest(pathWithTs, {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "Pragma": "no-cache"
+    }
+  });
 }
 
 export function apiPost(path: string, body?: any) {

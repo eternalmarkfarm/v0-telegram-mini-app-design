@@ -26,6 +26,8 @@ export default function Home() {
   const [events, setEvents] = useState<Array<{ event_key: string; enabled: boolean }>>([]);
   const [streamerErr, setStreamerErr] = useState<string | null>(null);
   const [viewerData, setViewerData] = useState<any>(null);
+  const [viewerLoading, setViewerLoading] = useState(false);
+  const [viewerErr, setViewerErr] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -105,14 +107,19 @@ export default function Home() {
   };
 
   const loadViewerData = async () => {
+    setViewerLoading(true);
+    setViewerErr(null);
     try {
       const r = await apiGet("/viewer/me");
       setViewerData(r);
       setIsTwitchLinked(Boolean(r.twitch_user_id));
       setTwitchLogin(r.twitch_login);
+      setIsSteamLinked(Boolean(r.steam_trade_url)); // Assuming this field exists or similar logic
     } catch (e: any) {
-      // Ignore errors if user not authenticated yet
-      console.log("Viewer data load error:", e);
+      console.error("Viewer data load error:", e);
+      setViewerErr(String(e?.message ?? e));
+    } finally {
+      setViewerLoading(false);
     }
   };
 
@@ -222,7 +229,22 @@ export default function Home() {
               <button className="border px-2 py-1 rounded" onClick={telegramLogin}>
                 Telegram login
               </button>
+              <button className="border px-2 py-1 rounded bg-blue-100 dark:bg-blue-900" onClick={loadViewerData}>
+                Force Refresh {viewerLoading && "..."}
+              </button>
             </div>
+
+            {viewerErr && <div className="text-xs text-red-600 mt-1">Viewer Load Error: {viewerErr}</div>}
+
+            {viewerData && (
+              <div className="mt-2 p-2 border border-blue-200 rounded text-[10px] bg-blue-50/50 overflow-auto">
+                <strong>Debug Viewer Data:</strong>
+                <div>TG ID: {viewerData.telegram_id}</div>
+                <div>Twitch ID: {viewerData.twitch_user_id || "null"}</div>
+                <div>Twitch Login: {viewerData.twitch_login || "null"}</div>
+                <div>Linked At: {viewerData.twitch_linked_at || "null"}</div>
+              </div>
+            )}
 
             {authError && <div className="text-xs text-red-600">{authError}</div>}
             {me && <pre className="text-xs">{JSON.stringify(me, null, 2)}</pre>}
