@@ -34,10 +34,10 @@ export function LinkButton({ className, isLoading, isLinked, loadingText, ...pro
         <Button
             size="sm"
             className={cn(
-                "relative overflow-hidden transition-all duration-300",
+                "relative overflow-hidden transition-all duration-300 px-4",
                 isLoading
-                    ? "bg-[#9146ff]/80 text-white/90 border-[#9146ff]/50 w-[140px]"
-                    : "bg-[#9146ff] hover:bg-[#7c3aed] text-white w-[100px]", // width transition for text change
+                    ? "bg-[#9146ff]/80 text-white/90 border-[#9146ff]/50"
+                    : "bg-[#9146ff] hover:bg-[#7c3aed] text-white",
                 className
             )}
             disabled={isLoading}
