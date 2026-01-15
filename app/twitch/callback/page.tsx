@@ -27,7 +27,6 @@ function CallbackInner() {
         const code = sp.get("code");
         const state = sp.get("state");
         const error = sp.get("error");
-        const type = sp.get("type"); // 'viewer' or 'streamer'
 
         if (error) {
           throw new Error(`Twitch OAuth error: ${error}`);
@@ -37,20 +36,11 @@ function CallbackInner() {
           throw new Error("Missing code or state parameter");
         }
 
-        // Determine which endpoint to use
-        if (type === "streamer") {
-          // Streamer OAuth flow
-          await apiPost("/twitch/exchange", { code, state });
-          setStatus("success");
-          setMessage("✅ Twitch account linked successfully! You can close this window and return to Telegram.");
-          // No redirect back to mini-app because we are in external browser
-        } else {
-          // Viewer OAuth flow (default)
-          await apiPost("/twitch/exchange-viewer", { code, state });
-          setStatus("success");
-          setMessage("✅ Twitch account linked successfully! You can close this window and return to Telegram.");
-          // No redirect
-        }
+        // Используем универсальный эндпоинт - type читается из state на бэкенде
+        const result = await apiPost("/twitch/exchange-universal", { code, state });
+        setStatus("success");
+        const userType = result?.type === "streamer" ? "Streamer" : "Viewer";
+        setMessage(`✅ Twitch ${userType} account linked successfully! You can close this window and return to Telegram.`);
       } catch (e: any) {
         setStatus("error");
         setMessage(`❌ Error: ${e?.message ?? e}`);
