@@ -288,6 +288,7 @@ export default function Home() {
           twitchLinked={isTwitchLinked}
           steamLinked={isSteamLinked}
           twitchLogin={twitchLogin}
+          isLoading={viewerLoading}
           onSteamLink={handleSteamLink}
         />
 

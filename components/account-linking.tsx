@@ -7,6 +7,7 @@ import { Check, Link2, HelpCircle } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useState } from "react"
 import { apiGet } from "@/lib/api"
+import { LinkButton } from "@/components/link-button"
 import { ensureAuth } from "@/lib/ensureAuth"
 
 // Twitch icon component
@@ -31,11 +32,12 @@ interface AccountLinkingProps {
   twitchLinked: boolean
   steamLinked: boolean
   twitchLogin?: string | null
+  isLoading?: boolean
   onTwitchLink?: () => void
   onSteamLink: (url: string) => void
 }
 
-export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, onTwitchLink, onSteamLink }: AccountLinkingProps) {
+export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink }: AccountLinkingProps) {
   const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
   const [linking, setLinking] = useState(false)
@@ -86,14 +88,11 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, onTwitc
                 <Check className="h-4 w-4 text-success" />
               </div>
             ) : (
-              <Button
-                size="sm"
-                className="bg-[#9146ff] hover:bg-[#7c3aed] text-white"
+              <LinkButton
+                isLoading={isLoading || linking}
                 onClick={handleTwitchLink}
-                disabled={linking}
-              >
-                {linking ? "..." : t.link}
-              </Button>
+                loadingText={t.syncing ?? "Syncing..."}
+              />
             )}
           </div>
         </div>
