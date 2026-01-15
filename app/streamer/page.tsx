@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -91,6 +91,7 @@ export default function StreamerDashboard() {
 
   const [streamer, setStreamer] = useState<Streamer>(null);
   const [events, setEvents] = useState<EventRow[]>([]);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   const refresh = async () => {
     setErr(null);
@@ -157,8 +158,44 @@ export default function StreamerDashboard() {
     // Refresh when returning from external browser
     const onFocus = () => refresh();
     window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
   }, []);
+
+  // Polling для проверки статуса привязки Twitch
+  useEffect(() => {
+    if (linking) {
+      pollingRef.current = setInterval(async () => {
+        try {
+          await ensureAuth();
+          const r = await apiGet("/streamer/me");
+          if (r.streamer?.twitch_linked_at) {
+            setStreamer(r.streamer);
+            setEvents(r.events ?? []);
+            setLinking(false);
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
+          }
+        } catch (e) {
+          console.error("Polling error:", e);
+        }
+      }, 3000);
+    }
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
+  }, [linking]);
 
   const twitchLinked = Boolean(streamer?.twitch_linked_at);
   const eventItems = useMemo(

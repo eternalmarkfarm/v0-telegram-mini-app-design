@@ -315,6 +315,7 @@ export default function Home() {
           onSteamLink={handleSteamLink}
           onTwitchUnlink={handleTwitchUnlink}
           onSteamUnlink={handleSteamUnlink}
+          onRefreshStatus={loadViewerData}
         />
 
         <Statistics />

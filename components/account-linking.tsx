@@ -37,9 +37,10 @@ interface AccountLinkingProps {
   onSteamLink: (url: string) => void | Promise<void>
   onTwitchUnlink?: () => void | Promise<void>
   onSteamUnlink?: () => void | Promise<void>
+  onRefreshStatus?: () => Promise<void>
 }
 
-export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink, onTwitchUnlink, onSteamUnlink }: AccountLinkingProps) {
+export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink, onTwitchUnlink, onSteamUnlink, onRefreshStatus }: AccountLinkingProps) {
   const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
   const [linking, setLinking] = useState(false)
@@ -47,6 +48,39 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   const [isTwitchUnlinking, setIsTwitchUnlinking] = useState(false)
   const [isSteamUnlinking, setIsSteamUnlinking] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const pollingRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Polling для проверки статуса привязки Twitch
+  useEffect(() => {
+    if (linking && onRefreshStatus) {
+      // Начинаем polling каждые 3 секунды
+      pollingRef.current = setInterval(async () => {
+        try {
+          await onRefreshStatus()
+        } catch (e) {
+          console.error("Polling error:", e)
+        }
+      }, 3000)
+    }
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [linking, onRefreshStatus])
+
+  // Останавливаем polling когда Twitch привязан
+  useEffect(() => {
+    if (twitchLinked && linking) {
+      setLinking(false)
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [twitchLinked, linking])
 
   // Auto-focus input for better UX on desktop
   useEffect(() => {
