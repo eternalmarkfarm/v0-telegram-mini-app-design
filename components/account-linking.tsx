@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, Link2, HelpCircle } from "lucide-react"
+import { Check, Link2, HelpCircle, Trash2 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useState, useRef, useEffect } from "react"
 import { apiGet } from "@/lib/api"
@@ -35,13 +35,17 @@ interface AccountLinkingProps {
   isLoading?: boolean
   onTwitchLink?: () => void
   onSteamLink: (url: string) => void | Promise<void>
+  onTwitchUnlink?: () => void | Promise<void>
+  onSteamUnlink?: () => void | Promise<void>
 }
 
-export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink }: AccountLinkingProps) {
+export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink, onTwitchUnlink, onSteamUnlink }: AccountLinkingProps) {
   const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
   const [linking, setLinking] = useState(false)
   const [isSteamLinking, setIsSteamLinking] = useState(false)
+  const [isTwitchUnlinking, setIsTwitchUnlinking] = useState(false)
+  const [isSteamUnlinking, setIsSteamUnlinking] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Auto-focus input for better UX on desktop
@@ -93,8 +97,28 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               </p>
             </div>
             {twitchLinked ? (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
-                <Check className="h-4 w-4 text-success" />
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
+                  <Check className="h-4 w-4 text-success" />
+                </div>
+                {onTwitchUnlink && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-2 text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-150 active:scale-95"
+                    onClick={async () => {
+                      setIsTwitchUnlinking(true)
+                      try {
+                        await onTwitchUnlink()
+                      } finally {
+                        setIsTwitchUnlinking(false)
+                      }
+                    }}
+                    disabled={isTwitchUnlinking}
+                  >
+                    <Trash2 className={`h-4 w-4 ${isTwitchUnlinking ? 'animate-pulse' : ''}`} />
+                  </Button>
+                )}
               </div>
             ) : (
               <LinkButton
@@ -119,8 +143,28 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               <p className="text-xs text-muted-foreground">{steamLinked ? t.linked : t.notLinked}</p>
             </div>
             {steamLinked && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
-                <Check className="h-4 w-4 text-success" />
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/20">
+                  <Check className="h-4 w-4 text-success" />
+                </div>
+                {onSteamUnlink && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-2 text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-150 active:scale-95"
+                    onClick={async () => {
+                      setIsSteamUnlinking(true)
+                      try {
+                        await onSteamUnlink()
+                      } finally {
+                        setIsSteamUnlinking(false)
+                      }
+                    }}
+                    disabled={isSteamUnlinking}
+                  >
+                    <Trash2 className={`h-4 w-4 ${isSteamUnlinking ? 'animate-pulse' : ''}`} />
+                  </Button>
+                )}
               </div>
             )}
           </div>

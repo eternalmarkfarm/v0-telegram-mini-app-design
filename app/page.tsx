@@ -216,6 +216,25 @@ export default function Home() {
     }
   };
 
+  const handleTwitchUnlink = async () => {
+    try {
+      await apiPost("/viewer/twitch/unlink", {});
+      setIsTwitchLinked(false);
+      setTwitchLogin(null);
+    } catch (e: any) {
+      alert(`Ошибка отвязки Twitch: ${e?.message ?? e}`);
+    }
+  };
+
+  const handleSteamUnlink = async () => {
+    try {
+      await apiPost("/viewer/steam/unlink", {});
+      setIsSteamLinked(false);
+    } catch (e: any) {
+      alert(`Ошибка отвязки Steam: ${e?.message ?? e}`);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
@@ -294,6 +313,8 @@ export default function Home() {
           twitchLogin={twitchLogin}
           isLoading={viewerLoading}
           onSteamLink={handleSteamLink}
+          onTwitchUnlink={handleTwitchUnlink}
+          onSteamUnlink={handleSteamUnlink}
         />
 
         <Statistics />

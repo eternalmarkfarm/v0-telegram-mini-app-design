@@ -22,6 +22,7 @@ interface Translations {
   steamPath: string
   pasteSteamLink: string
   linkSteam: string
+  unlink: string
 
   // Statistics
   statistics: string
@@ -92,6 +93,7 @@ const translations: Record<Language, Translations> = {
     steamPath: "Steam → Инвентарь → Предложения обмена → «Кто может присылать мне предложения?»",
     pasteSteamLink: "Вставьте ссылку обмена Steam",
     linkSteam: "Привязать Steam",
+    unlink: "Удалить",
 
     statistics: "Статистика",
     totalPrizes: "Всего призов",
@@ -153,6 +155,7 @@ const translations: Record<Language, Translations> = {
     steamPath: 'Steam → Inventory → Trade Offers → "Who can send me Trade Offers?"',
     pasteSteamLink: "Paste your Steam trade URL",
     linkSteam: "Link Steam",
+    unlink: "Unlink",
 
     statistics: "Statistics",
     totalPrizes: "Total Prizes",
