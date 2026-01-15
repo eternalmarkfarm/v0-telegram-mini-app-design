@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Check, Link2, HelpCircle } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { apiGet } from "@/lib/api"
 import { LinkButton } from "@/components/link-button"
 import { ensureAuth } from "@/lib/ensureAuth"
@@ -34,13 +34,22 @@ interface AccountLinkingProps {
   twitchLogin?: string | null
   isLoading?: boolean
   onTwitchLink?: () => void
-  onSteamLink: (url: string) => void
+  onSteamLink: (url: string) => void | Promise<void>
 }
 
 export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink }: AccountLinkingProps) {
   const { t } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
   const [linking, setLinking] = useState(false)
+  const [isSteamLinking, setIsSteamLinking] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-focus input for better UX on desktop
+  useEffect(() => {
+    if (!steamLinked && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [steamLinked])
 
   const handleTwitchLink = async () => {
     if (onTwitchLink) {
@@ -127,19 +136,37 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               <div className="relative">
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
+                  ref={inputRef}
                   placeholder={t.pasteSteamLink}
                   value={tradeUrl}
                   onChange={(e) => setTradeUrl(e.target.value)}
-                  className="pl-10 bg-input border-border/50 caret-foreground"
+                  className="pl-10 bg-input border-border/50 caret-[#66c0f4] focus:caret-[#66c0f4] text-foreground"
+                  style={{ caretColor: '#66c0f4' }}
                 />
               </div>
               <Button
-                className="w-full bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4]"
-                onClick={() => onSteamLink(tradeUrl)}
-                disabled={!tradeUrl}
+                className="w-full bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] transition-all duration-150 active:scale-[0.97] active:bg-[#0f1a24]"
+                onClick={async () => {
+                  setIsSteamLinking(true)
+                  try {
+                    await onSteamLink(tradeUrl)
+                  } finally {
+                    setIsSteamLinking(false)
+                  }
+                }}
+                disabled={!tradeUrl || isSteamLinking}
               >
-                <SteamIcon className="h-4 w-4 mr-2" />
-                {t.linkSteam}
+                <SteamIcon className={`h-4 w-4 mr-2 ${isSteamLinking ? 'animate-pulse' : ''}`} />
+                {isSteamLinking ? (
+                  <span className="flex items-center">
+                    {t.syncing}
+                    <span className="flex w-4 text-left ml-0.5">
+                      <span className="animate-[bounce_1.4s_infinite_0ms]">.</span>
+                      <span className="animate-[bounce_1.4s_infinite_200ms]">.</span>
+                      <span className="animate-[bounce_1.4s_infinite_400ms]">.</span>
+                    </span>
+                  </span>
+                ) : t.linkSteam}
               </Button>
             </div>
           )}
