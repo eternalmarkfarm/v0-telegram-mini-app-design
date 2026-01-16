@@ -122,7 +122,9 @@ export default function TrackedPage() {
                           )}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground uppercase">offline</span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 text-muted-foreground text-[11px] font-semibold px-2 py-0.5 uppercase">
+                          offline
+                        </span>
                       )}
                     </div>
                   </Link>
