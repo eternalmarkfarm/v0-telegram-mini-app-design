@@ -37,6 +37,8 @@ export default function TrackedPage() {
 
   useEffect(() => {
     load();
+    const interval = setInterval(load, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleRemove = async (streamerId: number) => {
@@ -98,8 +100,8 @@ export default function TrackedPage() {
                       <img
                         src={streamer.profile_image_url}
                         alt={name}
-                        className={`h-10 w-10 rounded-full object-cover ring-2 ${
-                          streamer.is_live ? "ring-success" : "ring-border/50 opacity-70"
+                        className={`h-10 w-10 rounded-full object-cover object-center ring-2 ${
+                          streamer.is_live ? "ring-destructive" : "ring-border/50 opacity-70"
                         }`}
                       />
                     ) : (

@@ -228,8 +228,12 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                   </a>
                 </Button>
                 {isTracked ? (
-                  <Button variant="ghost" className="h-10" onClick={handleUntrack} disabled={trackingBusy}>
-                    {language === "ru" ? "Убрать из отслеж." : "Untrack"}
+                  <Button
+                    className="h-10 bg-[#3b82f6] text-white hover:bg-[#2563eb]"
+                    onClick={handleUntrack}
+                    disabled={trackingBusy}
+                  >
+                    {language === "ru" ? "Открепить" : "Untrack"}
                   </Button>
                 ) : (
                   <Button className="h-10" onClick={handleTrack} disabled={trackingBusy || !streamer?.twitch_login}>
@@ -270,8 +274,8 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
 
             <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 text-xs text-muted-foreground">
               {language === "ru"
-                ? "Чтобы участвовать, нужно быть подписанным на стримера и присутствовать в чате. Если нужно, напишите короткое сообщение в чат (например, «привет»)."
-                : "To participate you should follow the streamer and be in chat. If needed, send a short chat message (e.g. “hello”)."}
+                ? "Чтобы участвовать, нужно быть подписанным на стримера и написать сообщение в чат (например, «привет»)."
+                : "To participate you should follow the streamer and send a chat message (e.g. “hello”)."}
             </Card>
 
             <div>

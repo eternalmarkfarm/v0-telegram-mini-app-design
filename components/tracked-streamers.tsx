@@ -38,6 +38,8 @@ export function TrackedStreamers() {
 
   useEffect(() => {
     loadTracked()
+    const interval = setInterval(loadTracked, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -83,8 +85,8 @@ export function TrackedStreamers() {
                       <img
                         src={streamer.profile_image_url}
                         alt={name}
-                        className={`h-12 w-12 rounded-full object-cover ring-2 ${
-                          streamer.is_live ? "ring-success" : "ring-border/50 opacity-70"
+                        className={`h-12 w-12 rounded-full object-cover object-center ring-2 ${
+                          streamer.is_live ? "ring-destructive" : "ring-border/50 opacity-70"
                         }`}
                       />
                     ) : (
