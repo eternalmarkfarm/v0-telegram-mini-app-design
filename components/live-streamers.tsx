@@ -60,7 +60,8 @@ export function LiveStreamers() {
           <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
-      <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
+      <Link href="/live" className="block">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50 hover:bg-secondary/20 transition-colors">
         {loading ? (
           <div className="flex items-center gap-3 p-4 text-muted-foreground">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 animate-pulse">
@@ -77,10 +78,9 @@ export function LiveStreamers() {
           </div>
         ) : (
           streamers.slice(0, 4).map((streamer) => (
-            <Link
+            <div
               key={streamer.id}
-              href={`/streamer/${streamer.id}`}
-              className="flex items-center gap-3 p-3 hover:bg-secondary/30 transition-colors"
+              className="flex items-center gap-3 p-3"
             >
               <div className="relative">
                 {streamer.profile_image_url ? (
@@ -106,10 +106,11 @@ export function LiveStreamers() {
                 <Users className="h-3 w-3" />
                 {streamer.viewer_count.toLocaleString()}
               </Badge>
-            </Link>
+            </div>
           ))
         )}
-      </Card>
+        </Card>
+      </Link>
     </div>
   )
 }

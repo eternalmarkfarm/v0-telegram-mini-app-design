@@ -1,6 +1,6 @@
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ??
-  "https://nail-miniapp.duckdns.org";
+  "/api";
 
 export function getToken() {
   if (typeof window === "undefined") return null;
