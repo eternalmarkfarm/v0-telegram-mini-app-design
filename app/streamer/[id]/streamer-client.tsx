@@ -268,6 +268,12 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
               </Card>
             </div>
 
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 text-xs text-muted-foreground">
+              {language === "ru"
+                ? "Чтобы участвовать, нужно быть подписанным на стримера и присутствовать в чате. Если нужно, напишите короткое сообщение в чат (например, «привет»)."
+                : "To participate you should follow the streamer and be in chat. If needed, send a short chat message (e.g. “hello”)."}
+            </Card>
+
             <div>
               <div className="flex items-center justify-between mb-3 px-1">
                 <h2 className="text-sm font-medium text-muted-foreground">

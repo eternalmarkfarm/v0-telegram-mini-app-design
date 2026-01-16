@@ -15,6 +15,7 @@ type TrackedStreamer = {
   twitch_display_name?: string | null
   profile_image_url?: string | null
   is_live?: boolean
+  viewer_count?: number | null
 }
 
 export function TrackedStreamers() {
@@ -93,9 +94,19 @@ export function TrackedStreamers() {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate max-w-[70px]">{name}</p>
-                  <p className={`text-[10px] ${streamer.is_live ? "text-success" : "text-muted-foreground"}`}>
-                    {streamer.is_live ? (language === "ru" ? "онлайн" : "online") : (language === "ru" ? "оффлайн" : "offline")}
-                  </p>
+                  {streamer.is_live ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-destructive/20 text-destructive text-[11px] font-semibold px-2 py-0.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+                      LIVE
+                      {typeof streamer.viewer_count === "number" && (
+                        <span className="text-[10px] font-medium text-destructive/80">
+                          {streamer.viewer_count.toLocaleString()}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground uppercase">offline</span>
+                  )}
                 </Link>
               )
             })}
