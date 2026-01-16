@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Users, Plus, Trash2 } from "lucide-react"
+import { Users, ChevronRight } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
-import { apiDelete, apiGet, apiPost } from "@/lib/api"
+import { apiGet } from "@/lib/api"
 
 type TrackedStreamer = {
   id: number
@@ -21,7 +21,6 @@ export function TrackedStreamers() {
   const { t, language } = useI18n()
   const [tracked, setTracked] = useState<TrackedStreamer[]>([])
   const [loading, setLoading] = useState(true)
-  const [loginInput, setLoginInput] = useState("")
   const [error, setError] = useState<string | null>(null)
 
   const loadTracked = async () => {
@@ -40,29 +39,6 @@ export function TrackedStreamers() {
     loadTracked()
   }, [])
 
-  const handleAdd = async () => {
-    const login = loginInput.trim()
-    if (!login) return
-    setError(null)
-    try {
-      await apiPost("/viewer/tracked", { twitch_login: login })
-      setLoginInput("")
-      await loadTracked()
-    } catch (e: any) {
-      setError(String(e?.message ?? e))
-    }
-  }
-
-  const handleRemove = async (streamerId: number) => {
-    setError(null)
-    try {
-      await apiDelete(`/viewer/tracked/${streamerId}`)
-      await loadTracked()
-    } catch (e: any) {
-      setError(String(e?.message ?? e))
-    }
-  }
-
   return (
     <div>
       <div className="flex items-center gap-2 mb-3 px-1">
@@ -70,18 +46,6 @@ export function TrackedStreamers() {
         <h2 className="text-sm font-medium text-muted-foreground">{t.trackedStreamers}</h2>
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 space-y-3">
-        <div className="flex items-center gap-2">
-          <Input
-            value={loginInput}
-            onChange={(e) => setLoginInput(e.target.value)}
-            placeholder={language === "ru" ? "Twitch логин" : "Twitch login"}
-            className="h-9"
-          />
-          <Button onClick={handleAdd} className="h-9 px-3">
-            <Plus className="h-4 w-4 mr-1" />
-            {language === "ru" ? "Добавить" : "Add"}
-          </Button>
-        </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
         {loading ? (
           <div className="flex items-center gap-3 p-2 text-muted-foreground">
@@ -106,7 +70,11 @@ export function TrackedStreamers() {
                 streamer.twitch_login ||
                 `#${streamer.id}`
               return (
-                <div key={streamer.id} className="flex flex-col items-center gap-1.5 shrink-0">
+                <Link
+                  key={streamer.id}
+                  href={`/streamer/${streamer.id}`}
+                  className="flex flex-col items-center gap-1.5 shrink-0"
+                >
                   <div className="relative">
                     {streamer.profile_image_url ? (
                       <img
@@ -121,24 +89,20 @@ export function TrackedStreamers() {
                         {name.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-card/90"
-                      onClick={() => handleRemove(streamer.id)}
-                    >
-                      <Trash2 className="h-3 w-3 text-destructive" />
-                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground truncate max-w-[70px]">{name}</p>
                   <p className={`text-[10px] ${streamer.is_live ? "text-success" : "text-muted-foreground"}`}>
                     {streamer.is_live ? (language === "ru" ? "онлайн" : "online") : (language === "ru" ? "оффлайн" : "offline")}
                   </p>
-                </div>
+                </Link>
               )
             })}
           </div>
         )}
+        <Link href="/tracked" className="flex items-center justify-between text-xs text-muted-foreground px-1">
+          <span>{language === "ru" ? "Управлять списком" : "Manage list"}</span>
+          <ChevronRight className="h-3 w-3" />
+        </Link>
       </Card>
     </div>
   )

@@ -1,22 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Download,
-  Trophy,
-  Coins,
-  Calendar,
   Gift,
-  Send,
   ChevronRight,
   Trash2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { apiGet, apiPost, removeToken, API_BASE, getToken } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useI18n } from "@/lib/i18n";
@@ -27,14 +21,6 @@ type Streamer = {
   twitch_linked_at?: string | null;
   lis_skins_token_set?: boolean;
 } | null;
-type EventRow = {
-  event_key: string;
-  enabled: boolean;
-  updated_at?: string;
-  price_min?: number | null;
-  price_max?: number | null;
-  winners_count?: number | null;
-};
 
 function TwitchIcon({ className }: { className?: string }) {
   return (
@@ -44,58 +30,6 @@ function TwitchIcon({ className }: { className?: string }) {
   );
 }
 
-const EVENT_META: Record<
-  string,
-  { label: string; descRu: string; descEn: string }
-> = {
-  "dota.pick_puck": {
-    label: "Pick Puck",
-    descRu: "Выбор Puck",
-    descEn: "Pick Puck",
-  },
-  "dota.pick_sf": {
-    label: "Pick Shadow Fiend",
-    descRu: "Выбор Shadow Fiend",
-    descEn: "Pick Shadow Fiend",
-  },
-  "dota.pick_lina": {
-    label: "Pick Lina",
-    descRu: "Выбор Lina",
-    descEn: "Pick Lina",
-  },
-  "dota.pick_void_spirit": {
-    label: "Pick Void Spirit",
-    descRu: "Выбор Void Spirit",
-    descEn: "Pick Void Spirit",
-  },
-  "dota.first_blood": {
-    label: "First Blood",
-    descRu: "Первая кровь",
-    descEn: "First blood",
-  },
-  "dota.double_kill": {
-    label: "Double Kill",
-    descRu: "Двойное убийство",
-    descEn: "Double kill",
-  },
-  "dota.triple_kill": {
-    label: "Triple Kill",
-    descRu: "Тройное убийство",
-    descEn: "Triple kill",
-  },
-  "dota.rampage": {
-    label: "Rampage",
-    descRu: "Рампейдж",
-    descEn: "Rampage",
-  },
-};
-
-const sentSkins = [
-  { id: 1, skin: "AK-47 | Redline", recipient: "player123", date: { ru: "10 янв", en: "Jan 10" }, value: "₽2,340" },
-  { id: 2, skin: "AWP | Asiimov", recipient: "steam_user", date: { ru: "9 янв", en: "Jan 9" }, value: "₽4,120" },
-  { id: 3, skin: "M4A4 | Howl", recipient: "dota_fan", date: { ru: "8 янв", en: "Jan 8" }, value: "₽12,500" },
-  { id: 4, skin: "Knife | Doppler", recipient: "lucky_one", date: { ru: "7 янв", en: "Jan 7" }, value: "₽8,900" },
-];
 
 export default function StreamerDashboard() {
   const { t, language } = useI18n();
@@ -104,11 +38,7 @@ export default function StreamerDashboard() {
   const [linking, setLinking] = useState(false);
 
   const [streamer, setStreamer] = useState<Streamer>(null);
-  const [events, setEvents] = useState<EventRow[]>([]);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
-  const [lisTokenInput, setLisTokenInput] = useState("");
-  const [lisTokenSaving, setLisTokenSaving] = useState(false);
-  const [lisTokenSaved, setLisTokenSaved] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const refresh = async () => {
@@ -118,8 +48,6 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setStreamer(r.streamer);
-      setEvents(r.events ?? []);
-      setLisTokenSaved(Boolean(r.streamer?.lis_skins_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -138,54 +66,6 @@ export default function StreamerDashboard() {
     }
   };
 
-  const toggleEvent = async (event_key: string, enabled: boolean) => {
-    setErr(null);
-    setEvents((prev) => prev.map((x) => (x.event_key === event_key ? { ...x, enabled } : x)));
-    try {
-      await ensureAuth();
-      await apiPost("/streamer/events", { event_key, enabled });
-    } catch (e: any) {
-      setEvents((prev) => prev.map((x) => (x.event_key === event_key ? { ...x, enabled: !enabled } : x)));
-      setErr(String(e?.message ?? e));
-    }
-  };
-
-  const updateEventField = (event_key: string, field: keyof EventRow, value: number | null) => {
-    setEvents((prev) =>
-      prev.map((x) => (x.event_key === event_key ? { ...x, [field]: value } : x))
-    );
-  };
-
-  const saveEventConfig = async (event: EventRow) => {
-    setErr(null);
-    try {
-      await ensureAuth();
-      await apiPost("/streamer/events", {
-        event_key: event.event_key,
-        price_min: event.price_min,
-        price_max: event.price_max,
-        winners_count: event.winners_count,
-      });
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
-    }
-  };
-
-  const saveLisToken = async () => {
-    if (!lisTokenInput.trim()) return;
-    setErr(null);
-    setLisTokenSaving(true);
-    try {
-      await ensureAuth();
-      await apiPost("/streamer/lis-skins-token", { api_token: lisTokenInput.trim() });
-      setLisTokenInput("");
-      setLisTokenSaved(true);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
-    } finally {
-      setLisTokenSaving(false);
-    }
-  };
 
   const handleDeleteAccount = async () => {
     const confirmText =
@@ -277,7 +157,6 @@ export default function StreamerDashboard() {
           const r = await apiGet("/streamer/me");
           if (r.streamer?.twitch_linked_at) {
             setStreamer(r.streamer);
-            setEvents(r.events ?? []);
             setLinking(false);
             if (pollingRef.current) {
               clearInterval(pollingRef.current);
@@ -299,39 +178,6 @@ export default function StreamerDashboard() {
   }, [linking]);
 
   const twitchLinked = Boolean(streamer?.twitch_linked_at);
-  const eventItems = useMemo(
-    () =>
-      events.map((event) => ({
-        ...event,
-        meta: EVENT_META[event.event_key],
-      })),
-    [events],
-  );
-
-  const personalStats = [
-    {
-      icon: Trophy,
-      label: language === "ru" ? "Моих призов" : "My prizes",
-      value: "47",
-      color: "text-warning",
-      bg: "bg-warning/20",
-    },
-    {
-      icon: Coins,
-      label: language === "ru" ? "Разыграно" : "Given away",
-      value: "₽23.5K",
-      color: "text-success",
-      bg: "bg-success/20",
-    },
-    { icon: Calendar, label: t.monthlyAmount, value: "₽8.2K", color: "text-primary", bg: "bg-primary/20" },
-    {
-      icon: Gift,
-      label: language === "ru" ? "Активных" : "Active",
-      value: "3",
-      color: "text-accent",
-      bg: "bg-accent/20",
-    },
-  ];
 
   return (
     <main className="min-h-screen bg-background pb-8">
@@ -434,181 +280,24 @@ export default function StreamerDashboard() {
 
         {!loading && streamer && twitchLinked && (
           <>
-            <div>
-              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.yourStatistics}</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {personalStats.map((stat) => (
-                  <Card key={stat.label} className="border-border/50 bg-card/80 backdrop-blur-sm p-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.bg}`}>
-                        <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                      </div>
-                      <div>
-                        <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                        <p className="text-xs text-muted-foreground">{stat.label}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.sentSkins}</h2>
-              <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
-                {sentSkins.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <Send className="h-10 w-10 text-muted-foreground/50 mb-2" />
-                    <p className="text-sm text-muted-foreground">{t.noSentSkins}</p>
+            <Link href="/streamer/events">
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between hover:bg-secondary/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
+                    <Gift className="h-5 w-5 text-primary" />
                   </div>
-                ) : (
-                  <>
-                    {sentSkins.map((skin) => (
-                      <div key={skin.id} className="p-3 flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
-                          <Send className="h-4 w-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{skin.skin}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {t.recipient}: {skin.recipient}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-success">{skin.value}</p>
-                          <p className="text-xs text-muted-foreground">{skin.date[language]}</p>
-                        </div>
-                      </div>
-                    ))}
-                    <Button variant="ghost" className="w-full justify-center py-3 text-primary hover:bg-primary/10">
-                      {language === "ru" ? "Показать все" : "Show all"}
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </>
-                )}
-              </Card>
-            </div>
-
-            <div>
-              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.eventsSettings}</h2>
-              <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-                <div className="divide-y divide-border/50">
-                  {eventItems.length === 0 ? (
-                    <div className="p-4 text-sm text-muted-foreground">No events yet.</div>
-                  ) : (
-                    eventItems.map((event) => (
-                      <div key={event.event_key} className="p-3 space-y-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground">
-                              {event.meta?.label ?? event.event_key}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {language === "ru"
-                                ? event.meta?.descRu ?? event.event_key
-                                : event.meta?.descEn ?? event.event_key}
-                            </p>
-                          </div>
-                          <Switch
-                            checked={event.enabled}
-                            onCheckedChange={(checked) => toggleEvent(event.event_key, checked)}
-                            className="data-[state=checked]:bg-primary"
-                          />
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={event.price_min ?? ""}
-                            onChange={(e) =>
-                              updateEventField(
-                                event.event_key,
-                                "price_min",
-                                e.target.value === "" ? null : Number(e.target.value)
-                              )
-                            }
-                            placeholder={language === "ru" ? "Цена от" : "Min price"}
-                            className="h-9"
-                          />
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={event.price_max ?? ""}
-                            onChange={(e) =>
-                              updateEventField(
-                                event.event_key,
-                                "price_max",
-                                e.target.value === "" ? null : Number(e.target.value)
-                              )
-                            }
-                            placeholder={language === "ru" ? "Цена до" : "Max price"}
-                            className="h-9"
-                          />
-                          <Input
-                            type="number"
-                            min="1"
-                            step="1"
-                            value={event.winners_count ?? ""}
-                            onChange={(e) =>
-                              updateEventField(
-                                event.event_key,
-                                "winners_count",
-                                e.target.value === "" ? null : Number(e.target.value)
-                              )
-                            }
-                            placeholder={language === "ru" ? "Победители" : "Winners"}
-                            className="h-9"
-                          />
-                        </div>
-                        <div className="flex justify-end">
-                          <Button
-                            variant="secondary"
-                            className="h-8 px-3 text-xs"
-                            onClick={() => saveEventConfig(event)}
-                          >
-                            {language === "ru" ? "Сохранить" : "Save"}
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {language === "ru" ? "Настройка событий" : "Events settings"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {language === "ru" ? "Цены, победители и токены" : "Prices, winners and tokens"}
+                    </p>
+                  </div>
                 </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </Card>
-            </div>
-
-            <div>
-              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
-                {language === "ru" ? "Токен Lis-Skins" : "Lis-Skins Token"}
-              </h2>
-              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
-                <Input
-                  type="password"
-                  value={lisTokenInput}
-                  onChange={(e) => setLisTokenInput(e.target.value)}
-                  placeholder={language === "ru" ? "Вставьте API токен" : "Paste API token"}
-                />
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {lisTokenSaved
-                      ? language === "ru"
-                        ? "Токен сохранен"
-                        : "Token saved"
-                      : language === "ru"
-                        ? "Токен не задан"
-                        : "Token not set"}
-                  </p>
-                  <Button
-                    onClick={saveLisToken}
-                    disabled={lisTokenSaving || !lisTokenInput.trim()}
-                    className="h-9 px-4"
-                  >
-                    {lisTokenSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
-                  </Button>
-                </div>
-              </Card>
-            </div>
+            </Link>
 
             <Button
               className="w-full h-14 text-base font-medium bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"

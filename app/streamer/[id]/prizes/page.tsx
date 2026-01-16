@@ -1,0 +1,144 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { ArrowLeft, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
+import { apiGet } from "@/lib/api";
+
+type PrizeItem = {
+  id: number;
+  skin_name?: string | null;
+  skin_price?: number | null;
+  delivery_status?: string | null;
+  created_at?: string | null;
+  twitch_login?: string | null;
+};
+
+export default function StreamerPrizesPage() {
+  const { id } = useParams<{ id: string }>();
+  const { language } = useI18n();
+  const [items, setItems] = useState<PrizeItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const pageSize = 15;
+
+  const load = async (pageIndex: number) => {
+    setLoading(true);
+    try {
+      const offset = pageIndex * pageSize;
+      const data = await apiGet(`/streamers/${id}/prizes?limit=${pageSize}&offset=${offset}`);
+      setItems(data?.items ?? []);
+      setTotal(data?.total ?? 0);
+    } catch (e) {
+      console.error("Failed to load prizes:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load(page);
+  }, [id, page]);
+
+  const statusLabel = (status?: string | null) => {
+    if (status === "success") return language === "ru" ? "Успешно" : "Success";
+    if (status === "failed") return language === "ru" ? "Не удалось" : "Failed";
+    return language === "ru" ? "В ожидании" : "Pending";
+  };
+
+  const maxPage = Math.max(0, Math.ceil(total / pageSize) - 1);
+
+  return (
+    <main className="min-h-screen bg-background pb-8">
+      <div className="mx-auto max-w-md px-4 py-4 space-y-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" asChild className="shrink-0">
+            <Link href={`/streamer/${id}`}>
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-lg font-bold text-foreground">
+              {language === "ru" ? "Все выдачи" : "All prizes"}
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              {language === "ru"
+                ? "Требуется быть в чате Twitch для участия"
+                : "You must be in Twitch chat to participate"}
+            </p>
+          </div>
+        </div>
+
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 text-xs text-muted-foreground">
+          {language === "ru"
+            ? "Чтобы участвовать, нужно быть подписанным на стримера и присутствовать в чате. Если нужно, напишите короткое сообщение в чат (например, «привет»)."
+            : "To participate you should follow the streamer and be in chat. If needed, send a short chat message (e.g. “hello”)."}
+        </Card>
+
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
+          {loading ? (
+            <div className="p-4 text-sm text-muted-foreground">Loading...</div>
+          ) : items.length === 0 ? (
+            <div className="p-4 text-sm text-muted-foreground">
+              {language === "ru" ? "Пока нет выдач" : "No prizes yet"}
+            </div>
+          ) : (
+            items.map((prize) => (
+              <div key={prize.id} className="p-3 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/60">
+                  {prize.delivery_status === "success" ? (
+                    <CheckCircle className="h-4 w-4 text-success" />
+                  ) : prize.delivery_status === "failed" ? (
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  ) : (
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {prize.twitch_login ? `@${prize.twitch_login}` : language === "ru" ? "Зритель" : "Viewer"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">{statusLabel(prize.delivery_status)}</p>
+                  {prize.skin_price !== null && prize.skin_price !== undefined && (
+                    <p className="text-sm font-medium text-foreground">₽{prize.skin_price}</p>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </Card>
+
+        <div className="flex items-center justify-between">
+          <Button
+            variant="secondary"
+            disabled={page === 0}
+            onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+          >
+            {language === "ru" ? "Назад" : "Back"}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {page + 1} / {maxPage + 1}
+          </p>
+          <Button
+            variant="secondary"
+            disabled={page >= maxPage}
+            onClick={() => setPage((prev) => Math.min(maxPage, prev + 1))}
+          >
+            {language === "ru" ? "Вперед" : "Next"}
+          </Button>
+        </div>
+      </div>
+    </main>
+  );
+}

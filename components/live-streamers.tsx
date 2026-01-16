@@ -2,7 +2,8 @@
 
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Radio, Users } from "lucide-react"
+import { Radio, Users, ChevronRight } from "lucide-react"
+import Link from "next/link"
 import { useI18n } from "@/lib/i18n"
 import { useEffect, useState } from "react"
 import { apiGet } from "@/lib/api"
@@ -21,7 +22,7 @@ interface LiveStreamer {
 }
 
 export function LiveStreamers() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [streamers, setStreamers] = useState<LiveStreamer[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -54,6 +55,10 @@ export function LiveStreamers() {
             {streamers.length}
           </Badge>
         )}
+        <Link href="/live" className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
+          {language === "ru" ? "Все" : "All"}
+          <ChevronRight className="h-3 w-3" />
+        </Link>
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
         {loading ? (
@@ -71,12 +76,10 @@ export function LiveStreamers() {
             <p className="text-sm">{t.noLiveStreamers}</p>
           </div>
         ) : (
-          streamers.map((streamer) => (
-            <a
+          streamers.slice(0, 4).map((streamer) => (
+            <Link
               key={streamer.id}
-              href={`https://twitch.tv/${streamer.twitch_login}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/streamer/${streamer.id}`}
               className="flex items-center gap-3 p-3 hover:bg-secondary/30 transition-colors"
             >
               <div className="relative">
@@ -103,7 +106,7 @@ export function LiveStreamers() {
                 <Users className="h-3 w-3" />
                 {streamer.viewer_count.toLocaleString()}
               </Badge>
-            </a>
+            </Link>
           ))
         )}
       </Card>
