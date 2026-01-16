@@ -237,7 +237,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background pb-8">
-      <div className="mx-auto max-w-md px-4 py-4 space-y-4">
+      <div className="mx-auto max-w-md px-4 py-4 space-y-3">
         {debug && (
           <div className="text-xs opacity-70">
             Backend: {backendOk === null ? "checking..." : backendOk ? "OK" : "ERROR"}

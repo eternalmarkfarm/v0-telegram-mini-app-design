@@ -93,7 +93,24 @@ export default function StreamerDashboard() {
       await apiPost("/streamer/delete");
       window.location.href = "/streamer";
     } catch (e: any) {
-      setErr(String(e?.message ?? e));
+      const message = String(e?.message ?? e);
+      const isAuthError =
+        message.includes("Session invalid/expired") ||
+        message.includes("Missing Bearer token") ||
+        message.includes("401");
+      if (isAuthError) {
+        removeToken();
+        try {
+          await ensureAuth();
+          await apiPost("/streamer/delete");
+          window.location.href = "/streamer";
+          return;
+        } catch (retryErr: any) {
+          setErr(String(retryErr?.message ?? retryErr));
+        }
+      } else {
+        setErr(message);
+      }
     } finally {
       setDeleteLoading(false);
     }
