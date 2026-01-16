@@ -7,6 +7,7 @@ type Language = "ru" | "en"
 interface Translations {
   // Giveaway Status
   participationStatus: string
+  canParticipate: string
   youParticipate: string
   youDontParticipate: string
   linkAccountsToParticipate: string
@@ -78,7 +79,8 @@ interface Translations {
 
 const translations: Record<Language, Translations> = {
   ru: {
-    participationStatus: "Вы можете участвовать в розыгрыше",
+    participationStatus: "Статус участия",
+    canParticipate: "Вы можете участвовать в розыгрыше",
     youParticipate: "Вы участвуете в розыгрыше",
     youDontParticipate: "Вы не участвуете",
     linkAccountsToParticipate: "Привяжите аккаунты для участия",
@@ -140,7 +142,8 @@ const translations: Record<Language, Translations> = {
     noSentSkins: "Нет отправленных скинов",
   },
   en: {
-    participationStatus: "You can participate in the giveaway",
+    participationStatus: "Participation Status",
+    canParticipate: "You can participate in the giveaway",
     youParticipate: "You are participating in the giveaway",
     youDontParticipate: "You are not participating",
     linkAccountsToParticipate: "Link accounts to participate",

@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, ChevronRight } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
-import { apiGet } from "@/lib/api"
+import { apiGet, removeToken } from "@/lib/api"
+import { ensureAuth } from "@/lib/ensureAuth"
 
 type TrackedStreamer = {
   id: number
@@ -24,13 +25,29 @@ export function TrackedStreamers() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const loadTracked = async () => {
+  const loadTracked = async (retried = false) => {
     setError(null)
     try {
       const data = await apiGet("/viewer/tracked")
       setTracked(data?.streamers ?? [])
     } catch (e: any) {
-      setError(String(e?.message ?? e))
+      const message = String(e?.message ?? e)
+      const isAuthError =
+        message.includes("Session invalid/expired") ||
+        message.includes("Missing Bearer token") ||
+        message.includes("401")
+      if (isAuthError && !retried) {
+        removeToken()
+        try {
+          await ensureAuth()
+          await loadTracked(true)
+          return
+        } catch {
+          setTracked([])
+          return
+        }
+      }
+      setError(message)
     } finally {
       setLoading(false)
     }

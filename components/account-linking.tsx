@@ -119,9 +119,9 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   return (
     <div className="space-y-3">
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="p-4">
+        <div className="p-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#9146ff]/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#9146ff]/20">
               <TwitchIcon className="h-5 w-5 text-[#9146ff]" />
             </div>
             <div className="flex-1">
@@ -167,9 +167,9 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
 
       {/* Steam Account */}
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="p-4">
+        <div className="p-3">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1b2838]/50">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1b2838]/50">
               <SteamIcon className="h-5 w-5 text-[#66c0f4]" />
             </div>
             <div className="flex-1">

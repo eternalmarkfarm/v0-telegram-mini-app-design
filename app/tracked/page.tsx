@@ -6,7 +6,8 @@ import { ArrowLeft, Users, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { apiDelete, apiGet } from "@/lib/api";
+import { apiDelete, apiGet, removeToken } from "@/lib/api";
+import { ensureAuth } from "@/lib/ensureAuth";
 
 type TrackedStreamer = {
   id: number;
@@ -23,12 +24,28 @@ export default function TrackedPage() {
   const [tracked, setTracked] = useState<TrackedStreamer[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = async (retried = false) => {
     setLoading(true);
     try {
       const data = await apiGet("/viewer/tracked");
       setTracked(data?.streamers ?? []);
     } catch (e) {
+      const message = String((e as any)?.message ?? e);
+      const isAuthError =
+        message.includes("Session invalid/expired") ||
+        message.includes("Missing Bearer token") ||
+        message.includes("401");
+      if (isAuthError && !retried) {
+        removeToken();
+        try {
+          await ensureAuth();
+          await load(true);
+          return;
+        } catch {
+          setTracked([]);
+          return;
+        }
+      }
       console.error("Failed to load tracked:", e);
     } finally {
       setLoading(false);
