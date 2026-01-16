@@ -11,16 +11,30 @@ import {
   Gift,
   Send,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { apiGet, apiPost } from "@/lib/api";
+import { Input } from "@/components/ui/input";
+import { apiGet, apiPost, removeToken, API_BASE, getToken } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useI18n } from "@/lib/i18n";
 
-type Streamer = { id: number; display_name: string; twitch_linked_at?: string | null } | null;
-type EventRow = { event_key: string; enabled: boolean; updated_at?: string };
+type Streamer = {
+  id: number;
+  display_name: string;
+  twitch_linked_at?: string | null;
+  lis_skins_token_set?: boolean;
+} | null;
+type EventRow = {
+  event_key: string;
+  enabled: boolean;
+  updated_at?: string;
+  price_min?: number | null;
+  price_max?: number | null;
+  winners_count?: number | null;
+};
 
 function TwitchIcon({ className }: { className?: string }) {
   return (
@@ -92,6 +106,10 @@ export default function StreamerDashboard() {
   const [streamer, setStreamer] = useState<Streamer>(null);
   const [events, setEvents] = useState<EventRow[]>([]);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const [lisTokenInput, setLisTokenInput] = useState("");
+  const [lisTokenSaving, setLisTokenSaving] = useState(false);
+  const [lisTokenSaved, setLisTokenSaved] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -101,6 +119,7 @@ export default function StreamerDashboard() {
       const r = await apiGet("/streamer/me");
       setStreamer(r.streamer);
       setEvents(r.events ?? []);
+      setLisTokenSaved(Boolean(r.streamer?.lis_skins_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -127,6 +146,88 @@ export default function StreamerDashboard() {
       await apiPost("/streamer/events", { event_key, enabled });
     } catch (e: any) {
       setEvents((prev) => prev.map((x) => (x.event_key === event_key ? { ...x, enabled: !enabled } : x)));
+      setErr(String(e?.message ?? e));
+    }
+  };
+
+  const updateEventField = (event_key: string, field: keyof EventRow, value: number | null) => {
+    setEvents((prev) =>
+      prev.map((x) => (x.event_key === event_key ? { ...x, [field]: value } : x))
+    );
+  };
+
+  const saveEventConfig = async (event: EventRow) => {
+    setErr(null);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/events", {
+        event_key: event.event_key,
+        price_min: event.price_min,
+        price_max: event.price_max,
+        winners_count: event.winners_count,
+      });
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    }
+  };
+
+  const saveLisToken = async () => {
+    if (!lisTokenInput.trim()) return;
+    setErr(null);
+    setLisTokenSaving(true);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/lis-skins-token", { api_token: lisTokenInput.trim() });
+      setLisTokenInput("");
+      setLisTokenSaved(true);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setLisTokenSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmText =
+      language === "ru"
+        ? "Точно удалить аккаунт и все данные (кроме Telegram)?"
+        : "Delete account and all data (except Telegram) ?";
+    if (!window.confirm(confirmText)) return;
+    setDeleteLoading(true);
+    setErr(null);
+    try {
+      await ensureAuth();
+      await apiPost("/account/delete");
+      removeToken();
+      window.location.href = "/";
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleDownloadConfig = async () => {
+    setErr(null);
+    try {
+      await ensureAuth();
+      const token = getToken();
+      if (!token) throw new Error("Missing auth token");
+      const resp = await fetch(`${API_BASE}/streamer/gsi-config`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!resp.ok) throw new Error(await resp.text());
+      const text = await resp.text();
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gamestate_integration_drop.cfg";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
       setErr(String(e?.message ?? e));
     }
   };
@@ -396,22 +497,80 @@ export default function StreamerDashboard() {
                     <div className="p-4 text-sm text-muted-foreground">No events yet.</div>
                   ) : (
                     eventItems.map((event) => (
-                      <div key={event.event_key} className="p-3 flex items-center justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">
-                            {event.meta?.label ?? event.event_key}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {language === "ru"
-                              ? event.meta?.descRu ?? event.event_key
-                              : event.meta?.descEn ?? event.event_key}
-                          </p>
+                      <div key={event.event_key} className="p-3 space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">
+                              {event.meta?.label ?? event.event_key}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {language === "ru"
+                                ? event.meta?.descRu ?? event.event_key
+                                : event.meta?.descEn ?? event.event_key}
+                            </p>
+                          </div>
+                          <Switch
+                            checked={event.enabled}
+                            onCheckedChange={(checked) => toggleEvent(event.event_key, checked)}
+                            className="data-[state=checked]:bg-primary"
+                          />
                         </div>
-                        <Switch
-                          checked={event.enabled}
-                          onCheckedChange={(checked) => toggleEvent(event.event_key, checked)}
-                          className="data-[state=checked]:bg-primary"
-                        />
+                        <div className="grid grid-cols-3 gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={event.price_min ?? ""}
+                            onChange={(e) =>
+                              updateEventField(
+                                event.event_key,
+                                "price_min",
+                                e.target.value === "" ? null : Number(e.target.value)
+                              )
+                            }
+                            placeholder={language === "ru" ? "Цена от" : "Min price"}
+                            className="h-9"
+                          />
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={event.price_max ?? ""}
+                            onChange={(e) =>
+                              updateEventField(
+                                event.event_key,
+                                "price_max",
+                                e.target.value === "" ? null : Number(e.target.value)
+                              )
+                            }
+                            placeholder={language === "ru" ? "Цена до" : "Max price"}
+                            className="h-9"
+                          />
+                          <Input
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={event.winners_count ?? ""}
+                            onChange={(e) =>
+                              updateEventField(
+                                event.event_key,
+                                "winners_count",
+                                e.target.value === "" ? null : Number(e.target.value)
+                              )
+                            }
+                            placeholder={language === "ru" ? "Победители" : "Winners"}
+                            className="h-9"
+                          />
+                        </div>
+                        <div className="flex justify-end">
+                          <Button
+                            variant="secondary"
+                            className="h-8 px-3 text-xs"
+                            onClick={() => saveEventConfig(event)}
+                          >
+                            {language === "ru" ? "Сохранить" : "Save"}
+                          </Button>
+                        </div>
                       </div>
                     ))
                   )}
@@ -419,9 +578,60 @@ export default function StreamerDashboard() {
               </Card>
             </div>
 
-            <Button className="w-full h-14 text-base font-medium bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity">
+            <div>
+              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
+                {language === "ru" ? "Токен Lis-Skins" : "Lis-Skins Token"}
+              </h2>
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+                <Input
+                  type="password"
+                  value={lisTokenInput}
+                  onChange={(e) => setLisTokenInput(e.target.value)}
+                  placeholder={language === "ru" ? "Вставьте API токен" : "Paste API token"}
+                />
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    {lisTokenSaved
+                      ? language === "ru"
+                        ? "Токен сохранен"
+                        : "Token saved"
+                      : language === "ru"
+                        ? "Токен не задан"
+                        : "Token not set"}
+                  </p>
+                  <Button
+                    onClick={saveLisToken}
+                    disabled={lisTokenSaving || !lisTokenInput.trim()}
+                    className="h-9 px-4"
+                  >
+                    {lisTokenSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            <Button
+              className="w-full h-14 text-base font-medium bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
+              onClick={handleDownloadConfig}
+            >
               <Download className="h-5 w-5 mr-2" />
               {t.downloadConfig}
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full h-12 text-base font-medium text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
+            >
+              <Trash2 className="h-5 w-5 mr-2" />
+              {deleteLoading
+                ? language === "ru"
+                  ? "Удаление..."
+                  : "Deleting..."
+                : language === "ru"
+                  ? "Удалить аккаунт"
+                  : "Delete account"}
             </Button>
           </>
         )}

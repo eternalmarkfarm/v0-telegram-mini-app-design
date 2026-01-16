@@ -47,3 +47,9 @@ export function apiPost(path: string, body?: any) {
     body: body ? JSON.stringify(body) : undefined,
   });
 }
+
+export function apiDelete(path: string) {
+  return apiRequest(path, {
+    method: "DELETE",
+  });
+}
