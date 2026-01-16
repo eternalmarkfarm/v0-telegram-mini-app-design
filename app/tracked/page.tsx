@@ -82,7 +82,9 @@ export default function TrackedPage() {
               <p className="text-sm">{language === "ru" ? "Пока нет стримеров" : "No tracked streamers yet"}</p>
             </div>
           ) : (
-            tracked.map((streamer) => {
+            [...tracked]
+              .sort((a, b) => Number(Boolean(b.is_live)) - Number(Boolean(a.is_live)))
+              .map((streamer) => {
               const name =
                 streamer.twitch_display_name ||
                 streamer.display_name ||

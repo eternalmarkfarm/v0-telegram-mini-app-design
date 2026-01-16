@@ -63,7 +63,9 @@ export function TrackedStreamers() {
           </div>
         ) : (
           <div className="flex items-center gap-3 overflow-x-auto pb-1">
-            {tracked.map((streamer) => {
+            {[...tracked]
+              .sort((a, b) => Number(Boolean(b.is_live)) - Number(Boolean(a.is_live)))
+              .map((streamer) => {
               const name =
                 streamer.twitch_display_name ||
                 streamer.display_name ||

@@ -172,17 +172,24 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
           <>
             <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
               <div className="flex items-center gap-3">
-                {streamer?.profile_image_url ? (
-                  <img
-                    src={streamer.profile_image_url}
-                    alt={streamer.display_name}
-                    className="h-14 w-14 rounded-full object-cover ring-2 ring-primary/30"
-                  />
-                ) : (
-                  <div className="h-14 w-14 rounded-full bg-secondary flex items-center justify-center text-lg font-bold text-muted-foreground">
-                    {(streamer?.display_name || "S").charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <div className="relative">
+                  {streamer?.profile_image_url ? (
+                    <img
+                      src={streamer.profile_image_url}
+                      alt={streamer.display_name}
+                      className={`h-14 w-14 rounded-full object-cover ring-2 ${
+                        data.live.is_live ? "ring-destructive" : "ring-border/50"
+                      }`}
+                    />
+                  ) : (
+                    <div className="h-14 w-14 rounded-full bg-secondary flex items-center justify-center text-lg font-bold text-muted-foreground">
+                      {(streamer?.display_name || "S").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  {data.live.is_live && (
+                    <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-destructive ring-2 ring-card animate-pulse" />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-base font-semibold text-foreground truncate">
                     {streamer?.twitch_display_name || streamer?.display_name}
@@ -207,14 +214,17 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <Button asChild variant="secondary" className="h-10">
+                <Button
+                  asChild
+                  className="h-10 bg-[#9146ff] text-white hover:bg-[#7c3aed]"
+                >
                   <a
                     href={streamer?.twitch_login ? `https://twitch.tv/${streamer.twitch_login}` : "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    {language === "ru" ? "Открыть Twitch" : "Open Twitch"}
+                    Twitch
                   </a>
                 </Button>
                 {isTracked ? (
@@ -223,7 +233,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                   </Button>
                 ) : (
                   <Button className="h-10" onClick={handleTrack} disabled={trackingBusy || !streamer?.twitch_login}>
-                    {language === "ru" ? "В отслеживаемые" : "Track"}
+                    {language === "ru" ? "Отслеживать" : "Track"}
                   </Button>
                 )}
               </div>
