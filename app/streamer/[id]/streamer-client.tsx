@@ -52,11 +52,13 @@ export default function StreamerDetailClient({ id }: { id: string }) {
   const { language } = useI18n();
   const [data, setData] = useState<StreamerProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [trackedIds, setTrackedIds] = useState<Set<number>>(new Set());
   const [trackingBusy, setTrackingBusy] = useState(false);
 
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
       const profile = await apiGet(`/streamers/${id}`);
       setData(profile);
@@ -65,6 +67,8 @@ export default function StreamerDetailClient({ id }: { id: string }) {
       setTrackedIds(ids);
     } catch (e) {
       console.error("Failed to load streamer profile:", e);
+      setData(null);
+      setError(String((e as any)?.message ?? e));
     } finally {
       setLoading(false);
     }
@@ -132,9 +136,19 @@ export default function StreamerDetailClient({ id }: { id: string }) {
           </div>
         </div>
 
-        {loading || !data ? (
+        {loading ? (
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 text-sm text-muted-foreground">
             Loading...
+          </Card>
+        ) : error || !data ? (
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {language === "ru" ? "Не удалось загрузить стримера." : "Failed to load streamer."}
+            </p>
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <Button variant="secondary" onClick={load}>
+              {language === "ru" ? "Повторить" : "Retry"}
+            </Button>
           </Card>
         ) : (
           <>
