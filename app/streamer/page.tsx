@@ -83,16 +83,15 @@ export default function StreamerDashboard() {
   const handleDeleteAccount = async () => {
     const confirmText =
       language === "ru"
-        ? "Точно удалить аккаунт и все данные (кроме Telegram)?"
-        : "Delete account and all data (except Telegram) ?";
+        ? "Удалить кабинет стримера и все его настройки?"
+        : "Delete streamer cabinet and all its settings?";
     if (!window.confirm(confirmText)) return;
     setDeleteLoading(true);
     setErr(null);
     try {
       await ensureAuth();
-      await apiPost("/account/delete");
-      removeToken();
-      window.location.href = "/";
+      await apiPost("/streamer/delete");
+      window.location.href = "/streamer";
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -510,8 +509,8 @@ export default function StreamerDashboard() {
                   ? "Удаление..."
                   : "Deleting..."
                 : language === "ru"
-                  ? "Удалить аккаунт"
-                  : "Delete account"}
+                  ? "Удалить кабинет стримера"
+                  : "Delete streamer cabinet"}
             </Button>
           </>
         )}
