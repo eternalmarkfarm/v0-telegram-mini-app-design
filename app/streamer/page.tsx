@@ -6,6 +6,13 @@ import {
   ArrowLeft,
   Download,
   Gift,
+  Trophy,
+  Coins,
+  Calendar,
+  Send,
+  CheckCircle,
+  XCircle,
+  Clock,
   ChevronRight,
   Trash2,
 } from "lucide-react";
@@ -40,6 +47,11 @@ export default function StreamerDashboard() {
   const [streamer, setStreamer] = useState<Streamer>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [lisTokenInput, setLisTokenInput] = useState("");
+  const [lisTokenSaving, setLisTokenSaving] = useState(false);
+  const [lisTokenSaved, setLisTokenSaved] = useState(false);
+  const [summary, setSummary] = useState<any>(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -48,6 +60,7 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setStreamer(r.streamer);
+      setLisTokenSaved(Boolean(r.streamer?.lis_skins_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -84,6 +97,34 @@ export default function StreamerDashboard() {
       setErr(String(e?.message ?? e));
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  const loadSummary = async (streamerId: number) => {
+    setSummaryLoading(true);
+    try {
+      const data = await apiGet(`/streamers/${streamerId}`);
+      setSummary(data);
+    } catch (e) {
+      console.error("Failed to load streamer summary:", e);
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+  const saveLisToken = async () => {
+    if (!lisTokenInput.trim()) return;
+    setErr(null);
+    setLisTokenSaving(true);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/lis-skins-token", { api_token: lisTokenInput.trim() });
+      setLisTokenInput("");
+      setLisTokenSaved(true);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setLisTokenSaving(false);
     }
   };
 
@@ -147,6 +188,12 @@ export default function StreamerDashboard() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (streamer?.id) {
+      loadSummary(streamer.id);
+    }
+  }, [streamer?.id]);
 
   // Polling для проверки статуса привязки Twitch
   useEffect(() => {
@@ -280,24 +327,168 @@ export default function StreamerDashboard() {
 
         {!loading && streamer && twitchLinked && (
           <>
-            <Link href="/streamer/events">
-              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between hover:bg-secondary/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
-                    <Gift className="h-5 w-5 text-primary" />
+            <div>
+              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.yourStatistics}</h2>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  {
+                    icon: Trophy,
+                    label: language === "ru" ? "Выдано всего" : "Total prizes",
+                    value: summary?.stats?.total_prizes ?? 0,
+                    color: "text-warning",
+                    bg: "bg-warning/20",
+                  },
+                  {
+                    icon: Coins,
+                    label: language === "ru" ? "Сумма всего" : "Total amount",
+                    value: `₽${summary?.stats?.total_amount ?? 0}`,
+                    color: "text-success",
+                    bg: "bg-success/20",
+                  },
+                  {
+                    icon: Calendar,
+                    label: language === "ru" ? "За стрим" : "This stream",
+                    value: summary?.stats?.stream_prizes ?? 0,
+                    color: "text-primary",
+                    bg: "bg-primary/20",
+                  },
+                  {
+                    icon: Gift,
+                    label: language === "ru" ? "Участников" : "Participants",
+                    value: summary?.stats?.stream_participants ?? 0,
+                    color: "text-accent",
+                    bg: "bg-accent/20",
+                  },
+                ].map((stat) => (
+                  <Card key={stat.label} className="border-border/50 bg-card/80 backdrop-blur-sm p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.bg}`}>
+                        <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-foreground">
+                          {summaryLoading ? "…" : stat.value}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{stat.label}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.sentSkins}</h2>
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
+                {summary?.recent_prizes?.length ? (
+                  summary.recent_prizes.map((prize: any) => (
+                    <div key={prize.id} className="p-3 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/60">
+                        {prize.delivery_status === "success" ? (
+                          <CheckCircle className="h-4 w-4 text-success" />
+                        ) : prize.delivery_status === "failed" ? (
+                          <XCircle className="h-4 w-4 text-destructive" />
+                        ) : (
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {prize.twitch_login ? `@${prize.twitch_login}` : t.recipient}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          {prize.delivery_status === "success"
+                            ? language === "ru"
+                              ? "Успешно"
+                              : "Success"
+                            : prize.delivery_status === "failed"
+                              ? language === "ru"
+                                ? "Не удалось"
+                                : "Failed"
+                              : language === "ru"
+                                ? "В ожидании"
+                                : "Pending"}
+                        </p>
+                        {prize.skin_price !== null && prize.skin_price !== undefined && (
+                          <p className="text-sm font-medium text-foreground">₽{prize.skin_price}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Send className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">{t.noSentSkins}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {language === "ru" ? "Настройка событий" : "Events settings"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {language === "ru" ? "Цены, победители и токены" : "Prices, winners and tokens"}
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                )}
+                {summary?.streamer?.id && (
+                  <Button variant="ghost" className="w-full justify-center py-3 text-primary hover:bg-primary/10" asChild>
+                    <Link href={`/streamer/${summary.streamer.id}/prizes`}>
+                      {language === "ru" ? "Показать все" : "Show all"}
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                )}
               </Card>
-            </Link>
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full h-12 text-base font-medium justify-between"
+              asChild
+            >
+              <Link href="/streamer/events">
+                <span className="flex items-center gap-2">
+                  <Gift className="h-5 w-5 text-primary" />
+                  {language === "ru" ? "Настройка событий" : "Events settings"}
+                </span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </Link>
+            </Button>
+
+            <div>
+              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
+                {language === "ru" ? "Токен Lis-Skins" : "Lis-Skins Token"}
+              </h2>
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+                <input
+                  type="password"
+                  value={lisTokenInput}
+                  onChange={(e) => setLisTokenInput(e.target.value)}
+                  placeholder={language === "ru" ? "Вставьте API токен" : "Paste API token"}
+                  className="w-full rounded-md border border-border bg-input/40 px-3 py-2 text-sm text-foreground"
+                />
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    {lisTokenSaved
+                      ? language === "ru"
+                        ? "Токен сохранен"
+                        : "Token saved"
+                      : language === "ru"
+                        ? "Токен не задан"
+                        : "Token not set"}
+                  </p>
+                  <Button
+                    onClick={saveLisToken}
+                    disabled={lisTokenSaving || !lisTokenInput.trim()}
+                    className="h-9 px-4"
+                  >
+                    {lisTokenSaving
+                      ? language === "ru"
+                        ? "Сохранение..."
+                        : "Saving..."
+                      : language === "ru"
+                        ? "Сохранить"
+                        : "Save"}
+                  </Button>
+                </div>
+              </Card>
+            </div>
 
             <Button
               className="w-full h-14 text-base font-medium bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
@@ -308,8 +499,8 @@ export default function StreamerDashboard() {
             </Button>
 
             <Button
-              variant="ghost"
-              className="w-full h-12 text-base font-medium text-destructive hover:text-destructive hover:bg-destructive/10"
+              variant="destructive"
+              className="w-full h-12 text-base font-medium"
               onClick={handleDeleteAccount}
               disabled={deleteLoading}
             >

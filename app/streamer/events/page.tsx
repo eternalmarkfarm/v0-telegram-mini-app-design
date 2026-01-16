@@ -68,9 +68,6 @@ export default function StreamerEventsPage() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const [lisTokenInput, setLisTokenInput] = useState("");
-  const [lisTokenSaving, setLisTokenSaving] = useState(false);
-  const [lisTokenSaved, setLisTokenSaved] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -79,7 +76,6 @@ export default function StreamerEventsPage() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setEvents(r.events ?? []);
-      setLisTokenSaved(Boolean(r.streamer?.lis_skins_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -133,21 +129,6 @@ export default function StreamerEventsPage() {
     }
   };
 
-  const saveLisToken = async () => {
-    if (!lisTokenInput.trim()) return;
-    setErr(null);
-    setLisTokenSaving(true);
-    try {
-      await ensureAuth();
-      await apiPost("/streamer/lis-skins-token", { api_token: lisTokenInput.trim() });
-      setLisTokenInput("");
-      setLisTokenSaved(true);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
-    } finally {
-      setLisTokenSaving(false);
-    }
-  };
 
   return (
     <main className="min-h-screen bg-background pb-8">
@@ -263,43 +244,6 @@ export default function StreamerEventsPage() {
           </Card>
         </div>
 
-        <div>
-          <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
-            {language === "ru" ? "Токен Lis-Skins" : "Lis-Skins Token"}
-          </h2>
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
-            <Input
-              type="password"
-              value={lisTokenInput}
-              onChange={(e) => setLisTokenInput(e.target.value)}
-              placeholder={language === "ru" ? "Вставьте API токен" : "Paste API token"}
-            />
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                {lisTokenSaved
-                  ? language === "ru"
-                    ? "Токен сохранен"
-                    : "Token saved"
-                  : language === "ru"
-                    ? "Токен не задан"
-                    : "Token not set"}
-              </p>
-              <Button
-                onClick={saveLisToken}
-                disabled={lisTokenSaving || !lisTokenInput.trim()}
-                className="h-9 px-4"
-              >
-                {lisTokenSaving
-                  ? language === "ru"
-                    ? "Сохранение..."
-                    : "Saving..."
-                  : language === "ru"
-                    ? "Сохранить"
-                    : "Save"}
-              </Button>
-            </div>
-          </Card>
-        </div>
       </div>
     </main>
   );
