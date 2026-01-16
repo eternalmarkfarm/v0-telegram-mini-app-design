@@ -17,20 +17,24 @@ type PrizeItem = {
   twitch_login?: string | null;
 };
 
-export default function StreamerPrizesClient({ id }: { id: string }) {
+export default function StreamerPrizesClient({ id }: { id?: string }) {
   const { language } = useI18n();
   const [items, setItems] = useState<PrizeItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [resolvedId, setResolvedId] = useState<string | null>(id ?? null);
 
   const pageSize = 15;
 
   const load = async (pageIndex: number) => {
     setLoading(true);
     try {
+      if (!resolvedId) {
+        throw new Error("Missing streamer id");
+      }
       const offset = pageIndex * pageSize;
-      const data = await apiGet(`/streamers/${id}/prizes?limit=${pageSize}&offset=${offset}`);
+      const data = await apiGet(`/streamers/${resolvedId}/prizes?limit=${pageSize}&offset=${offset}`);
       setItems(data?.items ?? []);
       setTotal(data?.total ?? 0);
     } catch (e) {
@@ -41,8 +45,22 @@ export default function StreamerPrizesClient({ id }: { id: string }) {
   };
 
   useEffect(() => {
+    if (id) {
+      setResolvedId(id);
+      return;
+    }
+    if (typeof window === "undefined") return;
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const maybeId = parts[parts.length - 2];
+    if (maybeId) {
+      setResolvedId(maybeId);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!resolvedId) return;
     load(page);
-  }, [id, page]);
+  }, [resolvedId, page]);
 
   const statusLabel = (status?: string | null) => {
     if (status === "success") return language === "ru" ? "Успешно" : "Success";
@@ -57,7 +75,7 @@ export default function StreamerPrizesClient({ id }: { id: string }) {
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href={`/streamer/${id}`}>
+            <Link href={`/streamer/${resolvedId ?? ""}`}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>

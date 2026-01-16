@@ -48,19 +48,36 @@ type StreamerProfile = {
   }>;
 };
 
-export default function StreamerDetailClient({ id }: { id: string }) {
+export default function StreamerDetailClient({ id }: { id?: string }) {
   const { language } = useI18n();
   const [data, setData] = useState<StreamerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [trackedIds, setTrackedIds] = useState<Set<number>>(new Set());
   const [trackingBusy, setTrackingBusy] = useState(false);
+  const [resolvedId, setResolvedId] = useState<string | null>(id ?? null);
+
+  useEffect(() => {
+    if (id) {
+      setResolvedId(id);
+      return;
+    }
+    if (typeof window === "undefined") return;
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const maybeId = parts[parts.length - 1];
+    if (maybeId && maybeId !== "streamer") {
+      setResolvedId(maybeId);
+    }
+  }, [id]);
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
-      const profile = await apiGet(`/streamers/${id}`);
+      if (!resolvedId) {
+        throw new Error("Missing streamer id");
+      }
+      const profile = await apiGet(`/streamers/${resolvedId}`);
       setData(profile);
       const tracked = await apiGet("/viewer/tracked").catch(() => ({ streamers: [] }));
       const ids = new Set<number>((tracked?.streamers ?? []).map((s: any) => Number(s.id)));
@@ -75,8 +92,9 @@ export default function StreamerDetailClient({ id }: { id: string }) {
   };
 
   useEffect(() => {
+    if (!resolvedId) return;
     load();
-  }, [id]);
+  }, [resolvedId]);
 
   const streamer = data?.streamer;
   const isTracked = streamer ? trackedIds.has(streamer.id) : false;
