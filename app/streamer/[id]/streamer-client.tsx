@@ -10,6 +10,7 @@ import {
   XCircle,
   Clock,
   Heart,
+  MessageCircle,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -275,7 +276,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
 
             <Card className="border border-warning/40 bg-warning/15 backdrop-blur-sm p-4 text-sm text-warning flex items-start gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-warning/20 text-warning">
-                <Heart className="h-4 w-4" />
+                <Heart className="h-4 w-4 text-[#9146ff]" />
               </div>
               <div>
                 <p className="font-semibold text-warning">
@@ -286,6 +287,10 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                     ? "Чтобы участвовать, нужно быть фоловером стримера и написать сообщение в чат (например, «привет»)."
                     : "To participate you should follow the streamer and send a chat message (e.g. “hello”)."}
                 </p>
+                <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-warning/90">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  {language === "ru" ? "Напишите в чат" : "Say hi in chat"}
+                </div>
               </div>
             </Card>
 
