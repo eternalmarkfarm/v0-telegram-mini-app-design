@@ -18,9 +18,10 @@ type EventRow = {
   price_min?: number | null;
   price_max?: number | null;
   winners_count?: number | null;
+  trigger_value?: number | null;
 };
 
-const EVENT_META: Record<string, { label: string; descRu: string; descEn: string }> = {
+const EVENT_META: Record<string, { label: string; descRu: string; descEn: string; hasThreshold?: boolean }> = {
   "dota.pick_puck": {
     label: "Pick Puck",
     descRu: "Выбор Puck",
@@ -60,6 +61,48 @@ const EVENT_META: Record<string, { label: string; descRu: string; descEn: string
     label: "Rampage",
     descRu: "Рампейдж",
     descEn: "Rampage",
+  },
+  "dota.ultra_kill": {
+    label: "Ultra Kill",
+    descRu: "Ультра убийство",
+    descEn: "Ultra kill",
+  },
+  "dota.kills_20": {
+    label: "20 Kills",
+    descRu: "20 убийств",
+    descEn: "20 kills",
+  },
+  "dota.net_worth_10k_11": {
+    label: "Net worth 10k < 11m",
+    descRu: "Net worth 10k до 11 минуты",
+    descEn: "Net worth 10k before 11 minutes",
+  },
+  "dota.net_worth_40k": {
+    label: "Net worth 40k",
+    descRu: "Net worth 40k",
+    descEn: "Net worth 40k",
+  },
+  "dota.lh_per_min_10": {
+    label: "10 LH/min",
+    descRu: "10 ластхитов в минуту",
+    descEn: "10 last hits per minute",
+  },
+  "dota.two_hours": {
+    label: "Game 2 hours+",
+    descRu: "Игра 2 часа+",
+    descEn: "Game 2 hours+",
+  },
+  "dota.win_streak": {
+    label: "Win streak",
+    descRu: "Серия побед",
+    descEn: "Win streak",
+    hasThreshold: true,
+  },
+  "dota.loss_streak": {
+    label: "Loss streak",
+    descRu: "Серия поражений",
+    descEn: "Loss streak",
+    hasThreshold: true,
   },
 };
 
@@ -123,6 +166,7 @@ export default function StreamerEventsPage() {
         price_min: event.price_min,
         price_max: event.price_max,
         winners_count: event.winners_count,
+        trigger_value: event.trigger_value,
       });
     } catch (e: any) {
       setErr(String(e?.message ?? e));
@@ -228,6 +272,25 @@ export default function StreamerEventsPage() {
                         className="h-9 no-spin"
                       />
                     </div>
+                    {event.meta?.hasThreshold && (
+                      <div className="grid grid-cols-1 gap-2">
+                        <Input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={event.trigger_value ?? ""}
+                          onChange={(e) =>
+                            updateEventField(
+                              event.event_key,
+                              "trigger_value",
+                              e.target.value === "" ? null : Number(e.target.value)
+                            )
+                          }
+                          placeholder={language === "ru" ? "Порог серии" : "Streak threshold"}
+                          className="h-9 no-spin"
+                        />
+                      </div>
+                    )}
                     <div className="flex justify-end">
                       <Button
                         variant="secondary"
