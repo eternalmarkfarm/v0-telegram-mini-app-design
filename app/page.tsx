@@ -28,6 +28,7 @@ export default function Home() {
   const [viewerData, setViewerData] = useState<any>(null);
   const [viewerLoading, setViewerLoading] = useState(false);
   const [viewerErr, setViewerErr] = useState<string | null>(null);
+  const [twitchDisconnectNote, setTwitchDisconnectNote] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -221,14 +222,7 @@ export default function Home() {
       await apiPost("/viewer/twitch/unlink", {});
       setIsTwitchLinked(false);
       setTwitchLogin(null);
-      const note =
-        "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch.";
-      const tg = (window as any).Telegram?.WebApp;
-      if (tg?.showAlert) {
-        tg.showAlert(note);
-      } else {
-        alert(note);
-      }
+      setTwitchDisconnectNote(true);
     } catch (e: any) {
       alert(`Ошибка отвязки Twitch: ${e?.message ?? e}`);
     }
@@ -325,6 +319,11 @@ export default function Home() {
           onSteamUnlink={handleSteamUnlink}
           onRefreshStatus={loadViewerData}
         />
+        {twitchDisconnectNote && (
+          <div className="rounded-lg border border-amber-400/40 bg-amber-500/20 px-3 py-2 text-xs text-amber-100">
+            Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch.
+          </div>
+        )}
 
         <Statistics />
         <LiveStreamers />

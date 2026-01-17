@@ -13,6 +13,8 @@ function CallbackInner() {
   const [message, setMessage] = useState("Processing Twitch OAuth...");
   const isSuccess = status === "success";
   const isProcessing = status === "processing";
+  const botUsername = "sobaka_oko_bot";
+  const telegramReturnUrl = `https://t.me/${botUsername}?startapp=1`;
 
   const handleCloseWindow = () => {
     const tg = (window as any).Telegram?.WebApp;
@@ -35,10 +37,10 @@ function CallbackInner() {
       return;
     }
     if (tg?.openTelegramLink) {
-      tg.openTelegramLink("https://t.me/");
+      tg.openTelegramLink(telegramReturnUrl);
       return;
     }
-    window.location.href = "https://t.me/";
+    window.location.href = telegramReturnUrl;
   };
 
   useEffect(() => {
@@ -94,7 +96,7 @@ function CallbackInner() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/35 to-black/60" />
         </>
       )}
-      <div className="relative z-10 w-full max-w-xl">
+      <div className="relative z-10 w-full max-w-xl pointer-events-auto">
         <Card
           className={`w-full border border-white/15 bg-black/45 text-center backdrop-blur ${isSuccess ? "p-8" : "p-6"}`}
         >

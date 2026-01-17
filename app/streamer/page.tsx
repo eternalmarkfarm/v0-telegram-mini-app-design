@@ -223,7 +223,7 @@ export default function StreamerDashboard() {
     setLinking(true);
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.openLink) {
-      tg.openLink(cachedUrl);
+      tg.openLink(cachedUrl, { try_instant_view: false });
     } else {
       window.location.href = cachedUrl;
     }
@@ -335,7 +335,7 @@ export default function StreamerDashboard() {
           )}
         </div>
         {twitchDisconnectNote && (
-          <div className="rounded-xl border border-amber-400/30 bg-amber-500/15 px-3 py-2 text-sm text-amber-100">
+          <div className="rounded-lg border border-amber-400/40 bg-amber-500/20 px-3 py-2 text-xs text-amber-100">
             {language === "ru"
               ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
               : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings."}
