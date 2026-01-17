@@ -65,6 +65,15 @@ function CallbackInner() {
     handleCallback();
   }, [sp, router]);
 
+  useEffect(() => {
+    if (!isSuccess) return;
+    const tg = (window as any).Telegram?.WebApp;
+    const timer = setTimeout(() => {
+      tg?.close?.();
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [isSuccess]);
+
   return (
     <main
       className={`relative min-h-screen flex items-center justify-center overflow-hidden p-4 ${
