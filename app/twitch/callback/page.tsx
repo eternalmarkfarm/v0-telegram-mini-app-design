@@ -20,7 +20,12 @@ function CallbackInner() {
       tg.close();
       return;
     }
-    window.close();
+    try {
+      window.open("", "_self");
+      window.close();
+    } catch (e) {
+      window.location.href = "about:blank";
+    }
   };
 
   const handleReturnToTelegram = () => {

@@ -55,6 +55,7 @@ export default function StreamerDashboard() {
   const twitchAuthUrlRef = useRef<string | null>(null);
   const [twitchAuthReady, setTwitchAuthReady] = useState(false);
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
+  const [twitchDisconnectNote, setTwitchDisconnectNote] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -125,16 +126,7 @@ export default function StreamerDashboard() {
       setTwitchAuthReady(false);
       setTwitchAuthLoading(false);
       twitchAuthUrlRef.current = null;
-      const note =
-        language === "ru"
-          ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
-          : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings.";
-      const tg = (window as any).Telegram?.WebApp;
-      if (tg?.showAlert) {
-        tg.showAlert(note);
-      } else {
-        alert(note);
-      }
+      setTwitchDisconnectNote(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       const message = String(e?.message ?? e);
@@ -152,16 +144,7 @@ export default function StreamerDashboard() {
           setTwitchAuthReady(false);
           setTwitchAuthLoading(false);
           twitchAuthUrlRef.current = null;
-          const note =
-            language === "ru"
-              ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
-              : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings.";
-          const tg = (window as any).Telegram?.WebApp;
-          if (tg?.showAlert) {
-            tg.showAlert(note);
-          } else {
-            alert(note);
-          }
+          setTwitchDisconnectNote(true);
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {
@@ -351,6 +334,13 @@ export default function StreamerDashboard() {
             </div>
           )}
         </div>
+        {twitchDisconnectNote && (
+          <div className="rounded-xl border border-amber-400/30 bg-amber-500/15 px-3 py-2 text-sm text-amber-100">
+            {language === "ru"
+              ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
+              : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings."}
+          </div>
+        )}
 
         {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1" && (
           <div className="text-xs opacity-70">
