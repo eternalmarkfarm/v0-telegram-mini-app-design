@@ -211,7 +211,6 @@ export default function StreamerDashboard() {
       const openUrl = (url: string) => {
         if (tg?.openLink) {
           tg.openLink(url);
-          setLinking(false);
         } else {
           window.location.href = url;
         }
@@ -239,9 +238,14 @@ export default function StreamerDashboard() {
 
     // Refresh when returning from external browser
     const onFocus = () => refresh();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
     window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
