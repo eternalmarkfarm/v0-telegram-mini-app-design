@@ -83,10 +83,10 @@ function CallbackInner() {
       {isSuccess && (
         <>
           <div
-            className="absolute inset-0 bg-center bg-cover"
+            className="pointer-events-none absolute inset-0 bg-center bg-cover"
             style={{ backgroundImage: "url('/twitch-success.png')" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/35 to-black/60" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/35 to-black/60" />
         </>
       )}
       <div className="relative z-10 w-full max-w-xl">
@@ -115,7 +115,7 @@ function CallbackInner() {
           </div>
           {isSuccess ? (
             <>
-              <p className="text-base text-white/90">
+              <p className="text-lg text-white/95">
                 Теперь вы можете продолжить пользоваться приложением в Telegram.
                 <br />
                 Это окно можно закрыть.
@@ -123,12 +123,14 @@ function CallbackInner() {
               <div className="mt-6 space-y-3">
                 <button
                   onClick={handleCloseWindow}
+                  type="button"
                   className="w-full rounded-lg py-3 text-sm font-semibold text-white shadow-lg shadow-[#9146ff]/30 bg-gradient-to-r from-[#6f3ad6] via-[#8b5cf6] to-[#6f3ad6]"
                 >
                   Закрыть окно
                 </button>
                 <button
                   onClick={handleReturnToTelegram}
+                  type="button"
                   className="w-full rounded-lg py-3 text-sm font-semibold text-white/90 bg-white/10 border border-white/10 hover:bg-white/15"
                 >
                   Вернуться в Telegram
