@@ -52,6 +52,8 @@ export default function StreamerDashboard() {
   const [lisTokenSaved, setLisTokenSaved] = useState(false);
   const [summary, setSummary] = useState<any>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
+  const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -110,10 +112,15 @@ export default function StreamerDashboard() {
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {
-          setErr(String(retryErr?.message ?? retryErr));
+          const m = String(retryErr?.message ?? retryErr);
+          setErr(m);
+          const tg = (window as any).Telegram?.WebApp;
+          tg?.showAlert?.(m);
         }
       } else {
         setErr(message);
+        const tg = (window as any).Telegram?.WebApp;
+        tg?.showAlert?.(message);
       }
     } finally {
       setDeleteLoading(false);
@@ -177,9 +184,14 @@ export default function StreamerDashboard() {
     setErr(null);
     setLinking(true);
     try {
-      await ensureAuth();
-      const r = await apiGet("/twitch/authorize");
-      const url = r?.url ?? r;
+      let url = twitchAuthUrl;
+      if (!url) {
+        await ensureAuth();
+        const r = await apiGet("/twitch/authorize");
+        url = r?.url ?? r;
+        if (!url) throw new Error("No Twitch authorize URL.");
+        setTwitchAuthUrl(url);
+      }
       if (!url) throw new Error("No Twitch authorize URL.");
 
       const tg = (window as any).Telegram?.WebApp;
@@ -208,6 +220,29 @@ export default function StreamerDashboard() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!streamer || streamer?.twitch_linked_at) return;
+    let cancelled = false;
+    const prefetch = async () => {
+      if (twitchAuthLoading || twitchAuthUrl) return;
+      setTwitchAuthLoading(true);
+      try {
+        await ensureAuth();
+        const r = await apiGet("/twitch/authorize");
+        const url = r?.url ?? r;
+        if (url && !cancelled) setTwitchAuthUrl(url);
+      } catch (e) {
+        console.warn("Twitch prefetch failed:", e);
+      } finally {
+        if (!cancelled) setTwitchAuthLoading(false);
+      }
+    };
+    prefetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [streamer?.id, streamer?.twitch_linked_at, twitchAuthLoading, twitchAuthUrl]);
 
   useEffect(() => {
     if (streamer?.id) {
