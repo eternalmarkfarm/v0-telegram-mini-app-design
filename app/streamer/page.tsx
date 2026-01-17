@@ -53,8 +53,11 @@ export default function StreamerDashboard() {
   const [summary, setSummary] = useState<any>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
+<<<<<<< HEAD
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
   const [twitchAuthReady, setTwitchAuthReady] = useState(false);
+=======
+>>>>>>> a3c2d98 (new)
 
   const refresh = async () => {
     setErr(null);
@@ -183,21 +186,23 @@ export default function StreamerDashboard() {
 
   const startTwitchLink = async () => {
     setErr(null);
-    const url =
-      twitchAuthUrl ||
-      (typeof window !== "undefined" ? localStorage.getItem("twitchAuthUrl") : null);
-    if (!url) {
-      setErr(language === "ru" ? "Ссылка еще не готова. Подождите пару секунд." : "Link not ready yet. Wait a moment.");
-      return;
-    }
     setLinking(true);
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg?.openLink) {
-      tg.openLink(url);
-    } else {
-      window.location.href = url;
+    try {
+      await ensureAuth();
+      const r = await apiGet("/twitch/authorize");
+      const url = r?.url ?? r;
+      if (!url) throw new Error("No Twitch authorize URL.");
+
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.openLink) {
+        tg.openLink(url);
+      } else {
+        window.location.href = url;
+      }
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+      setLinking(false);
     }
-    setLinking(false);
   };
 
   useEffect(() => {
@@ -215,6 +220,7 @@ export default function StreamerDashboard() {
     };
   }, []);
 
+<<<<<<< HEAD
   useEffect(() => {
     if (typeof window === "undefined") return;
     const cached = localStorage.getItem("twitchAuthUrl");
@@ -252,6 +258,8 @@ export default function StreamerDashboard() {
       cancelled = true;
     };
   }, [streamer?.id, streamer?.twitch_linked_at, twitchAuthLoading, twitchAuthUrl]);
+=======
+>>>>>>> a3c2d98 (new)
 
   useEffect(() => {
     if (streamer?.id) {
