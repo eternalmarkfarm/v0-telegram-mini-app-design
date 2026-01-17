@@ -125,6 +125,16 @@ export default function StreamerDashboard() {
       setTwitchAuthReady(false);
       setTwitchAuthLoading(false);
       twitchAuthUrlRef.current = null;
+      const note =
+        language === "ru"
+          ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
+          : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings.";
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.showAlert) {
+        tg.showAlert(note);
+      } else {
+        alert(note);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       const message = String(e?.message ?? e);
@@ -142,6 +152,16 @@ export default function StreamerDashboard() {
           setTwitchAuthReady(false);
           setTwitchAuthLoading(false);
           twitchAuthUrlRef.current = null;
+          const note =
+            language === "ru"
+              ? "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch."
+              : "Token revoked. To remove the app from Twitch Connections, disconnect it manually in Twitch settings.";
+          const tg = (window as any).Telegram?.WebApp;
+          if (tg?.showAlert) {
+            tg.showAlert(note);
+          } else {
+            alert(note);
+          }
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {

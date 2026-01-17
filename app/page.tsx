@@ -221,6 +221,14 @@ export default function Home() {
       await apiPost("/viewer/twitch/unlink", {});
       setIsTwitchLinked(false);
       setTwitchLogin(null);
+      const note =
+        "Токен отозван. Чтобы убрать приложение из списка подключений Twitch, отключите его вручную в настройках Twitch.";
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.showAlert) {
+        tg.showAlert(note);
+      } else {
+        alert(note);
+      }
     } catch (e: any) {
       alert(`Ошибка отвязки Twitch: ${e?.message ?? e}`);
     }
