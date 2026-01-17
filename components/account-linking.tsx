@@ -126,16 +126,33 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       return
     }
 
-    const cachedUrl = twitchAuthUrlRef.current
-    if (!cachedUrl) return
     setLinking(true)
     try {
       const tg = (window as any).Telegram?.WebApp
-      if (tg?.openLink) {
-        tg.openLink(cachedUrl, { try_instant_view: false })
-      } else {
-        window.location.href = cachedUrl
+      const openUrl = (url: string) => {
+        if (tg?.openLink) {
+          tg.openLink(url, { try_instant_view: false })
+        } else {
+          window.location.href = url
+        }
       }
+
+      let url = twitchAuthUrlRef.current
+      if (!url) {
+        await ensureAuth()
+        const response = await apiGet("/twitch/authorize-viewer")
+        url = response?.url
+        if (url) {
+          twitchAuthUrlRef.current = url
+          setTwitchAuthReady(true)
+        }
+      }
+
+      if (!url) {
+        throw new Error("No Twitch authorize URL received")
+      }
+
+      openUrl(url)
     } catch (e: any) {
       alert(`Error: ${e?.message ?? e}`)
       setLinking(false)
@@ -182,9 +199,10 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               </div>
             ) : (
               <LinkButton
-                isLoading={isLoading || linking || twitchAuthLoading || !twitchAuthReady}
+                isLoading={isLoading || linking}
                 onClick={handleTwitchLink}
                 loadingText={t.syncing ?? "Syncing..."}
+                disabled={Boolean(isLoading || linking || twitchAuthLoading || !twitchAuthReady)}
               />
             )}
           </div>

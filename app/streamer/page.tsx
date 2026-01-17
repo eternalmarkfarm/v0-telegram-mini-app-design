@@ -216,16 +216,38 @@ export default function StreamerDashboard() {
     }
   };
 
-  const startTwitchLink = () => {
+  const startTwitchLink = async () => {
     setErr(null);
-    const cachedUrl = twitchAuthUrlRef.current;
-    if (!cachedUrl) return;
     setLinking(true);
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg?.openLink) {
-      tg.openLink(cachedUrl, { try_instant_view: false });
-    } else {
-      window.location.href = cachedUrl;
+    try {
+      const tg = (window as any).Telegram?.WebApp;
+      const openUrl = (url: string) => {
+        if (tg?.openLink) {
+          tg.openLink(url, { try_instant_view: false });
+        } else {
+          window.location.href = url;
+        }
+      };
+
+      let url = twitchAuthUrlRef.current;
+      if (!url) {
+        await ensureAuth();
+        const r = await apiGet("/twitch/authorize");
+        url = r?.url ?? r;
+        if (url) {
+          twitchAuthUrlRef.current = url;
+          setTwitchAuthReady(true);
+        }
+      }
+
+      if (!url) {
+        throw new Error("No Twitch authorize URL.");
+      }
+
+      openUrl(url);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+      setLinking(false);
     }
   };
 
