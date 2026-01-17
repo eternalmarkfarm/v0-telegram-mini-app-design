@@ -52,12 +52,6 @@ export default function StreamerDashboard() {
   const [lisTokenSaved, setLisTokenSaved] = useState(false);
   const [summary, setSummary] = useState<any>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
-  const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
-<<<<<<< HEAD
-  const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
-  const [twitchAuthReady, setTwitchAuthReady] = useState(false);
-=======
->>>>>>> a3c2d98 (new)
 
   const refresh = async () => {
     setErr(null);
@@ -86,12 +80,38 @@ export default function StreamerDashboard() {
   };
 
 
-  const handleDeleteAccount = async () => {
+  const confirmDeleteCabinet = () => {
     const confirmText =
       language === "ru"
         ? "Удалить кабинет стримера и все его настройки?"
         : "Delete streamer cabinet and all its settings?";
-    if (!window.confirm(confirmText)) return;
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.showPopup) {
+      return new Promise<boolean>((resolve) => {
+        tg.showPopup(
+          {
+            title: language === "ru" ? "Подтверждение" : "Confirm",
+            message: confirmText,
+            buttons: [
+              { id: "cancel", type: "cancel", text: language === "ru" ? "Отмена" : "Cancel" },
+              {
+                id: "delete",
+                type: "destructive",
+                text: language === "ru" ? "Удалить" : "Delete",
+              },
+            ],
+          },
+          (buttonId: string) => resolve(buttonId === "delete"),
+        );
+      });
+    }
+
+    return Promise.resolve(window.confirm(confirmText));
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = await confirmDeleteCabinet();
+    if (!confirmed) return;
     setDeleteLoading(true);
     setErr(null);
     try {
@@ -220,47 +240,6 @@ export default function StreamerDashboard() {
     };
   }, []);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const cached = localStorage.getItem("twitchAuthUrl");
-    if (cached) {
-      setTwitchAuthUrl(cached);
-      setTwitchAuthReady(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!streamer || streamer?.twitch_linked_at) return;
-    let cancelled = false;
-    const prefetch = async () => {
-      if (twitchAuthLoading || twitchAuthUrl) return;
-      setTwitchAuthLoading(true);
-      try {
-        await ensureAuth();
-        const r = await apiGet("/twitch/authorize");
-        const url = r?.url ?? r;
-        if (url && !cancelled) {
-          setTwitchAuthUrl(url);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("twitchAuthUrl", url);
-          }
-          setTwitchAuthReady(true);
-        }
-      } catch (e) {
-        console.warn("Twitch prefetch failed:", e);
-      } finally {
-        if (!cancelled) setTwitchAuthLoading(false);
-      }
-    };
-    prefetch();
-    return () => {
-      cancelled = true;
-    };
-  }, [streamer?.id, streamer?.twitch_linked_at, twitchAuthLoading, twitchAuthUrl]);
-=======
->>>>>>> a3c2d98 (new)
-
   useEffect(() => {
     if (streamer?.id) {
       loadSummary(streamer.id);
@@ -378,18 +357,14 @@ export default function StreamerDashboard() {
                 <Button
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={startTwitchLink}
-                  disabled={linking || twitchAuthLoading || !twitchAuthReady}
+                  disabled={linking}
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
                   {linking
                     ? "Redirecting..."
-                    : twitchAuthLoading || !twitchAuthReady
-                      ? language === "ru"
-                        ? "Подготовка..."
-                        : "Preparing..."
-                      : language === "ru"
-                        ? "Привязать Twitch"
-                        : "Link Twitch"}
+                    : language === "ru"
+                      ? "Привязать Twitch"
+                      : "Link Twitch"}
                 </Button>
               ) : (
                 <Button
@@ -583,6 +558,7 @@ export default function StreamerDashboard() {
               className="w-full h-12 text-base font-medium"
               onClick={handleDeleteAccount}
               disabled={deleteLoading}
+              type="button"
             >
               <Trash2 className="h-5 w-5 mr-2" />
               {deleteLoading
