@@ -247,17 +247,7 @@ export default function StreamerDashboard() {
 
   useEffect(() => {
     refresh();
-
-    // Refresh when returning from external browser
-    const onFocus = () => refresh();
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") refresh();
-    };
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      window.removeEventListener("focus", onFocus);
-      document.removeEventListener("visibilitychange", onVisibility);
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
@@ -408,7 +398,7 @@ export default function StreamerDashboard() {
                 <Button
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={startTwitchLink}
-                  disabled={linking || twitchAuthLoading}
+                  disabled={linking || twitchAuthLoading || !twitchAuthReady}
                   type="button"
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
