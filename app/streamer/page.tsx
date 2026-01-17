@@ -54,6 +54,7 @@ export default function StreamerDashboard() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
+  const [pendingTwitchOpen, setPendingTwitchOpen] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -186,11 +187,8 @@ export default function StreamerDashboard() {
     try {
       let url = twitchAuthUrl;
       if (!url) {
-        await ensureAuth();
-        const r = await apiGet("/twitch/authorize");
-        url = r?.url ?? r;
-        if (!url) throw new Error("No Twitch authorize URL.");
-        setTwitchAuthUrl(url);
+        setPendingTwitchOpen(true);
+        return;
       }
       if (!url) throw new Error("No Twitch authorize URL.");
 
@@ -200,6 +198,8 @@ export default function StreamerDashboard() {
       } else {
         window.location.href = url;
       }
+      setPendingTwitchOpen(false);
+      setLinking(false);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
       setLinking(false);
@@ -231,7 +231,19 @@ export default function StreamerDashboard() {
         await ensureAuth();
         const r = await apiGet("/twitch/authorize");
         const url = r?.url ?? r;
-        if (url && !cancelled) setTwitchAuthUrl(url);
+        if (url && !cancelled) {
+          setTwitchAuthUrl(url);
+          if (pendingTwitchOpen) {
+            const tg = (window as any).Telegram?.WebApp;
+            if (tg?.openLink) {
+              tg.openLink(url);
+            } else {
+              window.location.href = url;
+            }
+            setPendingTwitchOpen(false);
+            setLinking(false);
+          }
+        }
       } catch (e) {
         console.warn("Twitch prefetch failed:", e);
       } finally {
@@ -568,6 +580,9 @@ export default function StreamerDashboard() {
                   ? "Удалить кабинет стримера"
                   : "Delete streamer cabinet"}
             </Button>
+            {err && (
+              <p className="text-xs text-red-500 text-center">{err}</p>
+            )}
           </>
         )}
       </div>
