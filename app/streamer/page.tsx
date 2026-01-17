@@ -54,7 +54,6 @@ export default function StreamerDashboard() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
-  const [pendingTwitchOpen, setPendingTwitchOpen] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -183,26 +182,17 @@ export default function StreamerDashboard() {
 
   const startTwitchLink = async () => {
     setErr(null);
+    const url = twitchAuthUrl;
+    if (!url) {
+      setErr(language === "ru" ? "Готовим ссылку... попробуйте еще раз." : "Preparing link... try again.");
+      return;
+    }
     setLinking(true);
-    try {
-      let url = twitchAuthUrl;
-      if (!url) {
-        setPendingTwitchOpen(true);
-        return;
-      }
-      if (!url) throw new Error("No Twitch authorize URL.");
-
-      const tg = (window as any).Telegram?.WebApp;
-      if (tg?.openLink) {
-        tg.openLink(url);
-      } else {
-        window.location.href = url;
-      }
-      setPendingTwitchOpen(false);
-      setLinking(false);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
-      setLinking(false);
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.openLink) {
+      tg.openLink(url);
+    } else {
+      window.location.href = url;
     }
   };
 
@@ -231,19 +221,7 @@ export default function StreamerDashboard() {
         await ensureAuth();
         const r = await apiGet("/twitch/authorize");
         const url = r?.url ?? r;
-        if (url && !cancelled) {
-          setTwitchAuthUrl(url);
-          if (pendingTwitchOpen) {
-            const tg = (window as any).Telegram?.WebApp;
-            if (tg?.openLink) {
-              tg.openLink(url);
-            } else {
-              window.location.href = url;
-            }
-            setPendingTwitchOpen(false);
-            setLinking(false);
-          }
-        }
+        if (url && !cancelled) setTwitchAuthUrl(url);
       } catch (e) {
         console.warn("Twitch prefetch failed:", e);
       } finally {
@@ -373,10 +351,18 @@ export default function StreamerDashboard() {
                 <Button
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={startTwitchLink}
-                  disabled={linking}
+                  disabled={linking || twitchAuthLoading || !twitchAuthUrl}
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
-                  {linking ? "Redirecting..." : language === "ru" ? "Привязать Twitch" : "Link Twitch"}
+                  {linking
+                    ? "Redirecting..."
+                    : twitchAuthLoading || !twitchAuthUrl
+                      ? language === "ru"
+                        ? "Подготовка..."
+                        : "Preparing..."
+                      : language === "ru"
+                        ? "Привязать Twitch"
+                        : "Link Twitch"}
                 </Button>
               ) : (
                 <Button
