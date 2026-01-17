@@ -121,6 +121,10 @@ export default function StreamerDashboard() {
       await ensureAuth();
       await apiPost("/streamer/delete");
       setStreamer(null);
+      setLinking(false);
+      setTwitchAuthReady(false);
+      setTwitchAuthLoading(false);
+      twitchAuthUrlRef.current = null;
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       const message = String(e?.message ?? e);
@@ -134,6 +138,10 @@ export default function StreamerDashboard() {
           await ensureAuth();
           await apiPost("/streamer/delete");
           setStreamer(null);
+          setLinking(false);
+          setTwitchAuthReady(false);
+          setTwitchAuthLoading(false);
+          twitchAuthUrlRef.current = null;
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {
@@ -260,6 +268,14 @@ export default function StreamerDashboard() {
       loadSummary(streamer.id);
     }
   }, [streamer?.id]);
+
+  useEffect(() => {
+    if (!streamer) {
+      setTwitchAuthReady(false);
+      setTwitchAuthLoading(false);
+      twitchAuthUrlRef.current = null;
+    }
+  }, [streamer]);
 
   useEffect(() => {
     if (!streamer || streamer?.twitch_linked_at) return;
