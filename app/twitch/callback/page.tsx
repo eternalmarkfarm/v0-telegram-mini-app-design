@@ -13,9 +13,6 @@ function CallbackInner() {
   const [message, setMessage] = useState("Processing Twitch OAuth...");
   const isSuccess = status === "success";
   const isProcessing = status === "processing";
-  const botUsername = "sobaka_oko_bot";
-  const telegramReturnUrl = `https://t.me/${botUsername}?startapp=1`;
-
   const handleCloseWindow = () => {
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.close) {
@@ -28,19 +25,6 @@ function CallbackInner() {
     } catch (e) {
       window.location.href = "about:blank";
     }
-  };
-
-  const handleReturnToTelegram = () => {
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg?.close) {
-      tg.close();
-      return;
-    }
-    if (tg?.openTelegramLink) {
-      tg.openTelegramLink(telegramReturnUrl);
-      return;
-    }
-    window.location.href = telegramReturnUrl;
   };
 
   useEffect(() => {
@@ -127,21 +111,10 @@ function CallbackInner() {
                 <br />
                 Это окно можно закрыть.
               </p>
-              <div className="mt-6 space-y-3">
-                <button
-                  onClick={handleCloseWindow}
-                  type="button"
-                  className="w-full rounded-lg py-3 text-sm font-semibold text-white shadow-lg shadow-[#9146ff]/30 bg-gradient-to-r from-[#6f3ad6] via-[#8b5cf6] to-[#6f3ad6]"
-                >
-                  Закрыть окно
-                </button>
-                <button
-                  onClick={handleReturnToTelegram}
-                  type="button"
-                  className="w-full rounded-lg py-3 text-sm font-semibold text-white/90 bg-white/10 border border-white/10 hover:bg-white/15"
-                >
-                  Вернуться в Telegram
-                </button>
+              <div className="mt-6 flex items-center justify-center">
+                <span className="text-4xl font-black tracking-[0.35em] text-transparent bg-clip-text bg-gradient-to-r from-[#ffb347] via-[#ffd1a8] to-[#ff7f50] drop-shadow-[0_6px_18px_rgba(255,140,82,0.45)]">
+                  УДАЧИ
+                </span>
               </div>
             </>
           ) : (
