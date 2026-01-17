@@ -202,7 +202,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
                 isLoading={isLoading || linking}
                 onClick={handleTwitchLink}
                 loadingText={t.syncing ?? "Syncing..."}
-                disabled={Boolean(isLoading || linking || twitchAuthLoading || !twitchAuthReady)}
+                disabled={Boolean(isLoading || linking)}
               />
             )}
           </div>
