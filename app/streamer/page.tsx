@@ -52,6 +52,7 @@ export default function StreamerDashboard() {
   const [lisTokenSaved, setLisTokenSaved] = useState(false);
   const [summary, setSummary] = useState<any>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const twitchAuthUrlRef = useRef<string | null>(null);
 
   const refresh = async () => {
     setErr(null);
@@ -118,7 +119,6 @@ export default function StreamerDashboard() {
       await ensureAuth();
       await apiPost("/streamer/delete");
       setStreamer(null);
-      setEvents([]);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       const message = String(e?.message ?? e);
@@ -132,7 +132,6 @@ export default function StreamerDashboard() {
           await ensureAuth();
           await apiPost("/streamer/delete");
           setStreamer(null);
-          setEvents([]);
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {
@@ -208,17 +207,27 @@ export default function StreamerDashboard() {
     setErr(null);
     setLinking(true);
     try {
+      const tg = (window as any).Telegram?.WebApp;
+      const openUrl = (url: string) => {
+        if (tg?.openLink) {
+          tg.openLink(url);
+          setLinking(false);
+        } else {
+          window.location.href = url;
+        }
+      };
+
+      const cachedUrl = twitchAuthUrlRef.current;
+      if (cachedUrl) {
+        openUrl(cachedUrl);
+        return;
+      }
+
       await ensureAuth();
       const r = await apiGet("/twitch/authorize");
       const url = r?.url ?? r;
       if (!url) throw new Error("No Twitch authorize URL.");
-
-      const tg = (window as any).Telegram?.WebApp;
-      if (tg?.openLink) {
-        tg.openLink(url);
-      } else {
-        window.location.href = url;
-      }
+      openUrl(url);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
       setLinking(false);
@@ -245,6 +254,27 @@ export default function StreamerDashboard() {
       loadSummary(streamer.id);
     }
   }, [streamer?.id]);
+
+  useEffect(() => {
+    if (!streamer || streamer?.twitch_linked_at) return;
+    let cancelled = false;
+    const prefetch = async () => {
+      try {
+        await ensureAuth();
+        const r = await apiGet("/twitch/authorize");
+        const url = r?.url ?? r;
+        if (url && !cancelled) {
+          twitchAuthUrlRef.current = url;
+        }
+      } catch (e) {
+        console.warn("Twitch prefetch failed:", e);
+      }
+    };
+    prefetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [streamer?.id, streamer?.twitch_linked_at]);
 
   // Polling для проверки статуса привязки Twitch
   useEffect(() => {
@@ -358,6 +388,7 @@ export default function StreamerDashboard() {
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={startTwitchLink}
                   disabled={linking}
+                  type="button"
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
                   {linking
@@ -371,6 +402,7 @@ export default function StreamerDashboard() {
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={becomeStreamer}
                   disabled={linking}
+                  type="button"
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
                   {language === "ru" ? "Стать стримером" : "Become Streamer"}
