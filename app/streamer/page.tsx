@@ -91,7 +91,9 @@ export default function StreamerDashboard() {
     try {
       await ensureAuth();
       await apiPost("/streamer/delete");
-      window.location.href = "/streamer";
+      setStreamer(null);
+      setEvents([]);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       const message = String(e?.message ?? e);
       const isAuthError =
@@ -103,7 +105,9 @@ export default function StreamerDashboard() {
         try {
           await ensureAuth();
           await apiPost("/streamer/delete");
-          window.location.href = "/streamer";
+          setStreamer(null);
+          setEvents([]);
+          window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         } catch (retryErr: any) {
           setErr(String(retryErr?.message ?? retryErr));
