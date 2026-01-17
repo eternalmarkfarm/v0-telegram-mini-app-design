@@ -197,7 +197,7 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const token = getToken();
       if (!token) throw new Error("Missing auth token");
-      const resp = await fetch(`${API_BASE}/streamer/gsi-config`, {
+      const resp = await fetch(`${API_BASE}/streamer/gsi-installer`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!resp.ok) throw new Error(await resp.text());
@@ -206,7 +206,7 @@ export default function StreamerDashboard() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "gamestate_integration_drop.cfg";
+      a.download = "install_gsi.ps1";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -215,6 +215,7 @@ export default function StreamerDashboard() {
       setErr(String(e?.message ?? e));
     }
   };
+
 
   const startTwitchLink = async () => {
     setErr(null);
