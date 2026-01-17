@@ -197,20 +197,13 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const token = getToken();
       if (!token) throw new Error("Missing auth token");
-      const resp = await fetch(`${API_BASE}/streamer/gsi-installer`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!resp.ok) throw new Error(await resp.text());
-      const text = await resp.text();
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "install_gsi.ps1";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      const url = `${API_BASE}/streamer/gsi-installer?token=${encodeURIComponent(token)}`;
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.openLink) {
+        tg.openLink(url, { try_instant_view: false });
+      } else {
+        window.location.href = url;
+      }
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     }
