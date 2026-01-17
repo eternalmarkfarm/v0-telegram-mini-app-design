@@ -54,6 +54,7 @@ export default function StreamerDashboard() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [twitchAuthUrl, setTwitchAuthUrl] = useState<string | null>(null);
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
+  const [twitchAuthReady, setTwitchAuthReady] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -182,9 +183,11 @@ export default function StreamerDashboard() {
 
   const startTwitchLink = async () => {
     setErr(null);
-    const url = twitchAuthUrl;
+    const url =
+      twitchAuthUrl ||
+      (typeof window !== "undefined" ? localStorage.getItem("twitchAuthUrl") : null);
     if (!url) {
-      setErr(language === "ru" ? "Готовим ссылку... попробуйте еще раз." : "Preparing link... try again.");
+      setErr(language === "ru" ? "Ссылка еще не готова. Подождите пару секунд." : "Link not ready yet. Wait a moment.");
       return;
     }
     setLinking(true);
@@ -194,6 +197,7 @@ export default function StreamerDashboard() {
     } else {
       window.location.href = url;
     }
+    setLinking(false);
   };
 
   useEffect(() => {
@@ -212,6 +216,15 @@ export default function StreamerDashboard() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const cached = localStorage.getItem("twitchAuthUrl");
+    if (cached) {
+      setTwitchAuthUrl(cached);
+      setTwitchAuthReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!streamer || streamer?.twitch_linked_at) return;
     let cancelled = false;
     const prefetch = async () => {
@@ -221,7 +234,13 @@ export default function StreamerDashboard() {
         await ensureAuth();
         const r = await apiGet("/twitch/authorize");
         const url = r?.url ?? r;
-        if (url && !cancelled) setTwitchAuthUrl(url);
+        if (url && !cancelled) {
+          setTwitchAuthUrl(url);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("twitchAuthUrl", url);
+          }
+          setTwitchAuthReady(true);
+        }
       } catch (e) {
         console.warn("Twitch prefetch failed:", e);
       } finally {
@@ -351,12 +370,12 @@ export default function StreamerDashboard() {
                 <Button
                   className="w-full h-12 text-base font-medium bg-[#9146ff] hover:bg-[#7c3aed] text-white"
                   onClick={startTwitchLink}
-                  disabled={linking || twitchAuthLoading || !twitchAuthUrl}
+                  disabled={linking || twitchAuthLoading || !twitchAuthReady}
                 >
                   <TwitchIcon className="h-5 w-5 mr-2" />
                   {linking
                     ? "Redirecting..."
-                    : twitchAuthLoading || !twitchAuthUrl
+                    : twitchAuthLoading || !twitchAuthReady
                       ? language === "ru"
                         ? "Подготовка..."
                         : "Preparing..."
