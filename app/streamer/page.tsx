@@ -47,15 +47,14 @@ export default function StreamerDashboard() {
   const [streamer, setStreamer] = useState<Streamer>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [lisTokenInput, setLisTokenInput] = useState("");
-  const [lisTokenSaving, setLisTokenSaving] = useState(false);
-  const [lisTokenSaved, setLisTokenSaved] = useState(false);
   const [summary, setSummary] = useState<any>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const twitchAuthUrlRef = useRef<string | null>(null);
   const [twitchAuthReady, setTwitchAuthReady] = useState(false);
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false);
   const [twitchDisconnectNote, setTwitchDisconnectNote] = useState(false);
+  const [gsiStatus, setGsiStatus] = useState<{ last_seen?: string | null; seconds_ago?: number | null } | null>(null);
+  const [gsiLoading, setGsiLoading] = useState(false);
 
   const refresh = async () => {
     setErr(null);
@@ -64,7 +63,6 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setStreamer(r.streamer);
-      setLisTokenSaved(Boolean(r.streamer?.lis_skins_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -175,19 +173,16 @@ export default function StreamerDashboard() {
     }
   };
 
-  const saveLisToken = async () => {
-    if (!lisTokenInput.trim()) return;
-    setErr(null);
-    setLisTokenSaving(true);
+  const loadGsiStatus = async () => {
+    setGsiLoading(true);
     try {
       await ensureAuth();
-      await apiPost("/streamer/lis-skins-token", { api_token: lisTokenInput.trim() });
-      setLisTokenInput("");
-      setLisTokenSaved(true);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e));
+      const data = await apiGet("/streamer/gsi-status");
+      setGsiStatus(data);
+    } catch (e) {
+      console.error("Failed to load GSI status:", e);
     } finally {
-      setLisTokenSaving(false);
+      setGsiLoading(false);
     }
   };
 
@@ -259,6 +254,13 @@ export default function StreamerDashboard() {
     if (streamer?.id) {
       loadSummary(streamer.id);
     }
+  }, [streamer?.id]);
+
+  useEffect(() => {
+    if (!streamer?.id) return;
+    loadGsiStatus();
+    const interval = setInterval(loadGsiStatus, 30000);
+    return () => clearInterval(interval);
   }, [streamer?.id]);
 
   useEffect(() => {
@@ -568,44 +570,53 @@ export default function StreamerDashboard() {
               </Link>
             </Button>
 
-            <div>
-              <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
-                {language === "ru" ? "Токен Lis-Skins" : "Lis-Skins Token"}
-              </h2>
-              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
-                <input
-                  type="password"
-                  value={lisTokenInput}
-                  onChange={(e) => setLisTokenInput(e.target.value)}
-                  placeholder={language === "ru" ? "Вставьте API токен" : "Paste API token"}
-                  className="w-full rounded-md border border-border bg-input/40 px-3 py-2 text-sm text-foreground"
-                />
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {lisTokenSaved
-                      ? language === "ru"
-                        ? "Токен сохранен"
-                        : "Token saved"
-                      : language === "ru"
-                        ? "Токен не задан"
-                        : "Token not set"}
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {language === "ru" ? "Статус GSI" : "GSI Status"}
                   </p>
-                  <Button
-                    onClick={saveLisToken}
-                    disabled={lisTokenSaving || !lisTokenInput.trim()}
-                    className="h-9 px-4"
-                  >
-                    {lisTokenSaving
-                      ? language === "ru"
-                        ? "Сохранение..."
-                        : "Saving..."
-                      : language === "ru"
-                        ? "Сохранить"
-                        : "Save"}
-                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    {language === "ru" ? "Последний сигнал от Dota 2" : "Last signal from Dota 2"}
+                  </p>
                 </div>
-              </Card>
-            </div>
+                <Button size="sm" variant="secondary" onClick={loadGsiStatus} disabled={gsiLoading}>
+                  {gsiLoading ? (language === "ru" ? "Проверка..." : "Checking...") : language === "ru" ? "Проверить" : "Check"}
+                </Button>
+              </div>
+              <div className="text-sm">
+                {typeof gsiStatus?.seconds_ago === "number" ? (
+                  <span className={gsiStatus.seconds_ago <= 60 ? "text-success" : "text-warning"}>
+                    {language === "ru"
+                      ? `Был сигнал ${gsiStatus.seconds_ago} сек назад`
+                      : `Last signal ${gsiStatus.seconds_ago}s ago`}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">
+                    {language === "ru" ? "Сигналов пока нет" : "No signals yet"}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {language === "ru"
+                  ? "Нужен параметр запуска: -gamestateintegration"
+                  : "Launch option required: -gamestateintegration"}
+              </p>
+            </Card>
+
+            <Button
+              variant="outline"
+              className="w-full h-12 text-base font-medium justify-between"
+              asChild
+            >
+              <Link href="/streamer/lis-skins">
+                <span className="flex items-center gap-2">
+                  <Gift className="h-5 w-5 text-primary" />
+                  {language === "ru" ? "Настройки Lis-Skins" : "Lis-Skins settings"}
+                </span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </Link>
+            </Button>
 
             <Button
               className="w-full h-14 text-base font-medium bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
