@@ -331,7 +331,7 @@ export default function LisSkinsSettingsPage() {
                     {typeof testResult.skin_price === "number" && (
                       <p>
                         {language === "ru" ? "Цена" : "Price"}:{" "}
-                        <span className="text-foreground">₽{testResult.skin_price}</span>
+                        <span className="text-foreground">${testResult.skin_price}</span>
                       </p>
                     )}
                     {testResult.purchase_id && (
@@ -350,7 +350,7 @@ export default function LisSkinsSettingsPage() {
         <div>
           <div className="flex items-center justify-between mb-2 px-1">
             <h2 className="text-sm font-medium text-muted-foreground">
-              {language === "ru" ? "Диапазон цен для Dota 2" : "Dota 2 price range"}
+              {language === "ru" ? "Диапазон цен для Dota 2 (USD)" : "Dota 2 price range (USD)"}
             </h2>
             {rangeSaved && (
               <span className="text-xs text-success flex items-center gap-1">

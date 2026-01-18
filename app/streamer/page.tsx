@@ -56,6 +56,18 @@ export default function StreamerDashboard() {
   const [gsiStatus, setGsiStatus] = useState<{ last_seen?: string | null; seconds_ago?: number | null } | null>(null);
   const [gsiLoading, setGsiLoading] = useState(false);
 
+  const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const refresh = async () => {
     setErr(null);
     setLoading(true);
@@ -479,7 +491,7 @@ export default function StreamerDashboard() {
                   {
                     icon: Coins,
                     label: language === "ru" ? "Сумма всего" : "Total amount",
-                    value: `₽${summary?.stats?.total_amount ?? 0}`,
+                    value: `$${summary?.stats?.total_amount ?? 0}`,
                     color: "text-success",
                     bg: "bg-success/20",
                   },
@@ -537,6 +549,9 @@ export default function StreamerDashboard() {
                         <p className="text-xs text-muted-foreground">
                           {prize.twitch_login ? `@${prize.twitch_login}` : t.recipient}
                         </p>
+                        {prize.created_at && (
+                          <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-muted-foreground">
@@ -557,7 +572,7 @@ export default function StreamerDashboard() {
                                   : "Processing"}
                         </p>
                         {prize.skin_price !== null && prize.skin_price !== undefined && (
-                          <p className="text-sm font-medium text-foreground">₽{prize.skin_price}</p>
+                          <p className="text-sm font-medium text-foreground">${prize.skin_price}</p>
                         )}
                       </div>
                     </div>

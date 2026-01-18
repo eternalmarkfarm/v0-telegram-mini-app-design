@@ -27,6 +27,18 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
 
   const pageSize = 15;
 
+  const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const load = async (pageIndex: number) => {
     setLoading(true);
     try {
@@ -94,7 +106,7 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
 
         <Card className="border border-warning/40 bg-warning/15 backdrop-blur-sm p-4 text-sm text-warning flex items-start gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-warning/20 text-warning">
-            <Heart className="h-4 w-4 text-[#9146ff]" />
+            <Heart className="h-4 w-4 text-[#9146ff] fill-[#9146ff]" />
           </div>
           <div>
             <p className="font-semibold text-warning">
@@ -138,11 +150,14 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
                   <p className="text-xs text-muted-foreground">
                     {prize.twitch_login ? `@${prize.twitch_login}` : language === "ru" ? "Зритель" : "Viewer"}
                   </p>
+                  {prize.created_at && (
+                    <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground">{statusLabel(prize.delivery_status)}</p>
                   {prize.skin_price !== null && prize.skin_price !== undefined && (
-                    <p className="text-sm font-medium text-foreground">₽{prize.skin_price}</p>
+                    <p className="text-sm font-medium text-foreground">${prize.skin_price}</p>
                   )}
                 </div>
               </div>

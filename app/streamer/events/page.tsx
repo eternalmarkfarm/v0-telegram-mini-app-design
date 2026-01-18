@@ -238,7 +238,7 @@ export default function StreamerEventsPage() {
                             e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
-                        placeholder={language === "ru" ? "Цена от" : "Min price"}
+                        placeholder={language === "ru" ? "Цена от (USD)" : "Min price (USD)"}
                         className="h-9 no-spin"
                       />
                       <Input
@@ -253,7 +253,7 @@ export default function StreamerEventsPage() {
                             e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
-                        placeholder={language === "ru" ? "Цена до" : "Max price"}
+                        placeholder={language === "ru" ? "Цена до (USD)" : "Max price (USD)"}
                         className="h-9 no-spin"
                       />
                       <Input

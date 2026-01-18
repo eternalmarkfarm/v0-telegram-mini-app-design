@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Gift, ChevronRight, Sparkles, Clock, CheckCircle, XCircle } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { apiGet, apiPost } from "@/lib/api"
+import Link from "next/link"
 
 type PrizeItem = {
   id: number
@@ -19,7 +20,12 @@ type PrizeItem = {
   }
 }
 
-export function MyPrizes() {
+type MyPrizesProps = {
+  limit?: number
+  showAllLink?: boolean
+}
+
+export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
   const { t, language } = useI18n()
   const [items, setItems] = useState<PrizeItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -27,7 +33,7 @@ export function MyPrizes() {
   const load = async () => {
     try {
       await apiPost("/viewer/prizes/refresh", {});
-      const data = await apiGet("/viewer/prizes")
+      const data = await apiGet(`/viewer/prizes?limit=${limit}`)
       setItems(data?.items ?? [])
     } catch (e) {
       console.error("Failed to load prizes:", e)
@@ -49,6 +55,18 @@ export function MyPrizes() {
     return language === "ru" ? "В обработке" : "Processing"
   }
 
+  const formatDate = (value?: string | null) => {
+    if (!value) return null
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return null
+    return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3 px-1">
@@ -56,10 +74,14 @@ export function MyPrizes() {
           <Sparkles className="h-4 w-4 text-warning" />
           <h2 className="text-sm font-medium text-muted-foreground">{t.myPrizes}</h2>
         </div>
-        <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary/80">
-          {language === "ru" ? "Все призы" : "All prizes"}
-          <ChevronRight className="h-3 w-3 ml-1" />
-        </Button>
+        {showAllLink && (
+          <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary/80" asChild>
+            <Link href="/prizes">
+              {language === "ru" ? "Все призы" : "All prizes"}
+              <ChevronRight className="h-3 w-3 ml-1" />
+            </Link>
+          </Button>
+        )}
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
         {loading ? (
@@ -98,6 +120,9 @@ export function MyPrizes() {
                     {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
                   </p>
                   <p className="text-xs text-muted-foreground">{streamerLabel}</p>
+                  {prize.created_at && (
+                    <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
+                  )}
                   {status === "sent" && (
                     <p className="text-[11px] text-warning">
                       {language === "ru"
@@ -108,7 +133,7 @@ export function MyPrizes() {
                 </div>
                 <div className="text-right">
                   {prize.skin_price !== null && prize.skin_price !== undefined && (
-                    <p className="text-sm font-semibold text-foreground">₽{prize.skin_price}</p>
+                    <p className="text-sm font-semibold text-foreground">${prize.skin_price}</p>
                   )}
                   <p className="text-xs text-muted-foreground">{statusLabel(status)}</p>
                 </div>
