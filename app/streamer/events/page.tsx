@@ -109,11 +109,13 @@ const EVENT_META: Record<string, { label: string; descRu: string; descEn: string
 export default function StreamerEventsPage() {
   const { language } = useI18n();
   const [events, setEvents] = useState<EventRow[]>([]);
+  const [streamerId, setStreamerId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [bulkMax, setBulkMax] = useState("");
   const [bulkWinners, setBulkWinners] = useState("");
   const [savedEventKey, setSavedEventKey] = useState<string | null>(null);
+  const [testStatus, setTestStatus] = useState<Record<string, string>>({});
 
   const refresh = async () => {
     setErr(null);
@@ -122,6 +124,7 @@ export default function StreamerEventsPage() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setEvents(r.events ?? []);
+      setStreamerId(r?.streamer?.id ?? null);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -213,6 +216,40 @@ export default function StreamerEventsPage() {
       );
     } catch (e: any) {
       setErr(String(e?.message ?? e));
+    }
+  };
+
+  const runTestEvent = async (eventKey: string) => {
+    if (!streamerId) {
+      setTestStatus((prev) => ({
+        ...prev,
+        [eventKey]: language === "ru" ? "Сначала создайте кабинет стримера." : "Create streamer cabinet first.",
+      }));
+      return;
+    }
+    setTestStatus((prev) => ({
+      ...prev,
+      [eventKey]: language === "ru" ? "Тестирование..." : "Testing...",
+    }));
+    try {
+      await ensureAuth();
+      const result = await apiPost("/giveaways/trigger", {
+        streamer_id: streamerId,
+        event_key: eventKey,
+      });
+      const winnersCount = Array.isArray(result?.winners) ? result.winners.length : 0;
+      setTestStatus((prev) => ({
+        ...prev,
+        [eventKey]:
+          language === "ru"
+            ? `Тест выполнен. Победителей: ${winnersCount}`
+            : `Test complete. Winners: ${winnersCount}`,
+      }));
+    } catch (e: any) {
+      setTestStatus((prev) => ({
+        ...prev,
+        [eventKey]: String(e?.message ?? e),
+      }));
     }
   };
 
@@ -354,20 +391,34 @@ export default function StreamerEventsPage() {
                       </div>
                     )}
                     <div className="flex justify-end">
-                      <Button
-                        variant={savedEventKey === event.event_key ? "default" : "secondary"}
-                        className="h-8 px-3 text-xs transition-colors"
-                        onClick={() => saveEventConfig(event)}
-                      >
-                        {savedEventKey === event.event_key
-                          ? language === "ru"
-                            ? "Сохранено"
-                            : "Saved"
-                          : language === "ru"
-                            ? "Сохранить"
-                            : "Save"}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {event.event_key === "dota.double_kill" && (
+                          <Button
+                            variant="outline"
+                            className="h-8 px-3 text-xs"
+                            onClick={() => runTestEvent(event.event_key)}
+                          >
+                            {language === "ru" ? "Тест" : "Test"}
+                          </Button>
+                        )}
+                        <Button
+                          variant={savedEventKey === event.event_key ? "default" : "secondary"}
+                          className="h-8 px-3 text-xs transition-colors"
+                          onClick={() => saveEventConfig(event)}
+                        >
+                          {savedEventKey === event.event_key
+                            ? language === "ru"
+                              ? "Сохранено"
+                              : "Saved"
+                            : language === "ru"
+                              ? "Сохранить"
+                              : "Save"}
+                        </Button>
+                      </div>
                     </div>
+                    {event.event_key === "dota.double_kill" && testStatus[event.event_key] && (
+                      <p className="text-[11px] text-muted-foreground">{testStatus[event.event_key]}</p>
+                    )}
                   </div>
                 ))
               )}
