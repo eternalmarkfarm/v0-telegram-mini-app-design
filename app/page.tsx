@@ -8,8 +8,11 @@ import { AccountLinking } from "@/components/account-linking";
 import { Statistics } from "@/components/statistics";
 import { LiveStreamers } from "@/components/live-streamers";
 import { TrackedStreamers } from "@/components/tracked-streamers";
-import { MyPrizes } from "@/components/my-prizes";
 import { BottomActions } from "@/components/bottom-actions";
+import { RecentPrizes } from "@/components/recent-prizes";
+import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { ChevronRight, Gift } from "lucide-react";
 
 export default function Home() {
   const [debug, setDebug] = useState(false);
@@ -328,7 +331,18 @@ export default function Home() {
         <Statistics />
         <LiveStreamers />
         <TrackedStreamers />
-        <MyPrizes />
+        <RecentPrizes />
+        <Link href="/prizes">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Gift className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">
+                {t.myPrizes}
+              </span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Card>
+        </Link>
         <BottomActions />
       </div>
     </main>

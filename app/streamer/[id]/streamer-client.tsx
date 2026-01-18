@@ -26,6 +26,7 @@ type StreamerProfile = {
     twitch_login?: string | null;
     twitch_display_name?: string | null;
     profile_image_url?: string | null;
+    telegram_channel_url?: string | null;
   };
   live: {
     is_live: boolean;
@@ -110,6 +111,12 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   useEffect(() => {
     if (!resolvedId) return;
     load();
+  }, [resolvedId]);
+
+  useEffect(() => {
+    if (!resolvedId) return;
+    const interval = setInterval(load, 30000);
+    return () => clearInterval(interval);
   }, [resolvedId]);
 
   const streamer = data?.streamer;
@@ -258,6 +265,13 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                   </Button>
                 )}
               </div>
+              {streamer?.telegram_channel_url && (
+                <Button variant="outline" className="h-10 w-full mt-2" asChild>
+                  <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
+                    {language === "ru" ? "TG канал" : "TG channel"}
+                  </a>
+                </Button>
+              )}
             </Card>
 
             <div className="grid grid-cols-2 gap-3">
@@ -283,7 +297,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
               </Card>
               <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3">
                 <p className="text-xs text-muted-foreground">
-                  {language === "ru" ? "Всего призов" : "Total prizes"}
+                  {language === "ru" ? "За все время выдано призов" : "All-time prizes given"}
                 </p>
                 <p className="text-lg font-semibold text-foreground">{data.stats.total_prizes}</p>
               </Card>

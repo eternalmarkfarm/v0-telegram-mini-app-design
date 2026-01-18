@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Gift } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -116,6 +116,8 @@ export default function StreamerEventsPage() {
   const [bulkWinners, setBulkWinners] = useState("");
   const [savedEventKey, setSavedEventKey] = useState<string | null>(null);
   const [testStatus, setTestStatus] = useState<Record<string, string>>({});
+  const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const prevPositionsRef = useRef<Map<string, number>>(new Map());
 
   const refresh = async () => {
     setErr(null);
@@ -150,9 +152,40 @@ export default function StreamerEventsPage() {
     }));
   }, [events]);
 
+  useLayoutEffect(() => {
+    const newPositions = new Map<string, number>();
+    itemRefs.current.forEach((el, key) => {
+      newPositions.set(key, el.getBoundingClientRect().top);
+    });
+    const prevPositions = prevPositionsRef.current;
+    if (prevPositions.size) {
+      newPositions.forEach((top, key) => {
+        const prevTop = prevPositions.get(key);
+        if (prevTop === undefined) return;
+        const delta = prevTop - top;
+        if (!delta) return;
+        const el = itemRefs.current.get(key);
+        if (!el) return;
+        el.style.transition = "transform 0s";
+        el.style.transform = `translateY(${delta}px)`;
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 220ms ease";
+          el.style.transform = "";
+        });
+      });
+    }
+    prevPositionsRef.current = newPositions;
+  }, [eventItems]);
+
   const toggleEvent = async (event_key: string, enabled: boolean) => {
     setErr(null);
+    const scrollY = typeof window === "undefined" ? 0 : window.scrollY;
     setEvents((prev) => prev.map((x) => (x.event_key === event_key ? { ...x, enabled } : x)));
+    requestAnimationFrame(() => {
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: scrollY });
+      }
+    });
     try {
       await ensureAuth();
       await apiPost("/streamer/events", { event_key, enabled });
@@ -321,7 +354,17 @@ export default function StreamerEventsPage() {
                 <div className="p-4 text-sm text-muted-foreground">No events yet.</div>
               ) : (
                 eventItems.map((event) => (
-                  <div key={event.event_key} className="p-3 space-y-3">
+                  <div
+                    key={event.event_key}
+                    className="p-3 space-y-3"
+                    ref={(el) => {
+                      if (el) {
+                        itemRefs.current.set(event.event_key, el);
+                      } else {
+                        itemRefs.current.delete(event.event_key);
+                      }
+                    }}
+                  >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground">

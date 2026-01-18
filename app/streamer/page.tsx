@@ -56,6 +56,9 @@ export default function StreamerDashboard() {
   const [twitchDisconnectNote, setTwitchDisconnectNote] = useState(false);
   const [gsiStatus, setGsiStatus] = useState<{ last_seen?: string | null; seconds_ago?: number | null } | null>(null);
   const [gsiLoading, setGsiLoading] = useState(false);
+  const [tgChannel, setTgChannel] = useState("");
+  const [tgSaving, setTgSaving] = useState(false);
+  const [tgSaved, setTgSaved] = useState(false);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -76,6 +79,9 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const r = await apiGet("/streamer/me");
       setStreamer(r.streamer);
+      if (r?.streamer?.telegram_channel_url) {
+        setTgChannel(r.streamer.telegram_channel_url);
+      }
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -259,6 +265,25 @@ export default function StreamerDashboard() {
     } catch (e: any) {
       setErr(String(e?.message ?? e));
       setLinking(false);
+    }
+  };
+
+  const saveTgChannel = async () => {
+    setErr(null);
+    setTgSaving(true);
+    setTgSaved(false);
+    try {
+      await ensureAuth();
+      const data = await apiPost("/streamer/telegram-channel", { telegram_channel_url: tgChannel });
+      if (data?.telegram_channel_url) {
+        setTgChannel(data.telegram_channel_url);
+      }
+      setTgSaved(true);
+      setTimeout(() => setTgSaved(false), 1400);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setTgSaving(false);
     }
   };
 
@@ -613,6 +638,36 @@ export default function StreamerDashboard() {
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </Link>
             </Button>
+
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {language === "ru" ? "TG канал стримера" : "Streamer TG channel"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {language === "ru"
+                    ? "Эта ссылка будет видна зрителям на странице стримера."
+                    : "This link is shown to viewers on the streamer page."}
+                </p>
+              </div>
+              <input
+                type="url"
+                className="w-full h-10 rounded-md border border-border/60 bg-background px-3 text-sm text-foreground"
+                placeholder="https://t.me/your_channel"
+                value={tgChannel}
+                onChange={(e) => setTgChannel(e.target.value)}
+              />
+              <div className="flex justify-end items-center gap-2">
+                {tgSaved && (
+                  <span className="text-xs text-success">
+                    {language === "ru" ? "Сохранено" : "Saved"}
+                  </span>
+                )}
+                <Button size="sm" variant="secondary" onClick={saveTgChannel} disabled={tgSaving}>
+                  {tgSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
+                </Button>
+              </div>
+            </Card>
 
             <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
               <div className="flex items-center justify-between">
