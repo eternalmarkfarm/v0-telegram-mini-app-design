@@ -113,6 +113,7 @@ export default function StreamerEventsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [bulkMax, setBulkMax] = useState("");
   const [bulkWinners, setBulkWinners] = useState("");
+  const [savedEventKey, setSavedEventKey] = useState<string | null>(null);
 
   const refresh = async () => {
     setErr(null);
@@ -175,6 +176,10 @@ export default function StreamerEventsPage() {
         winners_count: event.winners_count,
         trigger_value: event.trigger_value,
       });
+      setSavedEventKey(event.event_key);
+      setTimeout(() => {
+        setSavedEventKey((prev) => (prev === event.event_key ? null : prev));
+      }, 1400);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     }
@@ -350,11 +355,17 @@ export default function StreamerEventsPage() {
                     )}
                     <div className="flex justify-end">
                       <Button
-                        variant="secondary"
-                        className="h-8 px-3 text-xs"
+                        variant={savedEventKey === event.event_key ? "default" : "secondary"}
+                        className="h-8 px-3 text-xs transition-colors"
                         onClick={() => saveEventConfig(event)}
                       >
-                        {language === "ru" ? "Сохранить" : "Save"}
+                        {savedEventKey === event.event_key
+                          ? language === "ru"
+                            ? "Сохранено"
+                            : "Saved"
+                          : language === "ru"
+                            ? "Сохранить"
+                            : "Save"}
                       </Button>
                     </div>
                   </div>
