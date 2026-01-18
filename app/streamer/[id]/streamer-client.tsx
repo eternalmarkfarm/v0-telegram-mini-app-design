@@ -261,7 +261,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                 </Button>
                 {isTracked ? (
                   <Button
-                    className="h-10 bg-[#3b82f6] text-white hover:bg-[#2563eb]"
+                    className="h-10 bg-red-500 text-white hover:bg-red-600"
                     onClick={handleUntrack}
                     disabled={trackingBusy}
                   >
@@ -276,11 +276,11 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
               {streamer?.telegram_channel_url && (
                 <Button
                   variant="outline"
-                  className="h-10 w-full -mt-1 bg-orange-400 text-black hover:bg-orange-300"
+                  className="h-10 w-full -mt-1 bg-[#229ED9] text-white hover:bg-[#1d8fc7]"
                   asChild
                 >
                   <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
-                    <svg className="h-4 w-4 mr-2 text-black" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <svg className="h-4 w-4 mr-2 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M22.5 3.1c.3-1.2-1-2.2-2.1-1.7L2.7 8.9c-1.2.5-1.2 1.3-.2 1.6l4.8 1.5 1.9 6.1c.2.6.1.9.8.9.5 0 .8-.2 1.1-.5l2.8-2.7 5.9 4.3c1.1.6 1.9.3 2.2-1.1l3-14.9zM8.1 11.8l9.9-6.2c.5-.3.9.1.5.4l-8 7.2-.3 4.7-1.9-5.9-.2-.2z" />
                     </svg>
                     {language === "ru" ? "TG канал" : "TG channel"}
