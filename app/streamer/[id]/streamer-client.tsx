@@ -274,7 +274,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
               {streamer?.telegram_channel_url && (
                 <Button
                   variant="outline"
-                  className="h-10 w-full mt-1 bg-orange-400 text-black hover:bg-orange-300"
+                  className="h-10 w-full -mt-1 bg-orange-400 text-black hover:bg-orange-300"
                   asChild
                 >
                   <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
