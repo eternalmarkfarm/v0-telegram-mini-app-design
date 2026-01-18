@@ -114,6 +114,7 @@ export default function StreamerEventsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [bulkMax, setBulkMax] = useState("");
   const [bulkWinners, setBulkWinners] = useState("");
+  const [bulkEnabled, setBulkEnabled] = useState(true);
   const [savedEventKey, setSavedEventKey] = useState<string | null>(null);
   const [testStatus, setTestStatus] = useState<Record<string, string>>({});
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -137,6 +138,11 @@ export default function StreamerEventsPage() {
   useEffect(() => {
     refresh();
   }, []);
+
+  useEffect(() => {
+    if (!events.length) return;
+    setBulkEnabled(events.every((event) => event.enabled));
+  }, [events]);
 
   const eventItems = useMemo(() => {
     const sorted = [...events].sort((a, b) => {
@@ -252,6 +258,23 @@ export default function StreamerEventsPage() {
     }
   };
 
+  const applyAllToggle = async () => {
+    setErr(null);
+    const nextEnabled = !bulkEnabled;
+    setBulkEnabled(nextEnabled);
+    setEvents((prev) => prev.map((event) => ({ ...event, enabled: nextEnabled })));
+    try {
+      await ensureAuth();
+      const updates = events.map((event) =>
+        apiPost("/streamer/events", { event_key: event.event_key, enabled: nextEnabled })
+      );
+      await Promise.all(updates);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+      setEvents((prev) => prev.map((event) => ({ ...event, enabled: !nextEnabled })));
+      setBulkEnabled(!nextEnabled);
+    }
+  };
   const runTestEvent = async (eventKey: string) => {
     if (!streamerId) {
       setTestStatus((prev) => ({
@@ -342,9 +365,20 @@ export default function StreamerEventsPage() {
                 />
               </div>
               <div className="flex justify-end">
-                <Button variant="secondary" className="h-8 px-3 text-xs" onClick={applyAllSettings}>
-                  {language === "ru" ? "Применить ко всем" : "Apply to all"}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="secondary" className="h-8 px-3 text-xs" onClick={applyAllSettings}>
+                    {language === "ru" ? "Применить ко всем" : "Apply to all"}
+                  </Button>
+                  <Button variant="outline" className="h-8 px-3 text-xs" onClick={applyAllToggle}>
+                    {bulkEnabled
+                      ? language === "ru"
+                        ? "Выключить все"
+                        : "Disable all"
+                      : language === "ru"
+                        ? "Включить все"
+                        : "Enable all"}
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="divide-y divide-border/50">

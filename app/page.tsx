@@ -16,7 +16,7 @@ import { ChevronRight, Gift } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export default function Home() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [debug, setDebug] = useState(false);
   const [isTwitchLinked, setIsTwitchLinked] = useState(false);
   const [isSteamLinked, setIsSteamLinked] = useState(false);
@@ -334,15 +334,18 @@ export default function Home() {
         <LiveStreamers />
         <TrackedStreamers />
         <RecentPrizes />
-        <Link href="/prizes">
+        <Link href="/prizes" className="block">
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Gift className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">
-                {t.myPrizes}
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
+                <Gift className="h-5 w-5 text-primary animate-pulse" />
               </span>
+              <span className="text-base font-semibold text-foreground">{t.myPrizes}</span>
             </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+              {language === "ru" ? "Открыть" : "Open"}
+              <ChevronRight className="h-4 w-4" />
+            </span>
           </Card>
         </Link>
         <BottomActions />

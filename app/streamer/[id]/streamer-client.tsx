@@ -61,6 +61,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   const [trackedIds, setTrackedIds] = useState<Set<number>>(new Set());
   const [trackingBusy, setTrackingBusy] = useState(false);
   const [resolvedId, setResolvedId] = useState<string | null>(id ?? null);
+  const [quietLoading, setQuietLoading] = useState(false);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -88,7 +89,11 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   }, [id]);
 
   const load = async () => {
-    setLoading(true);
+    if (data) {
+      setQuietLoading(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     try {
       if (!resolvedId) {
@@ -105,6 +110,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
       setError(String((e as any)?.message ?? e));
     } finally {
       setLoading(false);
+      setQuietLoading(false);
     }
   };
 
@@ -178,7 +184,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
           </div>
         </div>
 
-        {loading ? (
+        {loading && !data ? (
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 text-sm text-muted-foreground">
             Loading...
           </Card>
@@ -266,7 +272,11 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                 )}
               </div>
               {streamer?.telegram_channel_url && (
-                <Button variant="outline" className="h-10 w-full mt-2" asChild>
+                <Button
+                  variant="outline"
+                  className="h-10 w-full mt-1 bg-orange-400 text-black hover:bg-orange-300"
+                  asChild
+                >
                   <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
                     {language === "ru" ? "TG канал" : "TG channel"}
                   </a>
