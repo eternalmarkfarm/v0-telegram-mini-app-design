@@ -280,8 +280,8 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                   asChild
                 >
                   <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
-                    <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M9.04 15.36 8.8 19c.34 0 .48-.14.65-.31l1.56-1.5 3.23 2.37c.59.33 1.01.16 1.16-.55l2.1-9.87c.2-.93-.34-1.29-.92-1.07L3.2 10.33c-.9.35-.88.83-.16 1.06l3.56 1.11 8.27-5.22c.39-.24.75-.11.46.13l-6.7 6.05z" />
+                    <svg className="h-4 w-4 mr-2 text-black" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M22.5 3.1c.3-1.2-1-2.2-2.1-1.7L2.7 8.9c-1.2.5-1.2 1.3-.2 1.6l4.8 1.5 1.9 6.1c.2.6.1.9.8.9.5 0 .8-.2 1.1-.5l2.8-2.7 5.9 4.3c1.1.6 1.9.3 2.2-1.1l3-14.9zM8.1 11.8l9.9-6.2c.5-.3.9.1.5.4l-8 7.2-.3 4.7-1.9-5.9-.2-.2z" />
                     </svg>
                     {language === "ru" ? "TG канал" : "TG channel"}
                   </a>

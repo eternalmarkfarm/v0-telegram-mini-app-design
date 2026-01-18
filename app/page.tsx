@@ -335,15 +335,15 @@ export default function Home() {
         <TrackedStreamers />
         <RecentPrizes />
         <Link href="/prizes" className="block">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 px-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-2 pr-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 shrink-0">
                 <Gift className="h-6 w-6 text-primary animate-pulse" />
                 <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-warning" />
               </span>
-              <span className="text-base font-semibold text-foreground">{t.myPrizes}</span>
+              <span className="text-lg font-semibold text-foreground">{t.myPrizes}</span>
             </div>
-            <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+            <span className="inline-flex items-center gap-1 text-sm font-bold text-primary">
               {language === "ru" ? "Открыть" : "Open"}
               <ChevronRight className="h-5 w-5" />
             </span>
