@@ -12,7 +12,7 @@ import { BottomActions } from "@/components/bottom-actions";
 import { RecentPrizes } from "@/components/recent-prizes";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Gift } from "lucide-react";
+import { ChevronRight, Gift, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export default function Home() {
@@ -335,16 +335,17 @@ export default function Home() {
         <TrackedStreamers />
         <RecentPrizes />
         <Link href="/prizes" className="block">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 px-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
-                <Gift className="h-5 w-5 text-primary animate-pulse" />
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+                <Gift className="h-6 w-6 text-primary animate-pulse" />
+                <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-warning" />
               </span>
               <span className="text-base font-semibold text-foreground">{t.myPrizes}</span>
             </div>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
               {language === "ru" ? "Открыть" : "Open"}
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5" />
             </span>
           </Card>
         </Link>

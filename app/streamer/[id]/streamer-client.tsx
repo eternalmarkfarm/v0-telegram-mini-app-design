@@ -253,7 +253,9 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
+                    <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+                    </svg>
                     Twitch
                   </a>
                 </Button>
@@ -278,6 +280,9 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                   asChild
                 >
                   <a href={streamer.telegram_channel_url} target="_blank" rel="noopener noreferrer">
+                    <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M9.04 15.36 8.8 19c.34 0 .48-.14.65-.31l1.56-1.5 3.23 2.37c.59.33 1.01.16 1.16-.55l2.1-9.87c.2-.93-.34-1.29-.92-1.07L3.2 10.33c-.9.35-.88.83-.16 1.06l3.56 1.11 8.27-5.22c.39-.24.75-.11.46.13l-6.7 6.05z" />
+                    </svg>
                     {language === "ru" ? "TG канал" : "TG channel"}
                   </a>
                 </Button>
