@@ -82,7 +82,7 @@ export function TrackedStreamers() {
             <p className="text-sm">{t.noTrackedStreamers}</p>
           </div>
         ) : (
-          <div className="flex items-center gap-3 overflow-x-auto pb-1">
+          <div className="flex items-center gap-3 overflow-x-auto overflow-y-visible py-1">
             {[...tracked]
               .sort((a, b) => Number(Boolean(b.is_live)) - Number(Boolean(a.is_live)))
               .map((streamer) => {

@@ -111,6 +111,9 @@ export default function StreamerEventsPage() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  const [bulkMin, setBulkMin] = useState("");
+  const [bulkMax, setBulkMax] = useState("");
+  const [bulkWinners, setBulkWinners] = useState("");
 
   const refresh = async () => {
     setErr(null);
@@ -130,14 +133,19 @@ export default function StreamerEventsPage() {
     refresh();
   }, []);
 
-  const eventItems = useMemo(
-    () =>
-      events.map((event) => ({
-        ...event,
-        meta: EVENT_META[event.event_key],
-      })),
-    [events],
-  );
+  const eventItems = useMemo(() => {
+    const sorted = [...events].sort((a, b) => {
+      const activeSort = Number(Boolean(b.enabled)) - Number(Boolean(a.enabled));
+      if (activeSort !== 0) return activeSort;
+      const aLabel = EVENT_META[a.event_key]?.label ?? a.event_key;
+      const bLabel = EVENT_META[b.event_key]?.label ?? b.event_key;
+      return aLabel.localeCompare(bLabel);
+    });
+    return sorted.map((event) => ({
+      ...event,
+      meta: EVENT_META[event.event_key],
+    }));
+  }, [events]);
 
   const toggleEvent = async (event_key: string, enabled: boolean) => {
     setErr(null);
@@ -173,6 +181,39 @@ export default function StreamerEventsPage() {
     }
   };
 
+  const applyAllSettings = async () => {
+    const minVal = bulkMin === "" ? null : Number(bulkMin);
+    const maxVal = bulkMax === "" ? null : Number(bulkMax);
+    const winnersVal = bulkWinners === "" ? null : Number(bulkWinners);
+    if (minVal === null && maxVal === null && winnersVal === null) {
+      setErr(language === "ru" ? "Введите значения для применения." : "Enter values to apply.");
+      return;
+    }
+
+    setErr(null);
+    try {
+      await ensureAuth();
+      const updates = events.map((event) =>
+        apiPost("/streamer/events", {
+          event_key: event.event_key,
+          price_min: minVal,
+          price_max: maxVal,
+          winners_count: winnersVal,
+        })
+      );
+      await Promise.all(updates);
+      setEvents((prev) =>
+        prev.map((event) => ({
+          ...event,
+          price_min: minVal !== null ? minVal : event.price_min,
+          price_max: maxVal !== null ? maxVal : event.price_max,
+          winners_count: winnersVal !== null ? winnersVal : event.winners_count,
+        }))
+      );
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    }
+  };
 
   return (
     <main className="min-h-screen bg-background pb-8">
@@ -200,6 +241,47 @@ export default function StreamerEventsPage() {
             {language === "ru" ? "События розыгрышей" : "Giveaway events"}
           </h2>
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+            <div className="p-3 border-b border-border/50 space-y-3">
+              <p className="text-xs text-muted-foreground">
+                {language === "ru"
+                  ? "Общие настройки применяются ко всем событиям."
+                  : "Bulk settings apply to all events."}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={bulkMin}
+                  onChange={(e) => setBulkMin(e.target.value)}
+                  placeholder={language === "ru" ? "Мин. цена (USD)" : "Min price (USD)"}
+                  className="h-9 no-spin"
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={bulkMax}
+                  onChange={(e) => setBulkMax(e.target.value)}
+                  placeholder={language === "ru" ? "Макс. цена (USD)" : "Max price (USD)"}
+                  className="h-9 no-spin"
+                />
+                <Input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={bulkWinners}
+                  onChange={(e) => setBulkWinners(e.target.value)}
+                  placeholder={language === "ru" ? "Победители" : "Winners"}
+                  className="h-9 no-spin"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button variant="secondary" className="h-8 px-3 text-xs" onClick={applyAllSettings}>
+                  {language === "ru" ? "Применить ко всем" : "Apply to all"}
+                </Button>
+              </div>
+            </div>
             <div className="divide-y divide-border/50">
               {loading ? (
                 <div className="p-4 text-sm text-muted-foreground">Loading...</div>

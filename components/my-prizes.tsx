@@ -7,6 +7,7 @@ import { Gift, ChevronRight, Sparkles, Clock, CheckCircle, XCircle } from "lucid
 import { useI18n } from "@/lib/i18n"
 import { apiGet, apiPost } from "@/lib/api"
 import Link from "next/link"
+import { getEventLabel } from "@/lib/event-labels"
 
 type PrizeItem = {
   id: number
@@ -14,6 +15,7 @@ type PrizeItem = {
   skin_price?: number | null
   delivery_status?: string | null
   created_at?: string | null
+  event_key?: string | null
   streamer?: {
     twitch_login?: string | null
     display_name?: string | null
@@ -110,6 +112,7 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
             const streamerLabel = prize.streamer?.twitch_login
               ? `@${prize.streamer.twitch_login}`
               : prize.streamer?.display_name || t.fromStreamer
+            const eventLabel = getEventLabel(prize.event_key, language)
             return (
               <div key={prize.id} className="flex items-center gap-3 p-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/20">
@@ -120,6 +123,11 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
                     {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
                   </p>
                   <p className="text-xs text-muted-foreground">{streamerLabel}</p>
+                  {eventLabel && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {language === "ru" ? "Событие:" : "Event:"} {eventLabel}
+                    </p>
+                  )}
                   {prize.created_at && (
                     <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
                   )}

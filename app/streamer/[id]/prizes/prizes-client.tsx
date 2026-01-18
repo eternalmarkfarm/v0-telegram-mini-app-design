@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { apiGet } from "@/lib/api";
+import { getEventLabel } from "@/lib/event-labels";
 
 type PrizeItem = {
   id: number;
@@ -14,6 +15,7 @@ type PrizeItem = {
   skin_price?: number | null;
   delivery_status?: string | null;
   created_at?: string | null;
+  event_key?: string | null;
   twitch_login?: string | null;
 };
 
@@ -150,6 +152,11 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
                   <p className="text-xs text-muted-foreground">
                     {prize.twitch_login ? `@${prize.twitch_login}` : language === "ru" ? "Зритель" : "Viewer"}
                   </p>
+                  {prize.event_key && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {language === "ru" ? "Событие:" : "Event:"} {getEventLabel(prize.event_key, language)}
+                    </p>
+                  )}
                   {prize.created_at && (
                     <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
                   )}

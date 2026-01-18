@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { apiGet, apiPost, removeToken, API_BASE, getToken } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useI18n } from "@/lib/i18n";
+import { getEventLabel } from "@/lib/event-labels";
 
 type Streamer = {
   id: number;
@@ -549,6 +550,11 @@ export default function StreamerDashboard() {
                         <p className="text-xs text-muted-foreground">
                           {prize.twitch_login ? `@${prize.twitch_login}` : t.recipient}
                         </p>
+                        {prize.event_key && (
+                          <p className="text-[11px] text-muted-foreground">
+                            {language === "ru" ? "Событие:" : "Event:"} {getEventLabel(prize.event_key, language)}
+                          </p>
+                        )}
                         {prize.created_at && (
                           <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
                         )}
