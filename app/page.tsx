@@ -13,8 +13,10 @@ import { RecentPrizes } from "@/components/recent-prizes";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, Gift } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export default function Home() {
+  const { t } = useI18n();
   const [debug, setDebug] = useState(false);
   const [isTwitchLinked, setIsTwitchLinked] = useState(false);
   const [isSteamLinked, setIsSteamLinked] = useState(false);
