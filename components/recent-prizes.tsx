@@ -74,18 +74,32 @@ export function RecentPrizes() {
             const streamerLabel = prize.streamer?.twitch_login
               ? `@${prize.streamer.twitch_login}`
               : prize.streamer?.display_name || (language === "ru" ? "Стример" : "Streamer")
+            const twitchLink = prize.streamer?.twitch_login
+              ? `https://twitch.tv/${prize.streamer.twitch_login}`
+              : null
             return (
               <div key={prize.id} className="p-3 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/60">
-                  <Gift className="h-4 w-4 text-primary" />
+                  <Gift className="h-4 w-4 text-green-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
+                  <p className="text-sm font-medium text-fuchsia-500 truncate">
                     {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
                   </p>
-                  <p className="text-xs text-muted-foreground">{streamerLabel}</p>
+                  {twitchLink ? (
+                    <a
+                      href={twitchLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-[#9146ff] hover:underline"
+                    >
+                      {streamerLabel}
+                    </a>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">{streamerLabel}</p>
+                  )}
                   {prize.event_key && (
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-[11px] text-[#a855f7]">
                       {language === "ru" ? "Событие:" : "Event:"} {getEventLabel(prize.event_key, language)}
                     </p>
                   )}

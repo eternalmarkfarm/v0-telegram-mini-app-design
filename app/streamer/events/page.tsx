@@ -77,20 +77,50 @@ const EVENT_META: Record<string, { label: string; descRu: string; descEn: string
     descRu: "Net worth 10k до 11 минуты",
     descEn: "Net worth 10k before 11 minutes",
   },
+  "dota.net_worth_20k": {
+    label: "Net worth 20k",
+    descRu: "Net worth 20k",
+    descEn: "Net worth 20k",
+  },
   "dota.net_worth_40k": {
     label: "Net worth 40k",
     descRu: "Net worth 40k",
     descEn: "Net worth 40k",
   },
-  "dota.lh_per_min_10": {
-    label: "10 LH/min",
-    descRu: "10 ластхитов в минуту",
-    descEn: "10 last hits per minute",
+  "dota.lh_minute_threshold": {
+    label: "LH 10×min",
+    descRu: "Крипов больше 10×минута (один раз за матч)",
+    descEn: "Last hits > 10×minute (once per match)",
   },
   "dota.two_hours": {
     label: "Game 2 hours+",
     descRu: "Игра 2 часа+",
     descEn: "Game 2 hours+",
+  },
+  "dota.buy_smoke": {
+    label: "Bought smoke",
+    descRu: "Купил смока (единожды)",
+    descEn: "Bought smoke (once)",
+  },
+  "dota.aegis": {
+    label: "Aegis",
+    descRu: "Взял аегис (единожды)",
+    descEn: "Aegis picked (once)",
+  },
+  "dota.cheese": {
+    label: "Cheese",
+    descRu: "Взял сыр (единожды)",
+    descEn: "Cheese picked (once)",
+  },
+  "dota.roshan_banner": {
+    label: "Roshan banner",
+    descRu: "Взял знамя рошана (единожды)",
+    descEn: "Roshan banner picked (once)",
+  },
+  "dota.refresher_shard": {
+    label: "Refresher shard",
+    descRu: "Взял рефрешер с рошана (единожды)",
+    descEn: "Refresher shard picked (once)",
   },
   "dota.win_streak": {
     label: "Win streak",
