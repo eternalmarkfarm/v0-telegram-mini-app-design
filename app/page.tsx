@@ -354,9 +354,9 @@ export default function Home() {
         <TrackedStreamers />
         <RecentPrizes />
         <Link href="/prizes" className="block">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-0 pr-3 flex flex-row items-center justify-between gap-0">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-2 pr-3 flex flex-row items-center justify-between gap-0">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15 shrink-0 -ml-5">
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15 shrink-0">
                 <Gift className="h-6 w-6 text-green-500 animate-pulse" />
                 <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-warning" />
               </span>
