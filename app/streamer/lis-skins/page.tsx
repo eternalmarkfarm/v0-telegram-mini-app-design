@@ -64,6 +64,15 @@ export default function LisSkinsSettingsPage() {
     }
   };
 
+  const refreshStreamerPurchases = useCallback(async () => {
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/lis-skins/refresh", {});
+    } catch (e) {
+      console.warn("Failed to refresh Lis-Skins statuses:", e);
+    }
+  }, []);
+
   useEffect(() => {
     load();
   }, []);
@@ -173,15 +182,6 @@ export default function LisSkinsSettingsPage() {
       setTestRunning(false);
     }
   };
-
-  const refreshStreamerPurchases = useCallback(async () => {
-    try {
-      await ensureAuth();
-      await apiPost("/streamer/lis-skins/refresh", {});
-    } catch (e) {
-      console.warn("Failed to refresh Lis-Skins statuses:", e);
-    }
-  }, []);
 
   return (
     <main className="min-h-screen bg-background pb-8">
