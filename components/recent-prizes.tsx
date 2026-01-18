@@ -99,8 +99,11 @@ export function RecentPrizes() {
                     <p className="text-xs text-muted-foreground">{streamerLabel}</p>
                   )}
                   {prize.event_key && (
-                    <p className="text-[11px] text-[#a855f7]">
-                      {language === "ru" ? "Событие:" : "Event:"} {getEventLabel(prize.event_key, language)}
+                    <p className="text-[11px]">
+                      <span className="text-foreground">
+                        {language === "ru" ? "Событие:" : "Event:"}
+                      </span>{" "}
+                      <span className="text-[#a855f7]">{getEventLabel(prize.event_key, language)}</span>
                     </p>
                   )}
                   {prize.created_at && (
@@ -109,7 +112,7 @@ export function RecentPrizes() {
                 </div>
                 <div className="text-right">
                   {prize.skin_price !== null && prize.skin_price !== undefined && (
-                    <p className="text-sm font-semibold text-foreground">${prize.skin_price}</p>
+                    <p className="text-sm font-semibold text-green-500">${prize.skin_price}</p>
                   )}
                 </div>
               </div>

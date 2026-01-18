@@ -313,24 +313,25 @@ export default function Home() {
         )}
 
         <GiveawayStatus isTwitchLinked={isTwitchLinked} isSteamLinked={isSteamLinked} />
-        <Link href="/rules" className="block">
-          <Card className="border border-destructive/30 bg-destructive/10 backdrop-blur-sm px-3 py-2 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/20">
-                <span className="text-2xl font-bold text-destructive">!</span>
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-destructive">
-                  {language === "ru" ? "Правила участия" : "Participation rules"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {language === "ru" ? "Открой, чтобы прочитать" : "Open to read"}
-                </p>
-              </div>
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/15">
+              <span className="text-2xl font-bold text-destructive">!</span>
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {language === "ru" ? "Правила участия" : "Participation rules"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {language === "ru" ? "Открой, чтобы прочитать" : "Open to read"}
+              </p>
             </div>
-            <ChevronRight className="h-5 w-5 text-destructive" />
-          </Card>
-        </Link>
+          </div>
+          <Link href="/rules" className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+            {language === "ru" ? "Открыть" : "Open"}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </Card>
 
         <AccountLinking
           twitchLinked={isTwitchLinked}
@@ -355,7 +356,7 @@ export default function Home() {
         <Link href="/prizes" className="block">
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-0 pr-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15 shrink-0 -ml-3">
+              <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15 shrink-0 -ml-5">
                 <Gift className="h-6 w-6 text-green-500 animate-pulse" />
                 <Sparkles className="absolute -top-1 -right-1 h-3.5 w-3.5 text-warning" />
               </span>
