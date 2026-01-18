@@ -132,9 +132,10 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   };
 
   const statusLabel = (status?: string | null) => {
-    if (status === "success") return language === "ru" ? "Успешно" : "Success";
+    if (status === "success") return language === "ru" ? "Получено" : "Received";
+    if (status === "sent") return language === "ru" ? "Отправлено" : "Sent";
     if (status === "failed") return language === "ru" ? "Не удалось" : "Failed";
-    return language === "ru" ? "В ожидании" : "Pending";
+    return language === "ru" ? "В обработке" : "Processing";
   };
 
   return (

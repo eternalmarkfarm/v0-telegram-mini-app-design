@@ -1,21 +1,53 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Gift, ChevronRight, Sparkles } from "lucide-react"
+import { Gift, ChevronRight, Sparkles, Clock, CheckCircle, XCircle } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
+import { apiGet, apiPost } from "@/lib/api"
 
-const prizes: Array<{
+type PrizeItem = {
   id: number
-  name: string
-  game: string
-  date: { ru: string; en: string }
-  status: "pending" | "claimed"
-  value: string
-}> = []
+  skin_name?: string | null
+  skin_price?: number | null
+  delivery_status?: string | null
+  created_at?: string | null
+  streamer?: {
+    twitch_login?: string | null
+    display_name?: string | null
+  }
+}
 
 export function MyPrizes() {
   const { t, language } = useI18n()
+  const [items, setItems] = useState<PrizeItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    try {
+      await apiPost("/viewer/prizes/refresh", {});
+      const data = await apiGet("/viewer/prizes")
+      setItems(data?.items ?? [])
+    } catch (e) {
+      console.error("Failed to load prizes:", e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+    const interval = setInterval(load, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const statusLabel = (status?: string | null) => {
+    if (status === "success") return language === "ru" ? "Получен" : "Received"
+    if (status === "sent") return language === "ru" ? "Отправлено" : "Sent"
+    if (status === "failed") return language === "ru" ? "Не удалось" : "Failed"
+    return language === "ru" ? "В обработке" : "Processing"
+  }
 
   return (
     <div>
@@ -30,37 +62,59 @@ export function MyPrizes() {
         </Button>
       </div>
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm divide-y divide-border/50">
-        {prizes.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center gap-3 p-4 text-muted-foreground">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/40">
+              <Clock className="h-5 w-5 text-muted-foreground/70" />
+            </div>
+            <p className="text-sm">Loading...</p>
+          </div>
+        ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <Gift className="h-10 w-10 text-muted-foreground/50 mb-2" />
             <p className="text-sm text-muted-foreground">{t.noPrizes}</p>
           </div>
         ) : (
-          prizes.map((prize) => (
-            <div key={prize.id} className="flex items-center gap-3 p-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/20">
-                <Gift className="h-5 w-5 text-warning" />
+          items.map((prize) => {
+            const status = prize.delivery_status
+            const icon =
+              status === "success" ? (
+                <CheckCircle className="h-5 w-5 text-success" />
+              ) : status === "failed" ? (
+                <XCircle className="h-5 w-5 text-destructive" />
+              ) : (
+                <Clock className="h-5 w-5 text-warning" />
+              )
+            const streamerLabel = prize.streamer?.twitch_login
+              ? `@${prize.streamer.twitch_login}`
+              : prize.streamer?.display_name || t.fromStreamer
+            return (
+              <div key={prize.id} className="flex items-center gap-3 p-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/20">
+                  {icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">
+                    {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{streamerLabel}</p>
+                  {status === "sent" && (
+                    <p className="text-[11px] text-warning">
+                      {language === "ru"
+                        ? "Прими трейд в течение 5–7 минут"
+                        : "Accept the trade within 5–7 minutes"}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  {prize.skin_price !== null && prize.skin_price !== undefined && (
+                    <p className="text-sm font-semibold text-foreground">₽{prize.skin_price}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">{statusLabel(status)}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">{prize.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {prize.game} • {prize.date[language]}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-success">{prize.value}</p>
-                <p className={`text-xs ${prize.status === "pending" ? "text-warning" : "text-muted-foreground"}`}>
-                  {prize.status === "pending"
-                    ? language === "ru"
-                      ? "Ожидает"
-                      : "Pending"
-                    : language === "ru"
-                      ? "Получен"
-                      : "Claimed"}
-                </p>
-              </div>
-            </div>
-          ))
+            )
+          })
         )}
       </Card>
     </div>

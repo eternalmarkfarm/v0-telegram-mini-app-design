@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -27,6 +27,15 @@ export default function LisSkinsSettingsPage() {
   const [priceMax, setPriceMax] = useState("");
   const [rangeSaving, setRangeSaving] = useState(false);
   const [rangeSaved, setRangeSaved] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    purchase_id?: number | null;
+    status?: string | null;
+    delivery_status?: string | null;
+    skin_name?: string | null;
+    skin_price?: number | null;
+    error?: string | null;
+  } | null>(null);
+  const [testRunning, setTestRunning] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -58,6 +67,13 @@ export default function LisSkinsSettingsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    refreshStreamerPurchases();
+    const interval = setInterval(refreshStreamerPurchases, 30000);
+    return () => clearInterval(interval);
+  }, [loading, refreshStreamerPurchases]);
 
   const saveToken = async () => {
     if (!tokenInput.trim()) return;
@@ -126,6 +142,47 @@ export default function LisSkinsSettingsPage() {
     }
   };
 
+  const runTestPurchase = async () => {
+    if (!tradeUrl.trim()) return;
+    setTestRunning(true);
+    setTestResult(null);
+    setErr(null);
+    try {
+      await ensureAuth();
+      const res = await apiPost("/streamer/lis-skins/test-purchase", { trade_url: tradeUrl.trim() });
+      setTestResult(res);
+    } catch (e: any) {
+      setTestResult({ error: String(e?.message ?? e) });
+      setErr(String(e?.message ?? e));
+    } finally {
+      setTestRunning(false);
+    }
+  };
+
+  const refreshTestStatus = async () => {
+    if (!testResult?.purchase_id) return;
+    setTestRunning(true);
+    setErr(null);
+    try {
+      await ensureAuth();
+      const res = await apiPost(`/streamer/lis-skins/purchase-status?purchase_id=${testResult.purchase_id}`);
+      setTestResult(res);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setTestRunning(false);
+    }
+  };
+
+  const refreshStreamerPurchases = useCallback(async () => {
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/lis-skins/refresh", {});
+    } catch (e) {
+      console.warn("Failed to refresh Lis-Skins statuses:", e);
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
@@ -157,6 +214,11 @@ export default function LisSkinsSettingsPage() {
             {language === "ru"
               ? "Диапазон цен влияет на покупку скинов для розыгрышей."
               : "The price range controls which skins can be purchased for giveaways."}
+          </p>
+          <p>
+            {language === "ru"
+              ? "Валюта — как в Lis‑Skins (обычно RUB)."
+              : "Currency follows Lis‑Skins (typically RUB)."}
           </p>
         </Card>
 
@@ -225,6 +287,63 @@ export default function LisSkinsSettingsPage() {
                 </Button>
               )}
             </div>
+          </Card>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h2 className="text-sm font-medium text-muted-foreground">
+              {language === "ru" ? "Тестовая покупка" : "Test purchase"}
+            </h2>
+          </div>
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              {language === "ru"
+                ? "Использует текущий диапазон цен и отправляет скин на указанную trade-ссылку."
+                : "Uses the current price range and sends a skin to the provided trade link."}
+            </p>
+            <Button onClick={runTestPurchase} disabled={testRunning || !tradeUrl.trim() || loading}>
+              {testRunning ? (language === "ru" ? "Отправка..." : "Sending...") : language === "ru" ? "Купить и отправить" : "Buy and send"}
+            </Button>
+            {testResult?.purchase_id && (
+              <Button variant="secondary" onClick={refreshTestStatus} disabled={testRunning}>
+                {language === "ru" ? "Обновить статус" : "Refresh status"}
+              </Button>
+            )}
+            {testResult && (
+              <div className="text-xs text-muted-foreground space-y-1">
+                {testResult.error ? (
+                  <p className="text-red-500">{testResult.error}</p>
+                ) : (
+                  <>
+                    <p>
+                      {language === "ru" ? "Статус" : "Status"}:{" "}
+                      <span className="text-foreground">{testResult.status || "—"}</span>
+                    </p>
+                    <p>
+                      {language === "ru" ? "Доставка" : "Delivery"}:{" "}
+                      <span className="text-foreground">{testResult.delivery_status || "—"}</span>
+                    </p>
+                    <p>
+                      {language === "ru" ? "Скин" : "Skin"}:{" "}
+                      <span className="text-foreground">{testResult.skin_name || "—"}</span>
+                    </p>
+                    {typeof testResult.skin_price === "number" && (
+                      <p>
+                        {language === "ru" ? "Цена" : "Price"}:{" "}
+                        <span className="text-foreground">₽{testResult.skin_price}</span>
+                      </p>
+                    )}
+                    {testResult.purchase_id && (
+                      <p>
+                        {language === "ru" ? "Покупка" : "Purchase"}:{" "}
+                        <span className="text-foreground">#{testResult.purchase_id}</span>
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </Card>
         </div>
 

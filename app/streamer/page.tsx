@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -173,6 +173,15 @@ export default function StreamerDashboard() {
     }
   };
 
+  const refreshLisSkinsStatus = useCallback(async () => {
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/lis-skins/refresh", {});
+    } catch (e) {
+      console.warn("Failed to refresh Lis-Skins statuses:", e);
+    }
+  }, []);
+
   const loadGsiStatus = async () => {
     setGsiLoading(true);
     try {
@@ -255,6 +264,16 @@ export default function StreamerDashboard() {
       loadSummary(streamer.id);
     }
   }, [streamer?.id]);
+
+  useEffect(() => {
+    if (!streamer?.id) return;
+    refreshLisSkinsStatus();
+    const interval = setInterval(() => {
+      loadSummary(streamer.id);
+      refreshLisSkinsStatus();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [streamer?.id, refreshLisSkinsStatus]);
 
   useEffect(() => {
     if (!streamer?.id) return;
@@ -523,15 +542,19 @@ export default function StreamerDashboard() {
                         <p className="text-xs text-muted-foreground">
                           {prize.delivery_status === "success"
                             ? language === "ru"
-                              ? "Успешно"
-                              : "Success"
-                            : prize.delivery_status === "failed"
+                              ? "Получено"
+                              : "Received"
+                            : prize.delivery_status === "sent"
                               ? language === "ru"
-                                ? "Не удалось"
-                                : "Failed"
-                              : language === "ru"
-                                ? "В ожидании"
-                                : "Pending"}
+                                ? "Отправлено"
+                                : "Sent"
+                              : prize.delivery_status === "failed"
+                                ? language === "ru"
+                                  ? "Не удалось"
+                                  : "Failed"
+                                : language === "ru"
+                                  ? "В обработке"
+                                  : "Processing"}
                         </p>
                         {prize.skin_price !== null && prize.skin_price !== undefined && (
                           <p className="text-sm font-medium text-foreground">₽{prize.skin_price}</p>
