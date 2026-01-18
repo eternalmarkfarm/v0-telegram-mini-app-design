@@ -313,7 +313,7 @@ export default function Home() {
         )}
 
         <GiveawayStatus isTwitchLinked={isTwitchLinked} isSteamLinked={isSteamLinked} />
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm px-3 py-2 flex items-center justify-between">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-sm px-3 py-2 flex flex-row items-center justify-between gap-0">
           <div className="flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/15">
               <span className="text-2xl font-bold text-destructive">!</span>
@@ -354,7 +354,7 @@ export default function Home() {
         <TrackedStreamers />
         <RecentPrizes />
         <Link href="/prizes" className="block">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-0 pr-3 flex items-center justify-between">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm py-4 pl-0 pr-3 flex flex-row items-center justify-between gap-0">
             <div className="flex items-center gap-2">
               <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15 shrink-0 -ml-5">
                 <Gift className="h-6 w-6 text-green-500 animate-pulse" />
