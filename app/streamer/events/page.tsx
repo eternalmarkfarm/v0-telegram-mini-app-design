@@ -111,7 +111,6 @@ export default function StreamerEventsPage() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const [bulkMin, setBulkMin] = useState("");
   const [bulkMax, setBulkMax] = useState("");
   const [bulkWinners, setBulkWinners] = useState("");
 
@@ -182,10 +181,9 @@ export default function StreamerEventsPage() {
   };
 
   const applyAllSettings = async () => {
-    const minVal = bulkMin === "" ? null : Number(bulkMin);
     const maxVal = bulkMax === "" ? null : Number(bulkMax);
     const winnersVal = bulkWinners === "" ? null : Number(bulkWinners);
-    if (minVal === null && maxVal === null && winnersVal === null) {
+    if (maxVal === null && winnersVal === null) {
       setErr(language === "ru" ? "Введите значения для применения." : "Enter values to apply.");
       return;
     }
@@ -196,7 +194,6 @@ export default function StreamerEventsPage() {
       const updates = events.map((event) =>
         apiPost("/streamer/events", {
           event_key: event.event_key,
-          price_min: minVal,
           price_max: maxVal,
           winners_count: winnersVal,
         })
@@ -205,7 +202,6 @@ export default function StreamerEventsPage() {
       setEvents((prev) =>
         prev.map((event) => ({
           ...event,
-          price_min: minVal !== null ? minVal : event.price_min,
           price_max: maxVal !== null ? maxVal : event.price_max,
           winners_count: winnersVal !== null ? winnersVal : event.winners_count,
         }))
@@ -240,6 +236,9 @@ export default function StreamerEventsPage() {
           <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">
             {language === "ru" ? "События розыгрышей" : "Giveaway events"}
           </h2>
+          <p className="text-xs text-muted-foreground mb-3 px-1">
+            {language === "ru" ? "Цены в $USD" : "Prices in $USD"}
+          </p>
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
             <div className="p-3 border-b border-border/50 space-y-3">
               <p className="text-xs text-muted-foreground">
@@ -247,23 +246,14 @@ export default function StreamerEventsPage() {
                   ? "Общие настройки применяются ко всем событиям."
                   : "Bulk settings apply to all events."}
               </p>
-              <div className="grid grid-cols-3 gap-2">
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={bulkMin}
-                  onChange={(e) => setBulkMin(e.target.value)}
-                  placeholder={language === "ru" ? "Мин. цена (USD)" : "Min price (USD)"}
-                  className="h-9 no-spin"
-                />
+              <div className="grid grid-cols-2 gap-2">
                 <Input
                   type="number"
                   min="0"
                   step="0.01"
                   value={bulkMax}
                   onChange={(e) => setBulkMax(e.target.value)}
-                  placeholder={language === "ru" ? "Макс. цена (USD)" : "Max price (USD)"}
+                  placeholder={language === "ru" ? "$max" : "$max"}
                   className="h-9 no-spin"
                 />
                 <Input
@@ -295,7 +285,7 @@ export default function StreamerEventsPage() {
                         <p className="text-sm font-medium text-foreground">
                           {event.meta?.label ?? event.event_key}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="text-xs text-muted-foreground leading-snug">
                           {language === "ru"
                             ? event.meta?.descRu ?? event.event_key
                             : event.meta?.descEn ?? event.event_key}
@@ -307,22 +297,7 @@ export default function StreamerEventsPage() {
                         className="data-[state=checked]:bg-primary"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={event.price_min ?? ""}
-                        onChange={(e) =>
-                          updateEventField(
-                            event.event_key,
-                            "price_min",
-                            e.target.value === "" ? null : Number(e.target.value)
-                          )
-                        }
-                        placeholder={language === "ru" ? "Цена от (USD)" : "Min price (USD)"}
-                        className="h-9 no-spin"
-                      />
+                    <div className="grid grid-cols-2 gap-2">
                       <Input
                         type="number"
                         min="0"
@@ -335,7 +310,7 @@ export default function StreamerEventsPage() {
                             e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
-                        placeholder={language === "ru" ? "Цена до (USD)" : "Max price (USD)"}
+                        placeholder={language === "ru" ? "$max" : "$max"}
                         className="h-9 no-spin"
                       />
                       <Input
