@@ -63,6 +63,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   const [resolvedId, setResolvedId] = useState<string | null>(id ?? null);
   const [quietLoading, setQuietLoading] = useState(false);
   const [eligibility, setEligibility] = useState<boolean | null>(null);
+  const [eligibilityDetails, setEligibilityDetails] = useState<any>(null);
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
 
   const formatDate = (value?: string | null) => {
@@ -166,9 +167,11 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
     try {
       const res = await apiGet(`/viewer/eligibility?streamer_id=${streamer.id}`);
       setEligibility(Boolean(res?.ok));
+      setEligibilityDetails(res);
     } catch (e) {
       console.error("Eligibility check failed:", e);
       setEligibility(false);
+      setEligibilityDetails(null);
     } finally {
       setEligibilityLoading(false);
     }
@@ -253,6 +256,7 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                 </div>
                 {data.live.is_live && (
                   <Badge variant="secondary" className="bg-destructive/20 text-destructive border-0 flex items-center gap-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-wide animate-pulse">Live</span>
                     <Users className="h-3 w-3" />
                     {data.live.viewer_count.toLocaleString()}
                   </Badge>
@@ -331,6 +335,26 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                         ? "Проверить соблюдения условий"
                         : "Check eligibility"}
               </Button>
+
+              {eligibility === false && eligibilityDetails && (
+                <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 text-xs text-muted-foreground space-y-1">
+                  {!eligibilityDetails.is_tracked && (
+                    <p>{language === "ru" ? "Не отслеживаете стримера." : "You are not tracking the streamer."}</p>
+                  )}
+                  {!eligibilityDetails.has_twitch && (
+                    <p>{language === "ru" ? "Не привязан Twitch аккаунт." : "Twitch account not linked."}</p>
+                  )}
+                  {!eligibilityDetails.has_steam && (
+                    <p>{language === "ru" ? "Не указан Steam Trade URL." : "Steam Trade URL not set."}</p>
+                  )}
+                  {!eligibilityDetails.is_follower && (
+                    <p>{language === "ru" ? "Вы не фолловер стримера." : "You are not a follower."}</p>
+                  )}
+                  {!eligibilityDetails.chat_recent && (
+                    <p>{language === "ru" ? "Нет сообщения в чате за последний час." : "No chat message within the last hour."}</p>
+                  )}
+                </Card>
+              )}
 
               {streamer?.id && (
                 <Link href={`/streamer/${streamer.id}/participants`} className="block">

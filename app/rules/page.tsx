@@ -70,6 +70,25 @@ export default function RulesPage() {
               <li className="flex items-start gap-2">
                 <span className="mt-1 text-destructive text-lg leading-none">•</span>
                 <span>
+                  Как найти{" "}
+                  <span className="inline-flex items-center gap-1 text-[#66c0f4]">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0z" />
+                    </svg>
+                    Steam
+                  </span>{" "}
+                  Trade URL:
+                  <span className="block mt-1 space-y-1">
+                    <span className="block">1) Войдите в клиент Steam и откройте свой инвентарь;</span>
+                    <span className="block">2) Нажмите кнопку "Предложения обмена" справа;</span>
+                    <span className="block">3) Нажмите на "Кто может отправлять мне предложения обмена";</span>
+                    <span className="block">4) Скопируйте ваш трейд URL, чтобы вставить в бота.</span>
+                  </span>
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 text-destructive text-lg leading-none">•</span>
+                <span>
                   Профиль и инвентарь должны быть открыты в настройках приватности{" "}
                   <span className="inline-flex items-center gap-1 text-[#66c0f4]">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -116,6 +135,25 @@ export default function RulesPage() {
               <li className="flex items-start gap-2">
                 <span className="mt-1 text-destructive text-lg leading-none">•</span>
                 <span>
+                  Where to find{" "}
+                  <span className="inline-flex items-center gap-1 text-[#66c0f4]">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0z" />
+                    </svg>
+                    Steam
+                  </span>{" "}
+                  Trade URL:
+                  <span className="block mt-1 space-y-1">
+                    <span className="block">1) Open Steam and go to Inventory;</span>
+                    <span className="block">2) Click "Trade Offers";</span>
+                    <span className="block">3) Click "Who can send me Trade Offers";</span>
+                    <span className="block">4) Copy the Trade URL and paste it into the bot.</span>
+                  </span>
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 text-destructive text-lg leading-none">•</span>
+                <span>
                   Your profile and inventory must be public in{" "}
                   <span className="inline-flex items-center gap-1 text-[#66c0f4]">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -133,6 +171,12 @@ export default function RulesPage() {
             </ul>
           )}
         </div>
+
+        <Button variant="secondary" className="w-full" asChild>
+          <Link href="/rules/events">
+            {language === "ru" ? "События для розыгрыша" : "Giveaway events"}
+          </Link>
+        </Button>
       </div>
     </div>
   )
