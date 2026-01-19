@@ -250,6 +250,11 @@ export default function StreamerDashboard() {
     try {
       const tg = (window as any).Telegram?.WebApp;
       const openUrl = (url: string) => {
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        if (isAndroid) {
+          window.location.href = url;
+          return;
+        }
         if (tg?.openLink) {
           tg.openLink(url, { try_instant_view: false });
         } else {
