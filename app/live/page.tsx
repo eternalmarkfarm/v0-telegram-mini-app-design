@@ -105,6 +105,7 @@ export default function LiveStreamersPage() {
                   </p>
                 </div>
                 <Badge variant="secondary" className="bg-destructive/20 text-destructive border-0 flex items-center gap-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-wide animate-pulse">Live</span>
                   <Users className="h-3 w-3" />
                   {streamer.viewer_count.toLocaleString()}
                 </Badge>
