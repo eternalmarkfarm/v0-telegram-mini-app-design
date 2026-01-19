@@ -154,8 +154,8 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   return (
     <div className="space-y-3">
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-          <div className="p-2">
-            <div className="flex items-center gap-3">
+        <div className="p-1">
+          <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#9146ff]/20">
               <TwitchIcon className="h-5 w-5 text-[#9146ff]" />
             </div>
@@ -198,16 +198,16 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               />
             )}
           </div>
-          {!twitchLinked && twitchManualUrl && (
-            <div className="px-2 pb-2">
+          {!twitchLinked && (
+            <div className="px-1 pb-1">
               <p className="text-xs text-muted-foreground">
                 {language === "ru"
                   ? "В случае ошибки 400 Bad Request скопируйте ссылку ниже и вставьте ее в браузер вручную:"
                   : "If you see 400 Bad Request, copy the link below and open it manually in your browser:"}
               </p>
               <Input
-                className="mt-2 text-xs"
-                value={twitchManualUrl}
+                className="mt-1 text-xs"
+                value={twitchManualUrl ?? ""}
                 readOnly
                 onFocus={(e) => e.currentTarget.select()}
               />
@@ -218,7 +218,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
 
       {/* Steam Account */}
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="p-2">
+        <div className="p-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1b2838]/50">
               <SteamIcon className="h-5 w-5 text-[#66c0f4]" />
