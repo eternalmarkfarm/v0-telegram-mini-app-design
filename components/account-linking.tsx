@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Check, Link2, HelpCircle, Trash2 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useState, useRef, useEffect } from "react"
-import { apiGet } from "@/lib/api"
+import { apiGet, API_BASE, getToken } from "@/lib/api"
 import { LinkButton } from "@/components/link-button"
 import { ensureAuth } from "@/lib/ensureAuth"
 
@@ -137,21 +137,10 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
         }
       }
 
-      let url = twitchAuthUrlRef.current
-      if (!url) {
-        await ensureAuth()
-        const response = await apiGet("/twitch/authorize-viewer")
-        url = response?.url
-        if (url) {
-          twitchAuthUrlRef.current = url
-          setTwitchAuthReady(true)
-        }
-      }
-
-      if (!url) {
-        throw new Error("No Twitch authorize URL received")
-      }
-
+      await ensureAuth()
+      const token = getToken()
+      if (!token) throw new Error("No auth token")
+      const url = `${API_BASE}/twitch/authorize-viewer-redirect?token=${encodeURIComponent(token)}`
       openUrl(url)
     } catch (e: any) {
       alert(`Error: ${e?.message ?? e}`)

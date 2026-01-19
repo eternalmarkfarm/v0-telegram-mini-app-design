@@ -257,21 +257,10 @@ export default function StreamerDashboard() {
         }
       };
 
-      let url = twitchAuthUrlRef.current;
-      if (!url) {
-        await ensureAuth();
-        const r = await apiGet("/twitch/authorize");
-        url = r?.url ?? r;
-        if (url) {
-          twitchAuthUrlRef.current = url;
-          setTwitchAuthReady(true);
-        }
-      }
-
-      if (!url) {
-        throw new Error("No Twitch authorize URL.");
-      }
-
+      await ensureAuth();
+      const token = getToken();
+      if (!token) throw new Error("Missing auth token");
+      const url = `${API_BASE}/twitch/authorize-redirect?token=${encodeURIComponent(token)}`;
       openUrl(url);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
