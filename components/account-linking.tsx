@@ -41,7 +41,7 @@ interface AccountLinkingProps {
 }
 
 export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoading, onTwitchLink, onSteamLink, onTwitchUnlink, onSteamUnlink, onRefreshStatus }: AccountLinkingProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [tradeUrl, setTradeUrl] = useState("")
   const [linking, setLinking] = useState(false)
   const [isSteamLinking, setIsSteamLinking] = useState(false)
@@ -52,6 +52,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   const twitchAuthUrlRef = useRef<string | null>(null)
   const [twitchAuthReady, setTwitchAuthReady] = useState(false)
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false)
+  const [twitchManualUrl, setTwitchManualUrl] = useState<string | null>(null)
 
   // Polling для проверки статуса привязки Twitch
   useEffect(() => {
@@ -104,6 +105,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
         const url = response?.url
         if (url && !cancelled) {
           twitchAuthUrlRef.current = url
+          setTwitchManualUrl(url)
           setTwitchAuthReady(true)
         }
       } catch (e) {
@@ -141,6 +143,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       const response = await apiGet("/twitch/authorize-viewer-link")
       const url = response?.url
       if (!url) throw new Error("Missing auth URL")
+      setTwitchManualUrl(url)
       openUrl(url)
     } catch (e: any) {
       alert(`Error: ${e?.message ?? e}`)
@@ -151,8 +154,8 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   return (
     <div className="space-y-3">
       <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="p-2">
-          <div className="flex items-center gap-3">
+          <div className="p-2">
+            <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#9146ff]/20">
               <TwitchIcon className="h-5 w-5 text-[#9146ff]" />
             </div>
@@ -195,6 +198,21 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               />
             )}
           </div>
+          {!twitchLinked && twitchManualUrl && (
+            <div className="px-2 pb-2">
+              <p className="text-xs text-muted-foreground">
+                {language === "ru"
+                  ? "В случае ошибки 400 Bad Request скопируйте ссылку ниже и вставьте ее в браузер вручную:"
+                  : "If you see 400 Bad Request, copy the link below and open it manually in your browser:"}
+              </p>
+              <Input
+                className="mt-2 text-xs"
+                value={twitchManualUrl}
+                readOnly
+                onFocus={(e) => e.currentTarget.select()}
+              />
+            </div>
+          )}
         </div>
       </Card>
 
