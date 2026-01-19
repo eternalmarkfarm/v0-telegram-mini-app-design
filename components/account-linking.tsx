@@ -53,6 +53,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
   const [twitchAuthReady, setTwitchAuthReady] = useState(false)
   const [twitchAuthLoading, setTwitchAuthLoading] = useState(false)
   const [twitchManualUrl, setTwitchManualUrl] = useState<string | null>(null)
+  const [isAndroid, setIsAndroid] = useState(false)
 
   // Polling для проверки статуса привязки Twitch
   useEffect(() => {
@@ -92,6 +93,11 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       inputRef.current.focus()
     }
   }, [steamLinked])
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return
+    setIsAndroid(/Android/i.test(navigator.userAgent))
+  }, [])
 
   useEffect(() => {
     if (twitchLinked) return
@@ -153,7 +159,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
 
   return (
     <div className="space-y-3">
-      <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+      <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
         <div className="p-1">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#9146ff]/20">
@@ -198,8 +204,8 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               />
             )}
           </div>
-          {!twitchLinked && (
-            <div className="px-1 pb-1">
+          {!twitchLinked && isAndroid && (
+            <div className="mt-2 px-2 pb-2 rounded-md bg-secondary/20 border border-border/40">
               <p className="text-xs text-muted-foreground">
                 {language === "ru"
                   ? "В случае ошибки 400 Bad Request скопируйте ссылку ниже и вставьте ее в браузер вручную:"
@@ -208,7 +214,9 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
               <Input
                 className="mt-1 text-xs"
                 value={twitchManualUrl ?? ""}
+                placeholder={language === "ru" ? "Ссылка подгружается..." : "Link is loading..."}
                 readOnly
+                disabled={!twitchManualUrl}
                 onFocus={(e) => e.currentTarget.select()}
               />
             </div>
@@ -217,7 +225,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       </Card>
 
       {/* Steam Account */}
-      <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+      <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
         <div className="p-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1b2838]/50">
