@@ -13,11 +13,12 @@ type Participant = {
   last_chat_at?: string | null
 }
 
-export default function StreamerParticipantsPage({ params }: { params: { id: string } }) {
+export default function StreamerParticipantsPage({ params }: { params?: { id?: string } }) {
   const { language } = useI18n()
   const [items, setItems] = useState<Participant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [resolvedId, setResolvedId] = useState<string | null>(params?.id ?? null)
 
   const formatDate = (value?: string | null) => {
     if (!value) return null
@@ -31,11 +32,28 @@ export default function StreamerParticipantsPage({ params }: { params: { id: str
     })
   }
 
+  useEffect(() => {
+    if (params?.id) {
+      setResolvedId(params.id)
+      return
+    }
+    if (typeof window === "undefined") return
+    const parts = window.location.pathname.split("/").filter(Boolean)
+    const idx = parts.indexOf("streamer")
+    const next = idx >= 0 ? parts[idx + 1] : null
+    if (next) setResolvedId(next)
+  }, [params?.id])
+
   const load = async () => {
+    if (!resolvedId) {
+      setError(language === "ru" ? "Не найден ID стримера." : "Missing streamer id.")
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
-      const res = await apiGet(`/streamers/${params.id}/participants`)
+      const res = await apiGet(`/streamers/${resolvedId}/participants`)
       setItems(res?.items ?? [])
     } catch (e: any) {
       setError(String(e?.message ?? e))
@@ -45,17 +63,18 @@ export default function StreamerParticipantsPage({ params }: { params: { id: str
   }
 
   useEffect(() => {
+    if (!resolvedId) return
     load()
     const interval = setInterval(load, 30000)
     return () => clearInterval(interval)
-  }, [params.id])
+  }, [resolvedId])
 
   return (
     <main className="min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-md px-4 py-4 space-y-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href={`/streamer/${params.id}`}>
+            <Link href={`/streamer/${resolvedId ?? ""}`}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
