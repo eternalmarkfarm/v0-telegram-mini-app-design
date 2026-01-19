@@ -59,6 +59,13 @@ export default function StreamerDashboard() {
   const [tgChannel, setTgChannel] = useState("");
   const [tgSaving, setTgSaving] = useState(false);
   const [tgSaved, setTgSaved] = useState(false);
+  const [seTokenInput, setSeTokenInput] = useState("");
+  const [seChannelId, setSeChannelId] = useState("");
+  const [seSaving, setSeSaving] = useState(false);
+  const [seSaved, setSeSaved] = useState(false);
+  const [seTokenSet, setSeTokenSet] = useState(false);
+  const [seTestLoading, setSeTestLoading] = useState(false);
+  const [seTestNote, setSeTestNote] = useState<string | null>(null);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -82,6 +89,10 @@ export default function StreamerDashboard() {
       if (r?.streamer?.telegram_channel_url) {
         setTgChannel(r.streamer.telegram_channel_url);
       }
+      if (r?.streamer?.streamelements_channel_id) {
+        setSeChannelId(r.streamer.streamelements_channel_id);
+      }
+      setSeTokenSet(Boolean(r?.streamer?.streamelements_token_set));
     } catch (e: any) {
       setErr(String(e?.message ?? e));
     } finally {
@@ -284,6 +295,63 @@ export default function StreamerDashboard() {
       setErr(String(e?.message ?? e));
     } finally {
       setTgSaving(false);
+    }
+  };
+
+  const saveStreamElements = async () => {
+    setErr(null);
+    setSeSaving(true);
+    setSeSaved(false);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/streamelements", {
+        api_token: seTokenInput.trim() || undefined,
+        channel_id: seChannelId.trim() || undefined,
+      });
+      if (seTokenInput.trim()) {
+        setSeTokenSet(true);
+        setSeTokenInput("");
+      }
+      setSeSaved(true);
+      setTimeout(() => setSeSaved(false), 1400);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setSeSaving(false);
+    }
+  };
+
+  const clearStreamElements = async () => {
+    setErr(null);
+    setSeSaving(true);
+    setSeSaved(false);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/streamelements/clear", {});
+      setSeTokenSet(false);
+      setSeChannelId("");
+      setSeSaved(true);
+      setTimeout(() => setSeSaved(false), 1400);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setSeSaving(false);
+    }
+  };
+
+  const testStreamElements = async () => {
+    setErr(null);
+    setSeTestNote(null);
+    setSeTestLoading(true);
+    try {
+      await ensureAuth();
+      await apiPost("/streamer/streamelements/test", {});
+      setSeTestNote(language === "ru" ? "Тестовое сообщение отправлено" : "Test message sent");
+      setTimeout(() => setSeTestNote(null), 2000);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e));
+    } finally {
+      setSeTestLoading(false);
     }
   };
 
@@ -665,6 +733,62 @@ export default function StreamerDashboard() {
                 )}
                 <Button size="sm" variant="secondary" onClick={saveTgChannel} disabled={tgSaving}>
                   {tgSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">StreamElements</p>
+                <p className="text-xs text-muted-foreground">
+                  {language === "ru"
+                    ? "Для уведомлений в чате о победителях"
+                    : "For winner announcements in chat"}
+                </p>
+              </div>
+              <input
+                type="text"
+                className="w-full h-10 rounded-md border border-border/60 bg-background px-3 text-sm text-foreground"
+                placeholder={language === "ru" ? "Channel ID" : "Channel ID"}
+                value={seChannelId}
+                onChange={(e) => setSeChannelId(e.target.value)}
+              />
+              <input
+                type="password"
+                className="w-full h-10 rounded-md border border-border/60 bg-background px-3 text-sm text-foreground"
+                placeholder={language === "ru" ? "API токен (JWT)" : "API token (JWT)"}
+                value={seTokenInput}
+                onChange={(e) => setSeTokenInput(e.target.value)}
+              />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>
+                  {seTokenSet
+                    ? language === "ru"
+                      ? "Токен сохранен"
+                      : "Token saved"
+                    : language === "ru"
+                      ? "Токен не задан"
+                      : "Token not set"}
+                </span>
+                {seSaved && (
+                  <span className="text-success">
+                    {language === "ru" ? "Сохранено" : "Saved"}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                {seTestNote && <span className="text-success">{seTestNote}</span>}
+                <span />
+              </div>
+              <div className="flex justify-end items-center gap-2">
+                <Button size="sm" variant="outline" onClick={testStreamElements} disabled={seSaving || seTestLoading}>
+                  {seTestLoading ? (language === "ru" ? "Отправка..." : "Sending...") : language === "ru" ? "Тест" : "Test"}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={clearStreamElements} disabled={seSaving}>
+                  {language === "ru" ? "Сбросить" : "Clear"}
+                </Button>
+                <Button size="sm" variant="secondary" onClick={saveStreamElements} disabled={seSaving}>
+                  {seSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
                 </Button>
               </div>
             </Card>
