@@ -14,6 +14,7 @@ type RecentPrize = {
   skin_price?: number | null
   created_at?: string | null
   event_key?: string | null
+  winner_twitch_login?: string | null
   streamer?: {
     display_name?: string | null
     twitch_login?: string | null
@@ -86,6 +87,11 @@ export function RecentPrizes() {
                   <p className="text-sm font-medium text-fuchsia-500 truncate">
                     {prize.skin_name || (language === "ru" ? "Скин" : "Skin")}
                   </p>
+                  {prize.winner_twitch_login && (
+                    <p className="text-xs text-green-500">
+                      {language === "ru" ? "Победитель:" : "Winner:"} @{prize.winner_twitch_login}
+                    </p>
+                  )}
                   {twitchLink ? (
                     <a
                       href={twitchLink}

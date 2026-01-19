@@ -62,6 +62,8 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   const [trackingBusy, setTrackingBusy] = useState(false);
   const [resolvedId, setResolvedId] = useState<string | null>(id ?? null);
   const [quietLoading, setQuietLoading] = useState(false);
+  const [eligibility, setEligibility] = useState<boolean | null>(null);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -155,6 +157,20 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
       console.error("Untrack error:", e);
     } finally {
       setTrackingBusy(false);
+    }
+  };
+
+  const checkEligibility = async () => {
+    if (!streamer?.id) return;
+    setEligibilityLoading(true);
+    try {
+      const res = await apiGet(`/viewer/eligibility?streamer_id=${streamer.id}`);
+      setEligibility(Boolean(res?.ok));
+    } catch (e) {
+      console.error("Eligibility check failed:", e);
+      setEligibility(false);
+    } finally {
+      setEligibilityLoading(false);
     }
   };
 
@@ -328,8 +344,8 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                 </p>
                 <p>
                   {language === "ru"
-                    ? "Чтобы участвовать, нужно быть фоловером стримера и написать сообщение в чат (например, «привет»)."
-                    : "To participate you should follow the streamer and send a chat message (e.g. “hello”)."}
+                    ? "Чтобы участвовать, нужно быть фоловером стримера, отслеживать его и писать в чат хотя бы раз в час."
+                    : "To participate you should follow the streamer, track them, and send a chat message at least once per hour."}
                 </p>
                 <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-warning/90">
                   <MessageCircle className="h-3.5 w-3.5" />
@@ -337,6 +353,43 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                 </div>
               </div>
             </Card>
+
+            <Button
+              className={`h-11 w-full text-base font-semibold ${
+                eligibility === true
+                  ? "bg-success text-white hover:bg-success/90"
+                  : eligibility === false
+                    ? "bg-destructive text-white hover:bg-destructive/90"
+                    : "bg-secondary text-foreground hover:bg-secondary/80"
+              }`}
+              onClick={checkEligibility}
+              disabled={eligibilityLoading}
+            >
+              {eligibilityLoading
+                ? language === "ru"
+                  ? "Проверка..."
+                  : "Checking..."
+                : eligibility === true
+                  ? language === "ru"
+                    ? "Участвуешь"
+                    : "Eligible"
+                  : eligibility === false
+                    ? language === "ru"
+                      ? "Нет"
+                    : "No"
+                    : language === "ru"
+                      ? "Проверить соблюдения условий"
+                      : "Check eligibility"}
+            </Button>
+
+            <Link href={`/streamer/${streamer?.id}/participants`} className="block">
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-3 flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">
+                  {language === "ru" ? "Все участники" : "All participants"}
+                </span>
+                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              </Card>
+            </Link>
 
             <div>
               <div className="flex items-center justify-between mb-3 px-1">
