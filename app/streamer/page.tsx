@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { apiGet, apiPost, removeToken, API_BASE, getToken } from "@/lib/api";
+import { apiGet, apiPost, removeToken } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useI18n } from "@/lib/i18n";
 import { getEventLabel } from "@/lib/event-labels";
@@ -258,9 +258,9 @@ export default function StreamerDashboard() {
       };
 
       await ensureAuth();
-      const token = getToken();
-      if (!token) throw new Error("Missing auth token");
-      const url = `${API_BASE}/twitch/authorize-redirect?token=${encodeURIComponent(token)}`;
+      const r = await apiGet("/twitch/authorize-streamer-link");
+      const url = r?.url ?? r;
+      if (!url) throw new Error("Missing auth URL");
       openUrl(url);
     } catch (e: any) {
       setErr(String(e?.message ?? e));
@@ -392,7 +392,7 @@ export default function StreamerDashboard() {
       setTwitchAuthLoading(true);
       try {
         await ensureAuth();
-        const r = await apiGet("/twitch/authorize");
+        const r = await apiGet("/twitch/authorize-streamer-link");
         const url = r?.url ?? r;
         if (url && !cancelled) {
           twitchAuthUrlRef.current = url;

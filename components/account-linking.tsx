@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Check, Link2, HelpCircle, Trash2 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useState, useRef, useEffect } from "react"
-import { apiGet, API_BASE, getToken } from "@/lib/api"
+import { apiGet } from "@/lib/api"
 import { LinkButton } from "@/components/link-button"
 import { ensureAuth } from "@/lib/ensureAuth"
 
@@ -100,7 +100,7 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       setTwitchAuthLoading(true)
       try {
         await ensureAuth()
-        const response = await apiGet("/twitch/authorize-viewer")
+        const response = await apiGet("/twitch/authorize-viewer-link")
         const url = response?.url
         if (url && !cancelled) {
           twitchAuthUrlRef.current = url
@@ -138,9 +138,9 @@ export function AccountLinking({ twitchLinked, steamLinked, twitchLogin, isLoadi
       }
 
       await ensureAuth()
-      const token = getToken()
-      if (!token) throw new Error("No auth token")
-      const url = `${API_BASE}/twitch/authorize-viewer-redirect?token=${encodeURIComponent(token)}`
+      const response = await apiGet("/twitch/authorize-viewer-link")
+      const url = response?.url
+      if (!url) throw new Error("Missing auth URL")
       openUrl(url)
     } catch (e: any) {
       alert(`Error: ${e?.message ?? e}`)
