@@ -31,84 +31,136 @@ Continue building your app on:
 
 ## Project Structure and Architecture
 
-This is a Next.js 16 app (App Router) for a Telegram Mini App experience with Twitch/Steam linking.
+This is a Next.js 16 (App Router) frontend plus a FastAPI backend. The app is a Telegram Mini App for Dota 2 giveaways using Twitch + Steam linking and Lis-Skins purchases.
 
-### Stack and Tooling
-- Next.js 16 + React 19
-- Tailwind CSS v4 (CSS variables theme)
-- Radix UI primitives + custom UI components
+### Stack
+Frontend:
+- Next.js 16 + React 19, Tailwind CSS v4
 - Local i18n context (ru/en)
-- Telegram WebApp SDK integration
+- Telegram WebApp SDK
 
-### Routing (App Router)
-- `app/layout.tsx`: Global layout, metadata, Telegram SDK script, i18n provider
-- `app/page.tsx`: Main landing dashboard (viewer flow)
-- `app/live/page.tsx`: Live streamers list
+Backend:
+- FastAPI (single `app.py`)
+- PostgreSQL
+- Twitch EventSub (WebSocket transport)
+- Dota 2 GSI ingestion + custom event engine
+- Lis-Skins API integration
+
+### Frontend Routes
+- `app/page.tsx`: Viewer home (public stats, recent prizes, tracked streamers)
+- `app/prizes/page.tsx`: Viewer prize history (full list)
+- `app/rules/page.tsx`: Participation rules
+- `app/live/page.tsx`: Live streamers
 - `app/tracked/page.tsx`: Tracked streamers management
-- `app/settings/page.tsx`: Language settings
-- `app/streamer/page.tsx`: Streamer dashboard (linking, stats, config download)
+- `app/streamer/page.tsx`: Streamer dashboard
 - `app/streamer/events/page.tsx`: Streamer event settings
-- `app/streamer/[id]/page.tsx`: Streamer profile entry
-- `app/streamer/[id]/streamer-client.tsx`: Streamer profile client UI
-- `app/streamer/[id]/prizes/page.tsx`: Streamer prizes entry
-- `app/streamer/[id]/prizes/prizes-client.tsx`: Streamer prizes client UI
-- `app/twitch/callback/page.tsx`: Twitch OAuth callback handler
+- `app/streamer/lis-skins/page.tsx`: Lis-Skins settings + test purchase
+- `app/streamer/[id]/page.tsx`: Viewer streamer page
+- `app/streamer/[id]/prizes/page.tsx`: Streamer prizes list
+- `app/twitch/callback/page.tsx`: Twitch OAuth callback
 
-### Components
-- `components/ui/*`: Reusable UI primitives (Button, Card, Input, Badge, Switch)
-- `components/*`: Feature blocks (account linking, live streamers, tracked streamers, stats, etc.)
+### Key UI Components
+- `components/account-linking.tsx`: Twitch + Steam linking UI
+- `components/statistics.tsx`: Public stats (total prizes, total amount)
+- `components/recent-prizes.tsx`: Last 3 prizes across all streamers
+- `components/my-prizes.tsx`: Viewer prize list block and /prizes page
+- `components/tracked-streamers.tsx`, `components/live-streamers.tsx`
 
-### API and Auth
-- `lib/api.ts`: API client with bearer token and cache-busting
-- `lib/ensureAuth.ts`: Telegram `initData` auth flow for tokens
-- `lib/i18n.tsx`: Language context and translations
+### Backend Responsibilities
+GSI:
+- `POST /gsi` ingests Dota 2 GSI payloads.
+- `EventEngine` turns payloads into event keys.
+- GSI installer is generated as a Windows-safe `.cmd` that writes a UTF-8-no-BOM `.cfg`.
 
-### Styling
-- `app/globals.css`: Active theme variables and base styles (dark palette)
-- `styles/globals.css`: Secondary theme file (not imported in layout)
+Giveaways:
+- `POST /giveaways/trigger` selects winners, buys skins via Lis-Skins, logs results.
+- Viewer eligibility requires: tracked streamer, follower, and chat message (EventSub).
 
-### Data and Auth Flow (Frontend)
-- Telegram Mini App opens `app/page.tsx`
-- `ensureAuth()` uses `Telegram.WebApp.initData` and posts to `/auth/telegram`
-- Token is stored in `localStorage` and sent as `Authorization: Bearer <token>`
-- On load, the app fetches `/me`, `/viewer/me`, and `/streamer/me` in parallel
-- Twitch OAuth:
-  - Viewer: `/twitch/authorize-viewer` -> external browser -> `/twitch/exchange-universal`
-  - Streamer: `/twitch/authorize` -> external browser -> `/twitch/exchange-universal`
-
-### API Endpoints Used by Frontend
-Auth and health:
-- `POST /auth/telegram`
-- `POST /auth/dev` (debug)
-- `GET /health`
-
-Viewer:
-- `GET /viewer/me`
-- `POST /viewer/steam`
-- `POST /viewer/steam/unlink`
-- `POST /viewer/twitch/unlink`
-- `GET /viewer/tracked`
-- `POST /viewer/tracked`
-- `DELETE /viewer/tracked/:id`
-
-Streamer:
-- `GET /streamer/me`
-- `POST /streamer/me`
-- `POST /streamer/delete`
-- `POST /streamer/lis-skins-token`
-- `POST /streamer/events`
-
-Discovery and stats:
-- `GET /streamers`
-- `GET /streamers/live`
-- `GET /streamers/:id`
-- `GET /streamers/:id/prizes`
+Lis-Skins:
+- Base URL `https://api.lis-skins.com/v1`
+- Cursor pagination for search
+- `unlock_days=[0]`, `only_unlocked=1`, `game=dota2`
+- Purchases logged in `lis_skins_purchases` + status log.
 
 Twitch:
-- `GET /twitch/authorize`
-- `GET /twitch/authorize-viewer`
-- `POST /twitch/exchange-universal`
+- Viewer and streamer OAuth flows.
+- EventSub WebSocket subscriptions for `channel.chat.message`.
+- Follower checks via Helix.
 
-### Dev and Debug Notes
-- `?debug=1` on main pages reveals additional debug UI and dev login
-- `next.config.mjs` sets `images.unoptimized = true` and `typescript.ignoreBuildErrors = true`
+Public:
+- `GET /public/stats` (global stats)
+- `GET /public/recent-prizes` (last 3 prizes)
+
+### Important Tables
+- `users`, `sessions`
+- `streamers`, `streamer_events`
+- `giveaways`, `giveaway_rewards`
+- `viewer_tracked_streamers`, `viewer_twitch_status`
+- `gsi_events_log`
+- `lis_skins_purchases`, `lis_skins_status_log`
+
+### Notes
+- UI auto-refreshes key blocks (stats, recent prizes, streamer profile).
+- `-gamestateintegration` launch option is required for GSI.
+- `streamer_id` is validated against owner when hitting streamer-only endpoints.
+
+### Server Deploy Cheatsheet
+Frontend (on server):
+```
+cd /home/user/apps/v0-telegram-mini-app-design
+git pull
+npm run build
+pm2 restart miniapp
+```
+
+Backend (on server):
+```
+cd /home/user/miniapp-backend
+git pull
+sudo systemctl restart miniapp-backend
+sudo journalctl -u miniapp-backend -f
+```
+
+### DB Migrations (manual)
+Examples used in this project:
+```
+-- Add Telegram channel URL for streamers
+ALTER TABLE streamers
+ADD COLUMN telegram_channel_url TEXT;
+
+-- Remove deprecated event
+DELETE FROM streamer_events WHERE event_key = 'dota.lh_per_min_10';
+
+-- Seed new events for all streamers
+INSERT INTO streamer_events (streamer_id, event_key, enabled, winners_count)
+SELECT s.id, v.event_key, true, 1
+FROM streamers s
+CROSS JOIN (VALUES
+  ('dota.lh_minute_threshold'),
+  ('dota.net_worth_20k'),
+  ('dota.buy_smoke'),
+  ('dota.aegis'),
+  ('dota.cheese'),
+  ('dota.roshan_banner'),
+  ('dota.refresher_shard')
+) AS v(event_key)
+ON CONFLICT (streamer_id, event_key) DO NOTHING;
+```
+
+### GSI Health Checklist
+1) GSI config file in:  
+   `C:\steam\steamapps\common\dota 2 beta\game\dota\cfg\gamestate_integration\`
+2) File name must be:  
+   `gamestate_integration_*.cfg`
+3) `uri` points to correct `streamer_id`
+4) Steam launch option includes:  
+   `-gamestateintegration`
+5) Backend logs show:  
+   `GSI payload received for streamer_id=...`
+
+### Lis-Skins Integration Notes
+- Base URL: `https://api.lis-skins.com/v1`
+- Auth header: `Authorization: Bearer <API_KEY>`
+- Search uses cursor pagination via `meta.next_cursor`
+- Use `unlock_days=[0]` + `only_unlocked=1` to avoid trade-locked skins
+- Market search can be delayed; WS/JSON prices are faster if needed

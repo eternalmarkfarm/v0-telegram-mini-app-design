@@ -220,7 +220,7 @@ export default function StreamerDashboard() {
       await ensureAuth();
       const token = getToken();
       if (!token) throw new Error("Missing auth token");
-      const url = `${API_BASE}/streamer/gsi-installer?token=${encodeURIComponent(token)}`;
+      const url = `${API_BASE}/streamer/config-package?token=${encodeURIComponent(token)}`;
       const tg = (window as any).Telegram?.WebApp;
       if (tg?.openLink) {
         tg.openLink(url, { try_instant_view: false });

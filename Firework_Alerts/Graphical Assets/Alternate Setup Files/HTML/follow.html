@@ -1,0 +1,71 @@
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:700" rel="stylesheet">
+<div id="notification-center">
+  <video id="vid" width="740" height="1080">
+    <source src="{video}" type="video/webm">
+  </video>
+  <div id="content">
+    <div id="amount">New Follow!</div>
+    <div id="name"><span>{name}</span></div>
+  </div>
+
+  <audio src='{audio}'></audio>
+
+</div>
+<script>
+function run() {
+  var video = document.getElementById('vid');
+  video.addEventListener('loadeddata', function() {
+    animate();
+  }, false);
+  video.load();
+}
+
+if (!window.scriptLoaded) {
+  jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.4/TweenMax.min.js")
+    .done(function() {
+      window.scriptLoaded = true;
+      run();
+    });
+} else {
+    run();
+}
+
+var animate = function() {
+  
+$.fn.centerMe = function(div) {
+  var w = ($(div).width() / 2) + 20;
+  this.css('left', $(window).width() / 2 - w);
+};
+
+$(window).resize(function() {
+  $('#name').centerMe();
+});
+
+$('#name').centerMe('#name');
+$('#amount').centerMe('#amount');
+  
+    var tl = new TimelineLite;
+  
+    tl.to("#notification-center", 0, {opacity: 1, onComplete: playVid})
+    
+    tl.from("#bit", .2, {opacity: 0, scale: 0, delay: .8}); 
+    tl.from("#name", .6, {ease: Back.easeOut.config(1.7), scaleX: 0, delay: .6});
+    tl.from("#name span", .2, {opacity: 0});
+    tl.from("#amount", .4, {opacity: 0, y: "+=10"}, "-=.4");
+    tl.to("#notification", 0, {delay: 8});
+    tl.to("#amount", .4, {opacity: 0, y: "+=10"}, "-=.4");
+    tl.to("#name span", .2, {opacity: 0});
+    tl.to("#name", .4, {ease: Back.easeOut.config(1.7), scaleX: 0, delay: .2});
+    tl.to("#bit", .2, {opacity: 0, scale: 0, delay: .5}); 
+
+    tl.to("#notification-center", 0, {delay: 5, opacity: 0});
+
+    function playVid() {
+      var vid = document.getElementById("vid");
+      vid.play();
+    }
+    function reverse() {
+      tl.reverse(0);
+    }
+}
+</script>
