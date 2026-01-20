@@ -104,6 +104,19 @@ Public:
 - `-gamestateintegration` launch option is required for GSI.
 - `streamer_id` is validated against owner when hitting streamer-only endpoints.
 
+### Recent Changes (2026-01-19)
+- Twitch OAuth Android hardening: short link endpoints, HTML 200 redirect with base64 URL, and optional "Open in Chrome" intent button.
+- Added one-time OAuth link codes table: `oauth_link_codes` (created on startup).
+- Auto-refresh LIS-Skins purchase statuses in background (`LIS_REFRESH_INTERVAL_SECONDS`, `LIS_REFRESH_STALE_SECONDS`).
+- EventSub subscription refresh on 401/403 and safer reconnect loop delay.
+- Participant eligibility now requires chat activity within 1 hour (viewer list + giveaway selection).
+- "Check eligibility" reasons and "All participants" page added for streamer viewers.
+- Rules page: bullet conditions, app icons, trade URL steps, and events list page.
+- StreamElements: settings + test message; chat messages only after successful purchase.
+- OBS config package: includes overlay HTML + assets, demo mode, and RU readme.
+- "Live" badge with pulse added to streamer cards; stream participants count now based on eligibility.
+- Streamer delete keeps historical stats; tracked list hides deleted streamers.
+
 ### Server Deploy Cheatsheet
 Frontend (on server):
 ```
