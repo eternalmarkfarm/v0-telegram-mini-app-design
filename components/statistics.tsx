@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { Card } from "@/components/ui/card"
-import { Trophy, Coins } from "lucide-react"
+import { Trophy, Coins, Clock } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { apiGet } from "@/lib/api"
 
 type PublicStats = {
   total_prizes: number
   total_amount: number
+  trade_offer_expiry_at?: string | null
 }
 
 export function Statistics() {
@@ -33,7 +34,14 @@ export function Statistics() {
   const stats = useMemo(() => {
     const totalPrizes = statsData?.total_prizes ?? 0
     const totalAmount = statsData?.total_amount ?? 0
+    const tradeExpiry = statsData?.trade_offer_expiry_at
     const formatAmount = (value: number) => `$${value.toFixed(2)}`
+    const formatExpiry = (value?: string | null) => {
+      if (!value) return language === "ru" ? "Нет активных" : "No active offers"
+      const date = new Date(value)
+      if (Number.isNaN(date.getTime())) return value
+      return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US")
+    }
     return [
       {
         icon: Trophy,
@@ -48,6 +56,13 @@ export function Statistics() {
         value: formatAmount(totalAmount),
         color: "text-success",
         bg: "bg-success/20",
+      },
+      {
+        icon: Clock,
+        label: language === "ru" ? "Трейд активен до" : "Trade offer active until",
+        value: formatExpiry(tradeExpiry),
+        color: "text-primary",
+        bg: "bg-primary/15",
       },
     ]
   }, [statsData, language])
