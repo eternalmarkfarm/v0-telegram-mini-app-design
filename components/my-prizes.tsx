@@ -16,6 +16,7 @@ type PrizeItem = {
   delivery_status?: string | null
   created_at?: string | null
   event_key?: string | null
+  trade_offer_expiry_at?: string | null
   streamer?: {
     twitch_login?: string | null
     display_name?: string | null
@@ -58,6 +59,17 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
   }
 
   const formatDate = (value?: string | null) => {
+    if (!value) return null
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return null
+    return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
+  const formatExpiry = (value?: string | null) => {
     if (!value) return null
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return null
@@ -130,6 +142,14 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
                   )}
                   {prize.created_at && (
                     <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
+                  )}
+                  {prize.trade_offer_expiry_at && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {language === "ru"
+                        ? "Трейд предложение активно до:"
+                        : "Trade offer active until:"}{" "}
+                      {formatExpiry(prize.trade_offer_expiry_at)}
+                    </p>
                   )}
                   {status === "sent" && (
                     <p className="text-[11px] text-warning">

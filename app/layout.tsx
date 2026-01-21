@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { I18nProvider } from "@/lib/i18n"
+import { Navigation } from "@/components/navigation"
 import Script from "next/script"
 import "./globals.css"
 
@@ -51,8 +52,11 @@ export default function RootLayout({
       <head>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       </head>
-      <body className={`font-sans antialiased`}>
-        <I18nProvider>{children}</I18nProvider>
+      <body className={`font-sans antialiased pb-24`}>
+        <I18nProvider>
+          {children}
+          <Navigation />
+        </I18nProvider>
         <Analytics />
       </body>
     </html>

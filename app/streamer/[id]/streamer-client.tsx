@@ -50,6 +50,7 @@ type StreamerProfile = {
     created_at?: string | null;
     event_key?: string | null;
     twitch_login?: string | null;
+    trade_offer_expiry_at?: string | null;
   }>;
 };
 
@@ -67,6 +68,17 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
 
   const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleString(language === "ru" ? "ru-RU" : "en-US", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+  const formatExpiry = (value?: string | null) => {
     if (!value) return null;
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return null;
@@ -459,6 +471,14 @@ export default function StreamerDetailClient({ id }: { id?: string }) {
                         )}
                         {prize.created_at && (
                           <p className="text-[11px] text-muted-foreground">{formatDate(prize.created_at)}</p>
+                        )}
+                        {prize.trade_offer_expiry_at && (
+                          <p className="text-[11px] text-muted-foreground">
+                            {language === "ru"
+                              ? "Трейд предложение активно до:"
+                              : "Trade offer active until:"}{" "}
+                            {formatExpiry(prize.trade_offer_expiry_at)}
+                          </p>
                         )}
                       </div>
                       <div className="text-right">
