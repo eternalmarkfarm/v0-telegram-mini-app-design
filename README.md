@@ -145,6 +145,13 @@ ADD COLUMN telegram_channel_url TEXT;
 ALTER TABLE lis_skins_purchases
 ADD COLUMN telegram_notified_at TIMESTAMPTZ;
 
+-- Retry controls for LIS-Skins trade creation failures
+ALTER TABLE lis_skins_purchases
+ADD COLUMN retry_count INT NOT NULL DEFAULT 0;
+
+ALTER TABLE lis_skins_purchases
+ADD COLUMN last_retry_at TIMESTAMPTZ;
+
 -- Optional: prevent sending notifications for historical purchases
 -- (run once right after adding the column)
 UPDATE lis_skins_purchases
