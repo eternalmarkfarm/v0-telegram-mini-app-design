@@ -145,6 +145,13 @@ ADD COLUMN telegram_channel_url TEXT;
 ALTER TABLE lis_skins_purchases
 ADD COLUMN telegram_notified_at TIMESTAMPTZ;
 
+-- Optional: prevent sending notifications for historical purchases
+-- (run once right after adding the column)
+UPDATE lis_skins_purchases
+SET telegram_notified_at = now()
+WHERE steam_trade_offer_expiry_at IS NOT NULL
+  AND telegram_notified_at IS NULL;
+
 -- Remove deprecated event
 DELETE FROM streamer_events WHERE event_key = 'dota.lh_per_min_10';
 
