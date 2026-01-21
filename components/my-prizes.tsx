@@ -53,9 +53,24 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
 
   const statusLabel = (status?: string | null) => {
     if (status === "success") return language === "ru" ? "Получен" : "Received"
+    if (status === "not_claimed") return language === "ru" ? "Не забрал" : "Not claimed"
     if (status === "sent") return language === "ru" ? "Отправлено" : "Sent"
     if (status === "failed") return language === "ru" ? "Не удалось" : "Failed"
     return language === "ru" ? "В обработке" : "Processing"
+  }
+
+  const statusClass = (status?: string | null) => {
+    if (status === "success") return "text-success"
+    if (status === "not_claimed" || status === "failed") return "text-destructive"
+    if (status === "sent") return "text-amber-500 animate-pulse"
+    return "text-sky-500"
+  }
+
+  const statusIconClass = (status?: string | null) => {
+    if (status === "success") return "text-success"
+    if (status === "not_claimed" || status === "failed") return "text-destructive"
+    if (status === "sent") return "text-amber-500 animate-pulse"
+    return "text-sky-500"
   }
 
   const formatDate = (value?: string | null) => {
@@ -115,11 +130,11 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
             const status = prize.delivery_status
             const icon =
               status === "success" ? (
-                <CheckCircle className="h-5 w-5 text-success" />
-              ) : status === "failed" ? (
-                <XCircle className="h-5 w-5 text-destructive" />
+                <CheckCircle className={`h-5 w-5 ${statusIconClass(status)}`} />
+              ) : status === "not_claimed" || status === "failed" ? (
+                <XCircle className={`h-5 w-5 ${statusIconClass(status)}`} />
               ) : (
-                <Clock className="h-5 w-5 text-warning" />
+                <Clock className={`h-5 w-5 ${statusIconClass(status)}`} />
               )
             const streamerLabel = prize.streamer?.twitch_login
               ? `@${prize.streamer.twitch_login}`
@@ -163,7 +178,7 @@ export function MyPrizes({ limit = 20, showAllLink = true }: MyPrizesProps) {
                   {prize.skin_price !== null && prize.skin_price !== undefined && (
                     <p className="text-sm font-semibold text-foreground">${prize.skin_price}</p>
                   )}
-                  <p className="text-xs text-muted-foreground">{statusLabel(status)}</p>
+                  <p className={`text-xs ${statusClass(status)}`}>{statusLabel(status)}</p>
                 </div>
               </div>
             )

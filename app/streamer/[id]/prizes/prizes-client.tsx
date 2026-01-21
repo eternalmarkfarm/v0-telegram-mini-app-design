@@ -90,9 +90,24 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
 
   const statusLabel = (status?: string | null) => {
     if (status === "success") return language === "ru" ? "Получено" : "Received";
+    if (status === "not_claimed") return language === "ru" ? "Не забрал" : "Not claimed";
     if (status === "sent") return language === "ru" ? "Отправлено" : "Sent";
     if (status === "failed") return language === "ru" ? "Не удалось" : "Failed";
     return language === "ru" ? "В обработке" : "Processing";
+  };
+
+  const statusClass = (status?: string | null) => {
+    if (status === "success") return "text-success";
+    if (status === "not_claimed" || status === "failed") return "text-destructive";
+    if (status === "sent") return "text-amber-500 animate-pulse";
+    return "text-sky-500";
+  };
+
+  const statusIconClass = (status?: string | null) => {
+    if (status === "success") return "text-success";
+    if (status === "not_claimed" || status === "failed") return "text-destructive";
+    if (status === "sent") return "text-amber-500 animate-pulse";
+    return "text-sky-500";
   };
 
   const maxPage = Math.max(0, Math.ceil(total / pageSize) - 1);
@@ -150,11 +165,11 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
               <div key={prize.id} className="p-3 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/60">
                   {prize.delivery_status === "success" ? (
-                    <CheckCircle className="h-4 w-4 text-success" />
-                  ) : prize.delivery_status === "failed" ? (
-                    <XCircle className="h-4 w-4 text-destructive" />
+                    <CheckCircle className={`h-4 w-4 ${statusIconClass(prize.delivery_status)}`} />
+                  ) : prize.delivery_status === "not_claimed" || prize.delivery_status === "failed" ? (
+                    <XCircle className={`h-4 w-4 ${statusIconClass(prize.delivery_status)}`} />
                   ) : (
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Clock className={`h-4 w-4 ${statusIconClass(prize.delivery_status)}`} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -182,7 +197,9 @@ export default function StreamerPrizesClient({ id }: { id?: string }) {
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-muted-foreground">{statusLabel(prize.delivery_status)}</p>
+                  <p className={`text-xs ${statusClass(prize.delivery_status)}`}>
+                    {statusLabel(prize.delivery_status)}
+                  </p>
                   {prize.skin_price !== null && prize.skin_price !== undefined && (
                     <p className="text-sm font-medium text-foreground">${prize.skin_price}</p>
                   )}
