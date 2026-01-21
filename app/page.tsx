@@ -105,8 +105,10 @@ export default function Home() {
         throw new Error("No Telegram.WebApp.initData (открой в Telegram Mini App)");
       }
 
-      const r = await apiPost("/auth/telegram", { initData });
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Moscow";
+      const r = await apiPost("/auth/telegram", { initData, timezone });
       setToken(r.token);
+      await apiPost("/viewer/timezone", { timezone }).catch(() => {});
     } catch (e: any) {
       setAuthError(String(e?.message ?? e));
     }
@@ -140,10 +142,14 @@ export default function Home() {
         // 1. Optimistic Auth: Use existing token if available
         let currentToken = getToken();
 
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Moscow";
         if (!currentToken) {
           // Only auth if no token
-          const r = await apiPost("/auth/telegram", { initData });
+          const r = await apiPost("/auth/telegram", { initData, timezone });
           setToken(r.token);
+          await apiPost("/viewer/timezone", { timezone }).catch(() => {});
+        } else {
+          await apiPost("/viewer/timezone", { timezone }).catch(() => {});
         }
 
         // 2. Parallel Fetching: Load all data at once
@@ -167,8 +173,10 @@ export default function Home() {
         if (e?.status === 401 || String(e).includes("401")) {
           try {
             removeToken();
-            const r = await apiPost("/auth/telegram", { initData });
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Moscow";
+            const r = await apiPost("/auth/telegram", { initData, timezone });
             setToken(r.token);
+            await apiPost("/viewer/timezone", { timezone }).catch(() => {});
             await Promise.all([apiGet("/me").then(setMe), loadStreamer(), loadViewerData()]);
           } catch (retryErr: any) {
             setAuthError(String(retryErr?.message ?? retryErr));

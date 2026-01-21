@@ -152,6 +152,10 @@ ADD COLUMN retry_count INT NOT NULL DEFAULT 0;
 ALTER TABLE lis_skins_purchases
 ADD COLUMN last_retry_at TIMESTAMPTZ;
 
+-- Store viewer timezone (used for Telegram notifications)
+ALTER TABLE users
+ADD COLUMN timezone TEXT;
+
 -- Optional: prevent sending notifications for historical purchases
 -- (run once right after adding the column)
 UPDATE lis_skins_purchases
