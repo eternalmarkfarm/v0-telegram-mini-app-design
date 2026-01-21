@@ -141,6 +141,10 @@ Examples used in this project:
 ALTER TABLE streamers
 ADD COLUMN telegram_channel_url TEXT;
 
+-- Telegram notify trigger for LIS-Skins trade expiry
+ALTER TABLE lis_skins_purchases
+ADD COLUMN telegram_notified_at TIMESTAMPTZ;
+
 -- Remove deprecated event
 DELETE FROM streamer_events WHERE event_key = 'dota.lh_per_min_10';
 
