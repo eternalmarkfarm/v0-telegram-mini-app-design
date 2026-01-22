@@ -104,6 +104,13 @@ Public:
 - `-gamestateintegration` launch option is required for GSI.
 - `streamer_id` is validated against owner when hitting streamer-only endpoints.
 
+### Today Summary (2026-01-21)
+- Telegram winner notifications are now sent only after LIS-Skins provides `steam_trade_offer_expiry_at`, via a background trigger (`lis_skins_purchases.telegram_notified_at`).
+- Added retry flow for LIS-Skins `trade_create_error`/`buy_error` with up to 5 attempts and 30s delay; failures notify the streamer in Telegram with error reasons.
+- Status mapping updated: `trade_create_error` stays "processing"; `trade_timeout/trade_canceled` becomes "not_claimed"; other returns become "failed".
+- Viewer timezone stored in `users.timezone` (default `Europe/Moscow`) and used to format trade expiry in Telegram messages; mini-app sends timezone on auth and also posts `/viewer/timezone`.
+- DB migrations added for `lis_skins_purchases.telegram_notified_at`, `retry_count`, `last_retry_at`, and `users.timezone`.
+
 ### Recent Changes (2026-01-19)
 - Twitch OAuth Android hardening: short link endpoints, HTML 200 redirect with base64 URL, and optional "Open in Chrome" intent button.
 - Added one-time OAuth link codes table: `oauth_link_codes` (created on startup).
