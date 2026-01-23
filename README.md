@@ -111,6 +111,13 @@ Public:
 - Viewer timezone stored in `users.timezone` (default `Europe/Moscow`) and used to format trade expiry in Telegram messages; mini-app sends timezone on auth and also posts `/viewer/timezone`.
 - DB migrations added for `lis_skins_purchases.telegram_notified_at`, `retry_count`, `last_retry_at`, and `users.timezone`.
 
+### Today Summary (2026-01-22)
+- HTTPS restored via Certbot + nginx; HTTP now redirects to HTTPS.
+- nginx now proxies `/api/*` to the FastAPI backend; frontend stays on `:3000`.
+- PM2 startup configured for auto-boot after server reboot.
+- Added GSI net worth debug logging behind `GSI_DEBUG_NET_WORTH=1` and blocked duplicate giveaway triggers per `(streamer_id, match_id, event_key)` after restarts.
+- Net worth calculation depends on item price cache (`cache/items.json`) and `requests` in the backend environment; missing cache results in low net worth values.
+
 ### Recent Changes (2026-01-19)
 - Twitch OAuth Android hardening: short link endpoints, HTML 200 redirect with base64 URL, and optional "Open in Chrome" intent button.
 - Added one-time OAuth link codes table: `oauth_link_codes` (created on startup).
