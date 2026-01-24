@@ -56,9 +56,9 @@ export default function StreamerFollowersPage() {
           {t.lastDays} {days}
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+      <div className="space-y-2 text-xs text-muted-foreground">
         {points.map((p) => (
-          <div key={`${days}-${p.date}`} className="flex items-center justify-between rounded-md bg-background/60 px-2 py-1">
+          <div key={`${days}-${p.date}`} className="flex items-center justify-between rounded-md bg-background/60 px-3 py-2">
             <span>{formatDay(p.date)}</span>
             <span className="text-foreground font-medium">+{p.count}</span>
           </div>
