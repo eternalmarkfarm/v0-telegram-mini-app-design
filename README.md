@@ -118,6 +118,9 @@ Public:
 - Added GSI net worth debug logging behind `GSI_DEBUG_NET_WORTH=1` and blocked duplicate giveaway triggers per `(streamer_id, match_id, event_key)` after restarts.
 - Net worth calculation depends on item price cache (`cache/items.json`) and `requests` in the backend environment; missing cache results in low net worth values.
 
+### Today Summary (2026-01-23)
+- Win/loss streak logic now resets the opposite trigger counter on outcome change, so streak giveaways re-arm after a loss/win flip.
+
 ### Recent Changes (2026-01-19)
 - Twitch OAuth Android hardening: short link endpoints, HTML 200 redirect with base64 URL, and optional "Open in Chrome" intent button.
 - Added one-time OAuth link codes table: `oauth_link_codes` (created on startup).

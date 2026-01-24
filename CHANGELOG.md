@@ -11,3 +11,6 @@
 - Added GSI net worth debug logging (`GSI_DEBUG_NET_WORTH=1`) and item price cache dependency notes for accurate net worth events.
 - Prevented duplicate giveaway triggers after backend restarts by skipping already-logged GSI events for the same match.
 - nginx now proxies `/api/*` to the backend, with HTTPS restored via Certbot and HTTP redirected to HTTPS.
+
+## 2026-01-23
+- Streak giveaways now reset the opposite trigger counter on outcome change (win resets loss trigger, loss resets win trigger), so streaks re-arm after a flip.
