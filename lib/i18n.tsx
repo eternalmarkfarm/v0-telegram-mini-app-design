@@ -75,6 +75,11 @@ interface Translations {
   downloadConfig: string
   recipient: string
   noSentSkins: string
+  followersToday: string
+  followersDynamics: string
+  openDynamics: string
+  notEnoughData: string
+  lastDays: string
 }
 
 const translations: Record<Language, Translations> = {
@@ -140,6 +145,11 @@ const translations: Record<Language, Translations> = {
     downloadConfig: "Скачать конфиг",
     recipient: "Получатель",
     noSentSkins: "Нет отправленных скинов",
+    followersToday: "Новые фолловеры сегодня",
+    followersDynamics: "Динамика фолловеров",
+    openDynamics: "Открыть динамику",
+    notEnoughData: "Не хватает данных",
+    lastDays: "Последние",
   },
   en: {
     participationStatus: "Participation Status",
@@ -203,6 +213,11 @@ const translations: Record<Language, Translations> = {
     downloadConfig: "Download Config",
     recipient: "Recipient",
     noSentSkins: "No skins sent yet",
+    followersToday: "New followers today",
+    followersDynamics: "Followers dynamics",
+    openDynamics: "Open dynamics",
+    notEnoughData: "Not enough data",
+    lastDays: "Last",
   },
 }
 

@@ -15,6 +15,7 @@ import {
   Clock,
   ChevronRight,
   Trash2,
+  UserPlus,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,8 @@ export default function StreamerDashboard() {
   const [seTokenSet, setSeTokenSet] = useState(false);
   const [seTestLoading, setSeTestLoading] = useState(false);
   const [seTestNote, setSeTestNote] = useState<string | null>(null);
+  const [followersToday, setFollowersToday] = useState<{ has_data: boolean; count_today: number } | null>(null);
+  const [followersTodayLoading, setFollowersTodayLoading] = useState(false);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -200,6 +203,19 @@ export default function StreamerDashboard() {
       console.error("Failed to load streamer summary:", e);
     } finally {
       setSummaryLoading(false);
+    }
+  };
+
+  const loadFollowersToday = async () => {
+    setFollowersTodayLoading(true);
+    try {
+      await ensureAuth();
+      const data = await apiGet("/streamer/followers/today");
+      setFollowersToday(data);
+    } catch (e) {
+      console.error("Failed to load followers today:", e);
+    } finally {
+      setFollowersTodayLoading(false);
     }
   };
 
@@ -357,6 +373,7 @@ export default function StreamerDashboard() {
   useEffect(() => {
     if (streamer?.id) {
       loadSummary(streamer.id);
+      loadFollowersToday();
     }
   }, [streamer?.id]);
 
@@ -609,6 +626,32 @@ export default function StreamerDashboard() {
                 ))}
               </div>
             </div>
+
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+                    <UserPlus className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-foreground">
+                      {followersTodayLoading
+                        ? "…"
+                        : followersToday?.has_data
+                          ? `+${followersToday?.count_today ?? 0}`
+                          : t.notEnoughData}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t.followersToday}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" className="text-primary hover:bg-primary/10" asChild>
+                  <Link href="/streamer/followers">
+                    {t.openDynamics}
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </Card>
 
             <div>
               <h2 className="text-sm font-medium text-muted-foreground mb-3 px-1">{t.sentSkins}</h2>
