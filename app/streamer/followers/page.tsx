@@ -49,23 +49,53 @@ export default function StreamerFollowersPage() {
     load();
   }, []);
 
-  const renderRange = (days: "5" | "15" | "30", points: RangePoint[]) => (
-    <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-foreground">
-          {t.lastDays} {days}
-        </p>
-      </div>
-      <div className="space-y-2 text-xs text-muted-foreground">
-        {points.map((p) => (
-          <div key={`${days}-${p.date}`} className="flex items-center justify-between rounded-md bg-background/60 px-3 py-2">
-            <span>{formatDay(p.date)}</span>
-            <span className="text-foreground font-medium">+{p.count}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
+  const buildFallbackRange = (days: number): RangePoint[] => {
+    const today = new Date();
+    const list: RangePoint[] = [];
+    for (let i = days - 1; i >= 0; i -= 1) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const iso = d.toISOString().slice(0, 10);
+      list.push({ date: iso, count: 0 });
+    }
+    return list;
+  };
+
+  const renderRange = (days: "5" | "15" | "30", points: RangePoint[]) => {
+    const safePoints = points.length ? points : buildFallbackRange(Number(days));
+    const maxCount = Math.max(1, ...safePoints.map((p) => p.count));
+    return (
+      <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-foreground">
+            {t.lastDays} {days}
+          </p>
+        </div>
+        <div className="space-y-2 text-xs text-muted-foreground">
+          {safePoints.map((p) => {
+            const width = Math.round((p.count / maxCount) * 100);
+            return (
+              <div
+                key={`${days}-${p.date}`}
+                className="rounded-md bg-background/60 px-3 py-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span>{formatDay(p.date)}</span>
+                  <span className="text-foreground font-medium">+{p.count}</span>
+                </div>
+                <div className="mt-2 h-2 w-full rounded-full bg-border/50">
+                  <div
+                    className="h-2 rounded-full bg-primary/70"
+                    style={{ width: `${width}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/40 p-4 space-y-4">
@@ -82,15 +112,16 @@ export default function StreamerFollowersPage() {
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-6 text-sm text-muted-foreground">
           …
         </Card>
-      ) : !stats?.has_data ? (
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-6 text-sm text-muted-foreground">
-          {t.notEnoughData}
-        </Card>
       ) : (
         <div className="space-y-3">
-          {renderRange("5", stats.ranges["5"] || [])}
-          {renderRange("15", stats.ranges["15"] || [])}
-          {renderRange("30", stats.ranges["30"] || [])}
+          {!stats?.has_data && (
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 text-xs text-muted-foreground">
+              {t.notEnoughData}
+            </Card>
+          )}
+          {renderRange("5", stats?.ranges?.["5"] || [])}
+          {renderRange("15", stats?.ranges?.["15"] || [])}
+          {renderRange("30", stats?.ranges?.["30"] || [])}
         </div>
       )}
 
