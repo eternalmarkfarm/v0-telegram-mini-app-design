@@ -121,6 +121,15 @@ Public:
 ### Today Summary (2026-01-23)
 - Win/loss streak logic now resets the opposite trigger counter on outcome change, so streak giveaways re-arm after a loss/win flip.
 
+### Today Summary (2026-01-24)
+- RCA for missed multikills: added `gsi_payload_log` to store GSI payload snapshots + engine state. Enables root-cause analysis for “event didn’t fire”.
+- Fixed repeatable multikill events: `dota.double_kill`, `dota.triple_kill`, `dota.ultra_kill`, `dota.rampage` now can trigger multiple times per match.
+- Added EventSub `channel.follow` ingest and follower analytics for streamer dashboard:
+  - New table `twitch_follows`
+  - New endpoints: `GET /streamer/followers/today`, `GET /streamer/followers/stats`
+  - New UI: `/streamer/followers` + “New followers today” block
+- Added weekly cleanup for `gsi_payload_log` controlled by `GSI_PAYLOAD_RETENTION_DAYS`.
+
 ### Recent Changes (2026-01-19)
 - Twitch OAuth Android hardening: short link endpoints, HTML 200 redirect with base64 URL, and optional "Open in Chrome" intent button.
 - Added one-time OAuth link codes table: `oauth_link_codes` (created on startup).
@@ -154,6 +163,24 @@ sudo journalctl -u miniapp-backend -f
 ### DB Migrations (manual)
 Examples used in this project:
 ```
+-- Track Twitch follows for daily analytics
+CREATE TABLE twitch_follows (
+  id bigserial PRIMARY KEY,
+  streamer_id bigint NOT NULL REFERENCES streamers(id) ON DELETE CASCADE,
+  broadcaster_user_id text NOT NULL,
+  follower_user_id text NOT NULL,
+  follower_login text,
+  follower_name text,
+  followed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX uq_twitch_follows_pair
+  ON twitch_follows (broadcaster_user_id, follower_user_id);
+
+CREATE INDEX idx_twitch_follows_streamer_date
+  ON twitch_follows (streamer_id, followed_at DESC);
+
 -- Add Telegram channel URL for streamers
 ALTER TABLE streamers
 ADD COLUMN telegram_channel_url TEXT;
@@ -172,6 +199,32 @@ ADD COLUMN last_retry_at TIMESTAMPTZ;
 -- Store viewer timezone (used for Telegram notifications)
 ALTER TABLE users
 ADD COLUMN timezone TEXT;
+
+-- GSI payload RCA log (optional but recommended)
+CREATE TABLE gsi_payload_log (
+  id bigserial PRIMARY KEY,
+  streamer_id bigint NOT NULL,
+  match_id bigint,
+  game_time int,
+  game_state text,
+  hero_name text,
+  player_kills int,
+  player_deaths int,
+  player_assists int,
+  player_steamid text,
+  map_name text,
+  events_triggered text[],
+  streak_events text[],
+  engine_state jsonb,
+  payload jsonb,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_gsi_payload_streamer_created
+  ON gsi_payload_log (streamer_id, created_at DESC);
+
+CREATE INDEX idx_gsi_payload_match
+  ON gsi_payload_log (match_id, created_at DESC);
 
 -- Optional: prevent sending notifications for historical purchases
 -- (run once right after adding the column)
