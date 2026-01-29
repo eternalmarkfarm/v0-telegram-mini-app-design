@@ -3,13 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Headphones, Gift, Eye } from 'lucide-react';
+import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
-const iconSuccess = "/prom/icon_success.jpg";
-const iconFail = "/prom/icon_fail.jpg";
-const iconDelivery = "/prom/dostavka.jpg";
-const iconReceived = "/prom/get_it.jpg";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
 const avatarCircle = "/prom/circle.png";
@@ -24,13 +21,7 @@ const menuBarIcon = "/prom/menu-bar1.png";
 const blockIcon = "/prom/block.png";
 
 
-type HomePrize = {
-  id: string;
-  skin: string;
-  streamerName: string;
-  time: string;
-  status: 'success' | 'fail' | 'delivery' | 'received';
-};
+type HomePrize = PrizeData;
 
 type TrackedStreamer = {
   id: number;
@@ -152,11 +143,11 @@ export default function Home() {
     }).replace(",", "");
   };
 
-  const mapPrizeStatus = (status?: string | null): HomePrize["status"] => {
+  const mapPrizeStatus = (status?: string | null): PrizeData["status"] => {
     if (status === "success") return "received";
-    if (status === "not_claimed" || status === "failed") return "fail";
-    if (status === "sent") return "delivery";
-    return "delivery";
+    if (status === "not_claimed" || status === "failed") return "missed";
+    if (status === "sent") return "sent";
+    return "processing";
   };
 
   const loadTracked = async () => {
@@ -199,10 +190,15 @@ export default function Home() {
       const items = res?.items ?? [];
       const mapped = items.map((item: any) => ({
         id: String(item.id),
-        skin: item.skin_name || "Unknown",
         streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
+        winnerNick: twitchLogin || "you",
+        winnerAvatar: viewerAvatar || undefined,
         time: formatPrizeTime(item.created_at),
+        trigger: getEventLabel(item.event_key),
+        deadline: formatPrizeTime(item.trade_offer_expiry_at),
+        price: item.skin_price ? String(item.skin_price) : "0.00",
         status: mapPrizeStatus(item.delivery_status),
+        game: "dota",
       })) as HomePrize[];
       setPrizes(mapped);
     } catch (e) {
@@ -220,36 +216,6 @@ export default function Home() {
     }, 30000);
     return () => window.clearInterval(interval);
   }, []);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <img src={iconSuccess} alt="success" className="w-8 h-8" />;
-      case 'fail':
-        return <img src={iconFail} alt="fail" className="w-8 h-8" />;
-      case 'delivery':
-        return <img src={iconDelivery} alt="delivery" className="w-8 h-8" />;
-      case 'received':
-        return <img src={iconReceived} alt="received" className="w-8 h-8" />;
-      default:
-        return null;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'success':
-        return 'Успешно';
-      case 'fail':
-        return 'Ошибка';
-      case 'delivery':
-        return 'Доставка';
-      case 'received':
-        return 'Получено';
-      default:
-        return '';
-    }
-  };
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
@@ -509,27 +475,7 @@ export default function Home() {
         ) : (
           <div className="space-y-3">
             {prizes.map((prize) => (
-              <div
-                key={prize.id}
-                className="yuze-glass rounded-[12px] px-5 py-3 flex gap-4"
-              >
-                <div className="w-16 h-16 rounded-[10px] bg-gradient-to-br from-[#1c233f] to-[#13192f] border border-white/10 flex items-center justify-center text-xs text-[#b3b3ff] overflow-hidden">
-                  {viewerAvatar ? (
-                    <img src={viewerAvatar} alt="" className="w-full h-full object-cover" aria-hidden="true" />
-                  ) : (
-                    "Skin"
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-white font-semibold">{prize.skin}</h4>
-                  <p className="text-xs text-[#b3b3ff] mt-1">{prize.streamerName}</p>
-                  <p className="text-[10px] text-[#b3b3ff] mt-2">{prize.time}</p>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  {getStatusIcon(prize.status)}
-                  <span className="text-[10px] text-[#b3b3ff]">{getStatusText(prize.status)}</span>
-                </div>
-              </div>
+              <PrizeCard key={prize.id} prize={prize} />
             ))}
           </div>
         )}
