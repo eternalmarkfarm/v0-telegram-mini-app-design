@@ -14,3 +14,9 @@
 
 ## 2026-01-23
 - Streak giveaways now reset the opposite trigger counter on outcome change (win resets loss trigger, loss resets win trigger), so streaks re-arm after a flip.
+
+## 2026-01-25
+- Giveaway winner selection updated: exclude winners from the last 2 giveaways when eligible count > 2 (server-side only).
+- Added low-win boost (+20%) for eligible users with <3 wins, applied every other giveaway (configurable).
+- Added admin-only rules state endpoint for auditing giveaway selection logic.
+- Added env toggles for giveaway selection rules and optional logging.

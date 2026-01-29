@@ -1,0 +1,196 @@
+"use client";
+
+import { useState } from 'react';
+import Link from "next/link";
+import { ChevronDown, Download, Trash2 } from 'lucide-react';
+import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
+const softwareIcon = "/prom/block.png";
+const fireIcon = "/prom/fire.png";
+const statisticsIcon = "/prom/statistics.png";
+const cs2Icon = "/prom/cs2.png";
+const dotaIcon = "/prom/icons8-dota-2-64.png";
+const fastDeliveryIcon = "/prom/fast-delivery.png";
+const trophyIcon = "/prom/trophy.png";
+
+
+export default function StreamPanel() {
+  const [isGsiOpen, setIsGsiOpen] = useState(true);
+  const { data, loading } = useStreamerMe();
+
+  const handleConfigDownload = async () => {
+    try {
+      const res = await fetch("/api/streamer/gsi-installer");
+      const text = await res.text();
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "install_gsi.cmd";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Failed to download GSI installer:", e);
+    }
+  };
+
+  const handleDeletePanel = () => {
+    if (confirm('Вы уверены, что хотите удалить кабинет стримера?')) {
+      console.log('Deleting panel...');
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto px-4 py-6 space-y-6 font-['Space_Grotesk'] text-[17px]">
+      <h1 className="text-2xl font-bold text-white drop-shadow-[0_0_12px_rgba(91,75,255,0.4)]">
+        Stream Panel
+      </h1>
+
+      {!loading && !data?.streamer && (
+        <div className="yuze-glass rounded-[20px] p-4 text-[#b3b3ff]">
+          <p className="text-white font-semibold mb-2">Кабинет стримера не создан</p>
+          <Link
+            href="/prom/begin-streamer"
+            className="inline-flex items-center justify-center rounded-[14px] bg-[#5B4BFF] px-4 py-2 text-white font-semibold"
+          >
+            Создать кабинет
+          </Link>
+        </div>
+      )}
+
+      <Link
+        href="/prom/streamer-integrations"
+        className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 flex items-center justify-center">
+            <img src={softwareIcon} alt="" className="w-11 h-11" aria-hidden="true" />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-lg font-bold text-white">Интеграция сторонних сервисов</h3>
+            <p className="text-sm text-[#b3b3ff] mt-1">StreamElement, TG канал, Lis-Skins</p>
+          </div>
+        </div>
+      </Link>
+
+      <Link
+        href="/prom/streamer-events"
+        className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 flex items-center justify-center">
+            <img src={fireIcon} alt="" className="w-9 h-9" aria-hidden="true" />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-lg font-bold text-white">Настройка событий</h3>
+          </div>
+        </div>
+      </Link>
+
+      <Link
+        href="/prom/streamer-stats"
+        className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 flex items-center justify-center">
+            <img src={statisticsIcon} alt="" className="w-9 h-9" aria-hidden="true" />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-lg font-bold text-white">Статистика</h3>
+          </div>
+        </div>
+      </Link>
+
+      <div className="yuze-glass rounded-[20px] p-4">
+        <button
+          type="button"
+          onClick={() => setIsGsiOpen((prev) => !prev)}
+          className="w-full flex items-center gap-3 text-left"
+          aria-expanded={isGsiOpen}
+        >
+          <img src={fastDeliveryIcon} alt="" className="w-9 h-9" aria-hidden="true" />
+          <div className="flex-1">
+            <h3 className="text-base font-bold text-white">Скачать конфиг GSI</h3>
+          </div>
+          <ChevronDown
+            className={`w-5 h-5 text-[#b3b3ff] transition-transform ${
+              isGsiOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        <div
+          className={`transition-all duration-300 ${
+            isGsiOpen ? 'mt-3 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
+          } overflow-hidden`}
+        >
+          <div className="grid grid-cols-2 gap-0">
+          <div className="flex items-center gap-3 pr-3">
+            <div className="w-9 h-9 rounded-[10px] bg-white/5 flex items-center justify-center">
+              <img src={cs2Icon} alt="" className="w-6 h-6" aria-hidden="true" />
+            </div>
+            <div className="flex-1 flex items-center justify-between">
+              <p className="text-sm text-[#b3b3ff]">CS2</p>
+              <button
+                onClick={handleConfigDownload}
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"
+                aria-label="Скачать конфиг CS2"
+              >
+                <Download className="w-4 h-4 text-white/90" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pl-3 border-l border-white/10">
+            <div className="w-9 h-9 rounded-[10px] bg-white/5 flex items-center justify-center">
+              <img src={dotaIcon} alt="" className="w-6 h-6" aria-hidden="true" />
+            </div>
+            <div className="flex-1 flex items-center justify-between">
+              <p className="text-sm text-[#b3b3ff]">Dota 2</p>
+              <button
+                onClick={handleConfigDownload}
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"
+                aria-label="Скачать конфиг Dota 2"
+              >
+                <Download className="w-4 h-4 text-white/90" />
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <Link
+        href="/prom/superdrop-settings"
+        className="block yuze-glass rounded-[24px] p-6 hover:bg-white/[0.14] transition-all duration-300"
+      >
+        <div className="flex items-center gap-4">
+          <img src={trophyIcon} alt="" className="w-8 h-8" aria-hidden="true" />
+          <div className="flex-1 text-left">
+            <h3 className="text-lg font-bold text-white">Настройки SuperDrop</h3>
+            <p className="text-sm text-[#b3b3ff] mt-1">Управление дропами и правилами</p>
+          </div>
+        </div>
+      </Link>
+
+      <button
+        onClick={handleDeletePanel}
+        className="w-full bg-red-500/10 border border-red-500/30 rounded-[24px] p-6 hover:bg-red-500/20 transition-all duration-300"
+        style={{
+          boxShadow: '0 4px 16px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        }}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-red-500/20 rounded-[16px] flex items-center justify-center">
+            <Trash2 className="w-6 h-6 text-red-500" />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-lg font-bold text-red-500">Удалить кабинет стримера</h3>
+            <p className="text-sm text-red-300 mt-1">Это действие необратимо</p>
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+}

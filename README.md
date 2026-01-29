@@ -104,6 +104,20 @@ Public:
 - `-gamestateintegration` launch option is required for GSI.
 - `streamer_id` is validated against owner when hitting streamer-only endpoints.
 
+### Giveaway Fairness Tuning (server-side)
+Environment toggles (backend):
+- `GIVEAWAY_RECENT_EXCLUDE_ENABLED=1` to exclude recent winners from selection.
+- `GIVEAWAY_RECENT_EXCLUDE_LAST_N=2` number of recent winners to exclude when eligible count > 2.
+- `GIVEAWAY_LOW_WINS_BOOST_ENABLED=1` to boost low-win eligible users.
+- `GIVEAWAY_LOW_WINS_THRESHOLD=3` wins threshold for boost eligibility.
+- `GIVEAWAY_LOW_WINS_BOOST_FACTOR=1.2` boost multiplier.
+- `GIVEAWAY_LOW_WINS_EVERY_OTHER=1` to apply boost every other giveaway.
+- `GIVEAWAY_RULES_LOG=1` to log selection rule state on each trigger.
+- `ADMIN_RULES_TOKEN=...` to secure the admin rules endpoint.
+
+Admin endpoint (backend):
+- `GET /admin/giveaways/rules?streamer_id=...&token=...` returns current selection rules state (not used by the UI).
+
 ### Today Summary (2026-01-21)
 - Telegram winner notifications are now sent only after LIS-Skins provides `steam_trade_offer_expiry_at`, via a background trigger (`lis_skins_purchases.telegram_notified_at`).
 - Added retry flow for LIS-Skins `trade_create_error`/`buy_error` with up to 5 attempts and 30s delay; failures notify the streamer in Telegram with error reasons.
