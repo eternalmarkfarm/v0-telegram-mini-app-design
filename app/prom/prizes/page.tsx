@@ -16,6 +16,7 @@ export default function Prizes() {
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const [items, setItems] = useState<PrizeData[]>([]);
   const { twitchLogin } = useViewerStatus();
+  const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
 
   const mapStatus = (status?: string | null): PrizeData["status"] => {
     if (status === "success") return "received";
@@ -40,12 +41,15 @@ export default function Prizes() {
     const load = async () => {
       try {
         await ensureAuth();
+        const profile = await apiGet("/viewer/profile").catch(() => null);
+        setViewerAvatar(profile?.profile_image_url ?? null);
         await apiPost("/viewer/prizes/refresh", {});
         const res = await apiGet("/viewer/prizes?limit=30");
         const mapped = (res?.items ?? []).map((item: any) => ({
           id: String(item.id),
           streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
           winnerNick: twitchLogin || "you",
+          winnerAvatar: profile?.profile_image_url ?? undefined,
           time: formatTime(item.created_at),
           trigger: getEventLabel(item.event_key),
           deadline: formatTime(item.trade_offer_expiry_at),

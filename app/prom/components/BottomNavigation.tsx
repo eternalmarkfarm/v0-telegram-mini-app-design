@@ -52,8 +52,10 @@ export default function BottomNavigation() {
         {/* Нижняя панель как на рефе */}
         <div className="relative pb-0">
           <div
-            className="relative bg-[#202436]/90 backdrop-blur-[22px] border border-white/5 rounded-t-[12px] rounded-b-none px-1 py-1.5"
+            className="absolute left-1/2 -translate-x-1/2 top-0 h-full bg-[#202436]/90 backdrop-blur-[22px] border border-white/5 rounded-t-[12px] rounded-b-none"
             style={{
+              width: 'calc(100% + 32px)',
+              maxWidth: 'calc(28rem + 32px)',
               boxShadow: '0 10px 26px rgba(6, 9, 24, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
               WebkitMaskImage: diceCutoutMask,
               maskImage: diceCutoutMask,
@@ -62,18 +64,21 @@ export default function BottomNavigation() {
               WebkitMaskSize: '100% 100%',
               maskSize: '100% 100%',
             }}
-          >
-            <div
-              className="pointer-events-none absolute inset-0 rounded-t-[12px] rounded-b-none border border-white/10"
-              style={{
-                WebkitMaskImage: diceCutoutMask,
-                maskImage: diceCutoutMask,
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskSize: '100% 100%',
-                maskSize: '100% 100%',
-              }}
-            ></div>
+          ></div>
+          <div
+            className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-0 h-full rounded-t-[12px] rounded-b-none border border-white/10"
+            style={{
+              width: 'calc(100% + 32px)',
+              maxWidth: 'calc(28rem + 32px)',
+              WebkitMaskImage: diceCutoutMask,
+              maskImage: diceCutoutMask,
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskSize: '100% 100%',
+              maskSize: '100% 100%',
+            }}
+          ></div>
+          <div className="relative px-1 py-1.5">
             <div className="grid grid-cols-[1fr_1fr_80px_1fr_1fr] items-end">
             <Link
               href={to("/")}

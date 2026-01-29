@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Users, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
@@ -79,6 +79,7 @@ export default function StreamerDetail() {
   const [profile, setProfile] = useState<StreamerProfile | null>(null);
   const [eligibility, setEligibility] = useState<Eligibility | null>(null);
   const [isFollowed, setIsFollowed] = useState(false);
+  const [events, setEvents] = useState<Array<{ id: string; name: string; isActive: boolean }>>([]);
 
   useEffect(() => {
     if (!streamerId) return;
@@ -109,11 +110,34 @@ export default function StreamerDetail() {
     load();
   }, [streamerId]);
 
+  useEffect(() => {
+    if (!streamerId) return;
+    const load = async () => {
+      try {
+        const res = await apiGet(`/streamers/${streamerId}/events`);
+        const items = (res?.items ?? []).map((item: any) => ({
+          id: String(item.event_key ?? item.id ?? Math.random()),
+          name: getEventLabel(item.event_key) || item.event_key,
+          isActive: Boolean(item.enabled),
+        }));
+        setEvents(items);
+      } catch (e) {
+        console.error("Failed to load events:", e);
+        setEvents([]);
+      }
+    };
+    load();
+  }, [streamerId]);
+
   const streamTitle = profile?.streamer?.twitch_display_name || profile?.streamer?.display_name || profile?.streamer?.twitch_login || "Streamer";
   const avatarSrc = profile?.streamer?.profile_image_url || "/prom/twitch_avatar.webp";
   const twitchLogin = profile?.streamer?.twitch_login;
   const liveViewers = profile?.live?.viewer_count ?? 0;
   const participants = profile?.stats?.stream_participants ?? 0;
+  const totalAmount = profile?.stats?.total_amount ?? 0;
+  const totalPrizes = profile?.stats?.total_prizes ?? 0;
+  const streamPrizes = profile?.stats?.stream_prizes ?? 0;
+  const totalAmountLabel = Number.isFinite(Number(totalAmount)) ? `$${Number(totalAmount).toFixed(2)}` : "$0.00";
 
   const recentPrizes = useMemo(() => {
     return (profile?.recent_prizes ?? []).map((item: any) => ({
@@ -216,75 +240,141 @@ export default function StreamerDetail() {
             alt=""
             className="pointer-events-none absolute left-1/2 top-1/2 object-contain z-30"
             style={{
-              width: 200,
-              height: 200,
-              transform: "translate(-50%, -50%) scale(1.2)",
+              width: 260,
+              height: 260,
+              transform: "translate(-50%, -50%) scale(1.42)",
             }}
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9146FF] to-[#5B4BFF] rounded-full blur-md opacity-70"></div>
-          <div className="relative z-10 w-20 h-20 rounded-full border border-white/40 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center shadow-[0_0_24px_rgba(145,70,255,0.35)]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#9146FF] to-[#5B4BFF] rounded-full blur-md opacity-60"></div>
+          <div className="relative w-20 h-20 rounded-full border border-white/40 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center">
             <img src={avatarSrc} alt={streamTitle} className="w-full h-full object-cover" />
           </div>
         </div>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">
-            {streamTitle}
-          </h1>
+        <div>
+          <h2 className="text-xl font-bold text-white">{streamTitle}</h2>
           {profile?.live?.is_live && (
-            <div className="flex items-center gap-2 mt-2">
-              <img src={liveIcon} alt="" className="w-6 h-6" aria-hidden="true" />
-              <span className="text-white font-semibold">LIVE</span>
-              <img src={eyeIcon} alt="" className="w-4 h-4" aria-hidden="true" />
-              <span className="text-white/80">{liveViewers}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <img src={liveIcon} alt="Live" className="w-11 h-11" />
+              <img src={eyeIcon} alt="" className="w-6 h-6 -ml-1" aria-hidden="true" />
+              <span className="text-sm font-semibold text-[#ff4b4b]">{liveViewers}</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="yuze-glass rounded-[16px] px-4 py-4">
-        <div className="grid grid-cols-2 gap-3 text-center">
-          <div className="rounded-[14px] bg-white/5 px-3 py-3">
-            <img src={unicIcon} alt="" className="w-6 h-6 mx-auto mb-2" />
-            <p className="text-white text-lg font-semibold">{participants}</p>
-            <p className="text-[#b3b3ff] text-xs">Сейчас участвуют</p>
-          </div>
-          <div className="rounded-[14px] bg-white/5 px-3 py-3">
-            <img src={trophyIcon} alt="" className="w-6 h-6 mx-auto mb-2" />
-            <p className="text-white text-lg font-semibold">{profile?.stats?.total_prizes ?? 0}</p>
-            <p className="text-[#b3b3ff] text-xs">Уникальные победители</p>
-          </div>
-          <div className="rounded-[14px] bg-white/5 px-3 py-3">
-            <img src={dollarSignIcon} alt="" className="w-6 h-6 mx-auto mb-2" />
-            <p className="text-white text-lg font-semibold">{profile?.stats?.total_amount ?? 0}</p>
-            <p className="text-[#b3b3ff] text-xs">Общая сумма</p>
-          </div>
-          <div className="rounded-[14px] bg-white/5 px-3 py-3">
-            <img src={customerExperienceIcon} alt="" className="w-6 h-6 mx-auto mb-2" />
-            <p className="text-white text-lg font-semibold">{profile?.stats?.stream_prizes ?? 0}</p>
-            <p className="text-[#b3b3ff] text-xs">В розыгрыше</p>
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+          <img src={unicIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
+          <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. участники</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{participants}</p>
+        </div>
+        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+          <img src={dollarSignIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
+          <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Общая стоимость</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-[#00FF9D]">{totalAmountLabel}</p>
+        </div>
+        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+          <img src={trophyIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
+          <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. победители</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{totalPrizes}</p>
+        </div>
+        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+          <img src={customerExperienceIcon} alt="" className="w-8 h-8 mx-auto mb-2" aria-hidden="true" />
+          <p className="text-sm font-['Space_Grotesk'] text-white/85 -mt-2 mb-1">Сейчас участвуют</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{streamPrizes}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {!allConditionsMet && (
+        <div
+          className="bg-red-500/10 border border-red-500/30 rounded-[20px] px-4 py-2 flex items-start gap-3"
+          style={{
+            boxShadow: "0 4px 16px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          <img src={checklistIcon} alt="" className="w-7 h-7 text-red-500 flex-shrink-0 mt-2" aria-hidden="true" />
+          <div>
+            <p className="text-white font-['Space_Grotesk'] font-semibold text-base">Вы не выполнили все условия</p>
+            <p className="text-red-300 font-['Space_Grotesk'] text-sm mt-0">Подробности во вкладке Условия</p>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2">
         <button
           type="button"
           onClick={() => setActiveTab("stats")}
-          className={`text-sm font-semibold transition-all ${activeTab === "stats" ? "text-white" : "text-[#b3b3ff]"}`}
+          className={`flex-1 py-3 px-4 rounded-[16px] font-semibold transition-all duration-300 ${
+            activeTab === "stats" ? "bg-[#5B4BFF] text-white" : "bg-white/5 text-[#b3b3ff]"
+          }`}
         >
-          Призы
+          Статистика
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("events")}
+          className={`flex-1 py-3 px-4 rounded-[16px] font-semibold transition-all duration-300 ${
+            activeTab === "events" ? "bg-[#5B4BFF] text-white" : "bg-white/5 text-[#b3b3ff]"
+          }`}
+        >
+          События
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("conditions")}
-          className={`text-sm font-semibold transition-all ${activeTab === "conditions" ? "text-white" : "text-[#b3b3ff]"}`}
+          className={`flex-1 py-3 px-4 rounded-[16px] font-semibold transition-all duration-300 ${
+            activeTab === "conditions" ? "bg-[#5B4BFF] text-white" : "bg-white/5 text-[#b3b3ff]"
+          }`}
         >
-          Условия
+          <span className="inline-flex items-center gap-2">
+            <img
+              src={allConditionsMet ? insuranceIcon : termsIcon}
+              alt=""
+              className="w-6 h-6"
+              aria-hidden="true"
+            />
+            Условия
+          </span>
         </button>
       </div>
 
-      {activeTab === "conditions" ? (
+      {activeTab === "stats" && (
+        <div className="space-y-3">
+          {recentPrizes.length === 0 ? (
+            <div className="yuze-glass rounded-[14px] px-4 py-6 text-center text-[#b3b3ff]">
+              Призы пока не выдавались.
+            </div>
+          ) : (
+            recentPrizes.map((prize) => <PrizeCard key={prize.id} prize={prize} />)
+          )}
+        </div>
+      )}
+
+      {activeTab === "events" && (
+        <div className="space-y-2">
+          {events.length === 0 ? (
+            <div className="yuze-glass rounded-[12px] px-4 py-3 text-[#b3b3ff]">
+              События пока не настроены.
+            </div>
+          ) : (
+            events.map((event) => (
+              <div key={event.id} className="yuze-glass rounded-[12px] px-4 py-3 flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="text-white font-['Space_Grotesk'] font-semibold">{event.name}</h4>
+                </div>
+                {event.isActive ? (
+                  <img src={checkIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                ) : (
+                  <img src={closeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {activeTab === "conditions" && (
         <div className="space-y-3">
           <div className="yuze-glass-soft rounded-[14px] px-4 py-3 flex items-center gap-3">
             <img src={allConditionsMet ? insuranceIcon : checklistIcon} alt="" className="w-8 h-8" />
@@ -299,16 +389,6 @@ export default function StreamerDetail() {
               <p className="text-white text-sm">{condition.name}</p>
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {recentPrizes.length === 0 ? (
-            <div className="yuze-glass rounded-[14px] px-4 py-6 text-center text-[#b3b3ff]">
-              Призы пока не выдавались.
-            </div>
-          ) : (
-            recentPrizes.map((prize) => <PrizeCard key={prize.id} prize={prize} />)
-          )}
         </div>
       )}
     </div>

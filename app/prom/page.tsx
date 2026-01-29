@@ -51,10 +51,13 @@ export default function Home() {
   const [isIntegrationsOpen, setIsIntegrationsOpen] = useState(false);
   const [tracked, setTracked] = useState<TrackedStreamer[]>([]);
   const [prizes, setPrizes] = useState<HomePrize[]>([]);
+  const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
+  const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(null);
   const needsConnections = !twitchLinked || !steamLinked;
   const base = "/prom";
 
-  const twitchNickname = twitchLogin || 'Twitch User';
+  const twitchNickname = viewerDisplayName || twitchLogin || 'Twitch User';
+  const avatarSrc = viewerAvatar || twitchAvatar;
 
   const handleTwitchConnect = async () => {
     try {
@@ -104,6 +107,25 @@ export default function Home() {
     }, 1000);
     return () => window.clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        await ensureAuth();
+        const res = await apiGet("/viewer/profile");
+        setViewerAvatar(res?.profile_image_url ?? null);
+        setViewerDisplayName(res?.display_name ?? null);
+      } catch (e) {
+        console.error("Failed to load viewer profile:", e);
+      }
+    };
+    if (twitchLinked) {
+      loadProfile();
+    } else {
+      setViewerAvatar(null);
+      setViewerDisplayName(null);
+    }
+  }, [twitchLinked]);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {
@@ -260,7 +282,7 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-br from-[#9146FF] to-[#5B4BFF] rounded-full blur-md opacity-70"></div>
               <div className="relative z-10 w-24 h-24 rounded-full border border-white/40 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center shadow-[0_0_24px_rgba(145,70,255,0.35)]">
-                <img src={twitchAvatar} alt="Twitch Avatar" className="w-full h-full object-cover" />
+                <img src={avatarSrc} alt="Twitch Avatar" className="w-full h-full object-cover" />
               </div>
             </div>
             <h2 className="text-2xl font-bold text-white tracking-wide drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">
@@ -491,8 +513,12 @@ export default function Home() {
                 key={prize.id}
                 className="yuze-glass rounded-[12px] px-5 py-3 flex gap-4"
               >
-                <div className="w-16 h-16 rounded-[10px] bg-gradient-to-br from-[#1c233f] to-[#13192f] border border-white/10 flex items-center justify-center text-xs text-[#b3b3ff]">
-                  Skin
+                <div className="w-16 h-16 rounded-[10px] bg-gradient-to-br from-[#1c233f] to-[#13192f] border border-white/10 flex items-center justify-center text-xs text-[#b3b3ff] overflow-hidden">
+                  {viewerAvatar ? (
+                    <img src={viewerAvatar} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+                  ) : (
+                    "Skin"
+                  )}
                 </div>
                 <div className="flex-1">
                   <h4 className="text-white font-semibold">{prize.skin}</h4>

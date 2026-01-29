@@ -84,8 +84,8 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
   return (
     <div className="yuze-glass rounded-[16px] px-5 py-4">
       <div className="flex items-start">
-        <div className="flex items-start gap-3 -ml-4 -mt-3 flex-1 min-w-0">
-          <div className="relative w-[68px] h-[68px] shrink-0 translate-y-1">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="relative w-[68px] h-[68px] shrink-0">
             <img
               src={avatarSrc}
               alt={prize.winnerNick}
@@ -98,7 +98,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               <img src={gameIcon} alt={gameLabel} className="w-4 h-4" />
             </div>
           </div>
-          <div className="grid grid-cols-[115px_115px_56px] items-start gap-1 mt-1 min-w-0">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_56px] items-start gap-2 min-w-0">
             <div className="flex flex-col min-w-0 order-1">
               <div className="flex items-center gap-0.5 text-xs text-[#b3b3ff] -ml-1 h-6 min-w-0">
                 <img src={trophyIcon} alt="Trophy" className="w-6 h-6 -ml-0.5" />
@@ -135,7 +135,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
                 <span>{prize.deadline}</span>
               </div>
             </div>
-            <div className="flex flex-col items-center -mt-1 order-3 w-[56px]">
+            <div className="flex flex-col items-center order-3 w-[56px]">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>
