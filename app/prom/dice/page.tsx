@@ -43,6 +43,7 @@ export default function Dice() {
             id: String(item.id),
             streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
             winnerNick: item.winner_twitch_login || "viewer",
+            winnerAvatar: item.winner_profile_image_url || undefined,
             time,
             trigger: getEventLabel(item.event_key),
             deadline: time,

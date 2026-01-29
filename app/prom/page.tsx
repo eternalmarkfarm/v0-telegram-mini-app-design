@@ -153,7 +153,7 @@ export default function Home() {
   };
 
   const mapPrizeStatus = (status?: string | null): HomePrize["status"] => {
-    if (status === "success") return "success";
+    if (status === "success") return "received";
     if (status === "not_claimed" || status === "failed") return "fail";
     if (status === "sent") return "delivery";
     return "delivery";
