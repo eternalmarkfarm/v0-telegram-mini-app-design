@@ -44,6 +44,7 @@ export default function StreamerPrizes() {
           id: String(item.id),
           streamerName: me?.streamer?.twitch_login || me?.streamer?.display_name || "Streamer",
           winnerNick: item.twitch_login || "viewer",
+          winnerAvatar: item.winner_profile_image_url || undefined,
           time: formatTime(item.created_at),
           trigger: getEventLabel(item.event_key),
           deadline: formatTime(item.trade_offer_expiry_at),
