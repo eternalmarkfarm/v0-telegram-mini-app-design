@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiGet } from "@/lib/api";
@@ -22,7 +22,7 @@ type StreamerItem = {
   isOnline: boolean;
 };
 
-export default function Streamers() {
+function StreamersContent() {
   const searchParams = useSearchParams();
   const [nowMs, setNowMs] = useState(Date.now());
   const [streamers, setStreamers] = useState<StreamerItem[]>([]);
@@ -222,5 +222,21 @@ export default function Streamers() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Streamers() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-md mx-auto px-4 py-6">
+          <div className="yuze-glass rounded-[24px] p-6 text-center text-[#b3b3ff]">
+            Загрузка списка...
+          </div>
+        </div>
+      }
+    >
+      <StreamersContent />
+    </Suspense>
   );
 }
