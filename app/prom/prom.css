@@ -22,6 +22,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   align-items: stretch;
+  container-type: inline-size;
 }
 
 .prom-integrations-btn {
@@ -56,6 +57,51 @@
 
 .prom-tracked-prizes {
   margin-left: 0;
+}
+
+.prom-tracked-card {
+  container-type: inline-size;
+}
+
+@container (max-width: 360px) {
+  .prom-integrations-row {
+    gap: 12px;
+  }
+
+  .prom-integrations-label {
+    font-size: 13px;
+    letter-spacing: -0.01em;
+  }
+}
+
+@container (max-width: 320px) {
+  .prom-integrations-row {
+    gap: 10px;
+  }
+
+  .prom-integrations-btn {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .prom-integrations-label {
+    font-size: 12px;
+  }
+}
+
+@container (max-width: 360px) {
+  .prom-tracked-row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    row-gap: 6px;
+  }
+
+  .prom-tracked-side {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    max-width: none;
+    width: 100%;
+  }
 }
 
 .tg-linux .prom-prize-meta {
