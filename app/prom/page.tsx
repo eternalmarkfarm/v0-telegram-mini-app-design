@@ -446,7 +446,7 @@ export default function Home() {
                         </div>
                       )}
                     </div>
-                    <div className="prom-tracked-side flex items-end gap-4 -mt-2">
+                    <div className="prom-tracked-side -mt-2">
                       {streamer.isOnline ? (
                         <div className="flex flex-col items-center gap-0 -mt-1 w-20">
                           <img
@@ -466,15 +466,13 @@ export default function Home() {
                           <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                         </div>
                       )}
-                      <div className="prom-tracked-stats grid grid-cols-2 gap-x-4 gap-y-1 text-center">
-                        <div className={`prom-tracked-prizes flex flex-col items-center ${streamer.isOnline ? '' : '-ml-6'}`}>
-                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                          <p className="prom-tracked-stat text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
-                          <p className="prom-tracked-stat mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
-                        </div>
+                      <div className={`prom-tracked-prizes flex flex-col items-center ${streamer.isOnline ? '' : '-ml-6'}`}>
+                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        <p className="prom-tracked-stat text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
+                      </div>
+                      <div className="prom-tracked-value flex flex-col items-center">
+                        <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
+                        <p className="prom-tracked-stat mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
                       </div>
                     </div>
                   </div>

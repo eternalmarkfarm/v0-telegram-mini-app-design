@@ -44,23 +44,16 @@
 }
 
 .prom-tracked-side {
-  display: flex;
+  display: grid;
+  grid-template-columns: 56px 44px 56px;
   align-items: center;
-  gap: 12px;
-  flex-wrap: nowrap;
-  justify-content: flex-end;
-  max-width: 220px;
-  white-space: nowrap;
+  column-gap: 10px;
+  justify-content: end;
 }
 
-.prom-tracked-stats {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.prom-tracked-prizes {
-  margin-left: 0;
+.prom-tracked-prizes,
+.prom-tracked-value {
+  min-width: 44px;
 }
 
 .prom-tracked-card {
@@ -151,8 +144,7 @@
 }
 
 .tg-linux .prom-tracked-side {
-  gap: 8px;
-  max-width: 200px;
+  column-gap: 8px;
 }
 
 .tg-linux .prom-integrations-btn {
