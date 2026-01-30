@@ -26,9 +26,26 @@
 }
 
 .prom-integrations-card {
-  box-shadow: 0 12px 32px rgba(5, 8, 24, 0.4);
+  position: relative;
+  overflow: hidden;
   border: none;
+  background: transparent;
+  box-shadow: 0 12px 32px rgba(5, 8, 24, 0.4);
+}
+
+.prom-integrations-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
   background: linear-gradient(135deg, rgba(28, 32, 56, 0.92), rgba(36, 42, 72, 0.92));
+  backdrop-filter: blur(16px);
+  z-index: 0;
+}
+
+.prom-integrations-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .prom-integrations-btn {
