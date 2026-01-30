@@ -175,7 +175,7 @@ function StreamersContent() {
                           <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
                         </div>
                         <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
                           <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
                         </div>
                       </div>
@@ -221,7 +221,7 @@ function StreamersContent() {
                           <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
                         </div>
                         <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
                           <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
                         </div>
                       </div>
