@@ -186,6 +186,7 @@ export default function Home() {
   const loadPrizes = async () => {
     try {
       await ensureAuth();
+      await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
       const res = await apiGet("/viewer/prizes?limit=3");
       const items = res?.items ?? [];
       const mapped = items.map((item: any) => ({
