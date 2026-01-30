@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
 const iconSuperdropInactive = "/prom/medal_black.svg";
 const iconSuperdropActive = "/prom/medal_color.svg";
 const diceIcon = "/prom/dice_bw.png";
@@ -15,8 +16,9 @@ const forStreamersActive = "/prom/user-setting_new.svg";
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  const [hasStreamPanel] = useState(false); // Будет меняться при создании панели
+  const { data: streamerMe } = useStreamerMe();
   const [liveStreamersCount] = useState(3); // Моковые данные для LIVE индикатора
+  const hasStreamPanel = Boolean(streamerMe?.streamer?.id);
 
   const base = "/prom";
   const path = pathname?.startsWith(base) ? pathname.slice(base.length) || "/" : pathname || "/";

@@ -17,8 +17,8 @@ type StreamerItem = {
   avatar?: string | null;
   viewers?: number | null;
   streamStartMs: number;
-  totalPrizes: number;
-  totalValue: string;
+  totalPrizes?: number | null;
+  totalValue?: string | null;
   isOnline: boolean;
 };
 
@@ -52,17 +52,26 @@ function StreamersContent() {
         const all = listRes?.streamers ?? [];
         const liveMap = new Map<number, any>();
         live.forEach((s: any) => liveMap.set(s.id, s));
+        const statsResponses = await Promise.all(
+          all.map((s: any) => apiGet(`/streamers/${s.id}`).catch(() => null))
+        );
+        const statsById = new Map<number, any>();
+        statsResponses.forEach((res: any) => {
+          if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
+        });
+
         const merged = all.map((s: any) => {
           const liveRow = liveMap.get(s.id);
           const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
+          const statsRow = statsById.get(s.id);
           return {
             id: s.id,
             nickname: liveRow?.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
             avatar: liveRow?.profile_image_url || null,
             viewers: liveRow?.viewer_count ?? 0,
             streamStartMs: startedAt || 0,
-            totalPrizes: 0,
-            totalValue: "$0.00",
+            totalPrizes: typeof statsRow?.total_prizes === "number" ? statsRow.total_prizes : null,
+            totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : null,
             isOnline: Boolean(liveRow?.is_live),
           } as StreamerItem;
         });
@@ -158,16 +167,18 @@ function StreamersContent() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-center">
-                      <div className={`flex flex-col items-center ${streamer.isOnline ? "" : "-ml-6"}`}>
-                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                        <p className="text-base font-semibold text-white">{streamer.totalPrizes}</p>
+                    {(streamer.totalPrizes !== null || streamer.totalValue) && (
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-center">
+                        <div className={`flex flex-col items-center ${streamer.isOnline ? "" : "-ml-6"}`}>
+                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                          <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                          <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                        </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
-                        <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue}</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </Link>
@@ -204,16 +215,18 @@ function StreamersContent() {
                       <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-center">
-                      <div className="flex flex-col items-center -ml-6">
-                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                        <p className="text-base font-semibold text-white">{streamer.totalPrizes}</p>
+                    {(streamer.totalPrizes !== null || streamer.totalValue) && (
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-center">
+                        <div className="flex flex-col items-center -ml-6">
+                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                          <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                          <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                        </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
-                        <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue}</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </Link>
