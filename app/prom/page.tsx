@@ -67,12 +67,22 @@ export default function Home() {
     response?.android_url ||
     response?.url;
 
+  const openExternal = (url: string) => {
+    const tg = (window as any)?.Telegram?.WebApp;
+    if (tg?.openLink) {
+      tg.openLink(url, { try_instant_view: false });
+      return;
+    }
+    window.location.href = url;
+  };
+
   const handleTwitchConnect = async () => {
     try {
       await ensureAuth();
       const response = await apiGet("/twitch/authorize-viewer-link");
-      if (response?.url) {
-        window.location.href = response.url;
+      const url = pickAndroidAuthUrl(response);
+      if (url) {
+        openExternal(url);
       }
     } catch (e) {
       console.error("Twitch connect error:", e);
@@ -88,7 +98,7 @@ export default function Home() {
       const url = pickAndroidAuthUrl(response);
       if (url) {
         setAndroidAuthUrl(url);
-        window.open(url, "_blank");
+        openExternal(url);
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);
@@ -140,6 +150,28 @@ export default function Home() {
     const platform = (window as any)?.Telegram?.WebApp?.platform;
     setIsAndroid(platform === "android" || /Android/i.test(ua));
   }, []);
+
+  useEffect(() => {
+    if (!isAndroid || twitchLinked || androidAuthLoading || androidAuthUrl) return;
+    let cancelled = false;
+    const prefetch = async () => {
+      setAndroidAuthLoading(true);
+      try {
+        await ensureAuth();
+        const response = await apiGet("/twitch/authorize-viewer-link");
+        const url = pickAndroidAuthUrl(response);
+        if (url && !cancelled) setAndroidAuthUrl(url);
+      } catch (e) {
+        console.warn("Android auth prefetch failed:", e);
+      } finally {
+        if (!cancelled) setAndroidAuthLoading(false);
+      }
+    };
+    prefetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAndroid, twitchLinked, androidAuthLoading, androidAuthUrl]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -354,27 +386,35 @@ export default function Home() {
         >
           {isAndroid && !twitchLinked && (
             <div className="mb-3 rounded-[12px] border border-[#5B4BFF]/40 bg-[#1a1f3a]/70 px-3 py-2 text-xs text-[#b3b3ff]">
-              <p className="font-semibold text-white mb-1">Android: возможна проблема с авторизацией</p>
+              <p className="font-semibold text-white mb-1">Android: ссылка для авторизации</p>
               <p className="mb-2">
-                Если Telegram не открывает Twitch, используйте кнопку ниже — откроется браузер с авторизацией.
+                Откройте ссылку ниже в браузере (это рабочий вариант для Android).
               </p>
-              <button
-                type="button"
-                onClick={handleAndroidAuth}
-                className="w-full rounded-[10px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
-              >
-                {androidAuthLoading ? "Готовим ссылку..." : "Открыть авторизацию"}
-              </button>
-              {androidAuthUrl && (
-                <a
-                  href={androidAuthUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex text-[#7BB6FF] underline"
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleAndroidAuth}
+                  className="flex-1 rounded-[10px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
                 >
-                  Открыть ссылку в браузере
-                </a>
-              )}
+                  {androidAuthLoading ? "Готовим..." : "Открыть"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (androidAuthUrl) navigator.clipboard?.writeText(androidAuthUrl);
+                  }}
+                  className="rounded-[10px] px-3 py-2 text-white/90 bg-white/10"
+                >
+                  Копировать
+                </button>
+              </div>
+              <input
+                className="mt-2 w-full rounded-[8px] bg-[#12162a] border border-white/10 px-2 py-1 text-[11px] text-white/80"
+                value={androidAuthUrl ?? ""}
+                readOnly
+                placeholder="Ссылка подгружается..."
+                onFocus={(e) => e.currentTarget.select()}
+              />
             </div>
           )}
           <div className="prom-integrations-row flex gap-5">

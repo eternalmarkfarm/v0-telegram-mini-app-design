@@ -24,6 +24,32 @@ export default function BeginStreamer() {
     setIsAndroid(platform === "android" || /Android/i.test(ua));
   }, []);
 
+  useEffect(() => {
+    if (!isAndroid || androidAuthLoading || androidAuthUrl) return;
+    let cancelled = false;
+    const prefetch = async () => {
+      setAndroidAuthLoading(true);
+      try {
+        await ensureAuth();
+        const response = await apiGet("/twitch/authorize-streamer-link");
+        const url =
+          response?.short_url ||
+          response?.shortUrl ||
+          response?.android_url ||
+          response?.url;
+        if (url && !cancelled) setAndroidAuthUrl(url);
+      } catch (e) {
+        console.warn("Android auth prefetch failed:", e);
+      } finally {
+        if (!cancelled) setAndroidAuthLoading(false);
+      }
+    };
+    prefetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAndroid, androidAuthLoading, androidAuthUrl]);
+
   const handleAndroidAuth = async () => {
     if (androidAuthLoading) return;
     setAndroidAuthLoading(true);
@@ -37,7 +63,12 @@ export default function BeginStreamer() {
         response?.url;
       if (url) {
         setAndroidAuthUrl(url);
-        window.open(url, "_blank");
+        const tg = (window as any)?.Telegram?.WebApp;
+        if (tg?.openLink) {
+          tg.openLink(url, { try_instant_view: false });
+        } else {
+          window.location.href = url;
+        }
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);
@@ -116,27 +147,35 @@ export default function BeginStreamer() {
 
         {isAndroid && (
           <div className="mb-4 rounded-[14px] border border-[#5B4BFF]/40 bg-[#1a1f3a]/70 px-3 py-2 text-xs text-[#b3b3ff]">
-            <p className="font-semibold text-white mb-1">Android: возможна проблема с авторизацией</p>
+            <p className="font-semibold text-white mb-1">Android: ссылка для авторизации</p>
             <p className="mb-2">
-              Если Telegram не открывает Twitch, используйте кнопку ниже — откроется браузер с авторизацией.
+              Откройте ссылку ниже в браузере (это рабочий вариант для Android).
             </p>
-            <button
-              type="button"
-              onClick={handleAndroidAuth}
-              className="w-full rounded-[12px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
-            >
-              {androidAuthLoading ? "Готовим ссылку..." : "Открыть авторизацию"}
-            </button>
-            {androidAuthUrl && (
-              <a
-                href={androidAuthUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-flex text-[#7BB6FF] underline"
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleAndroidAuth}
+                className="flex-1 rounded-[12px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
               >
-                Открыть ссылку в браузере
-              </a>
-            )}
+                {androidAuthLoading ? "Готовим..." : "Открыть"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (androidAuthUrl) navigator.clipboard?.writeText(androidAuthUrl);
+                }}
+                className="rounded-[12px] px-3 py-2 text-white/90 bg-white/10"
+              >
+                Копировать
+              </button>
+            </div>
+            <input
+              className="mt-2 w-full rounded-[8px] bg-[#12162a] border border-white/10 px-2 py-1 text-[11px] text-white/80"
+              value={androidAuthUrl ?? ""}
+              readOnly
+              placeholder="Ссылка подгружается..."
+              onFocus={(e) => e.currentTarget.select()}
+            />
           </div>
         )}
 

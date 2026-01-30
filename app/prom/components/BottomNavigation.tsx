@@ -24,7 +24,7 @@ export default function BottomNavigation() {
   const path = pathname?.startsWith(base) ? pathname.slice(base.length) || "/" : pathname || "/";
   const to = (p: string) => (p === "/" ? base : `${base}${p}`);
   const streamPanelPath = hasStreamPanel ? to('/stream-panel') : to('/begin-streamer');
-  const streamPanelLabel = hasStreamPanel ? 'Stream Panel' : 'For Streamers';
+  const streamPanelLabel = 'For Streamers';
   const diceCutoutMask = 'radial-gradient(46px 46px at 50% 2px, transparent 98%, black 100%)';
   const isDiceSection = path.startsWith('/dice');
   const isStreamersSection = path.startsWith('/streamers');
@@ -180,16 +180,10 @@ export default function BottomNavigation() {
                   }}
                 />
               )}
-              {hasStreamPanel ? (
-                <span className={`text-[11px] font-medium ${isStreamPanelSection ? 'text-[#b3b3ff]' : 'text-white'}`}>
-                  {streamPanelLabel}
-                </span>
-              ) : (
-                <span className={`text-[11px] font-medium leading-[12px] text-center ${isStreamPanelSection ? 'text-[#b3b3ff]' : 'text-white'}`}>
-                  <span className="block">For</span>
-                  <span className="block">Streamers</span>
-                </span>
-              )}
+              <span className={`text-[11px] font-medium leading-[12px] text-center ${isStreamPanelSection ? 'text-[#b3b3ff]' : 'text-white'}`}>
+                <span className="block">For</span>
+                <span className="block">Streamers</span>
+              </span>
             </Link>
             </div>
           </div>
