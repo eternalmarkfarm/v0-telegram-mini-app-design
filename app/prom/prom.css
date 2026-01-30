@@ -56,6 +56,12 @@
   min-width: 44px;
 }
 
+.prom-prize-meta {
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.05;
+}
+
 .prom-tracked-card {
   container-type: inline-size;
 }
