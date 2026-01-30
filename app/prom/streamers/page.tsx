@@ -58,8 +58,12 @@ function StreamersContent() {
           all.map((s: any) => apiGet(`/streamers/${s.id}`).catch(() => null))
         );
         const statsById = new Map<number, any>();
+        const streamerById = new Map<number, any>();
         statsResponses.forEach((res: any) => {
-          if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
+          if (res?.streamer?.id) {
+            statsById.set(res.streamer.id, res.stats);
+            streamerById.set(res.streamer.id, res.streamer);
+          }
         });
 
         const merged = all
@@ -67,9 +71,18 @@ function StreamersContent() {
           const liveRow = liveMap.get(s.id);
           const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
           const statsRow = statsById.get(s.id);
-          const rawName = liveRow?.twitch_display_name || s.display_name || "";
+          const streamerRow = streamerById.get(s.id);
+          const rawName =
+            liveRow?.twitch_display_name ||
+            streamerRow?.display_name ||
+            s.display_name ||
+            "";
           const nickname = rawName && rawName !== "Streamer" ? rawName : (s.twitch_login || "");
-          const avatar = liveRow?.profile_image_url || s.profile_image_url || null;
+          const avatar =
+            liveRow?.profile_image_url ||
+            streamerRow?.profile_image_url ||
+            s.profile_image_url ||
+            null;
           return {
             id: s.id,
             nickname,
