@@ -35,7 +35,11 @@ export default function BeginStreamer() {
         const url =
           response?.short_url ||
           response?.shortUrl ||
+          response?.short_link ||
+          response?.shortLink ||
           response?.android_url ||
+          response?.auth_url ||
+          response?.authUrl ||
           response?.url;
         if (url && !cancelled) setAndroidAuthUrl(url);
       } catch (e) {
@@ -59,7 +63,11 @@ export default function BeginStreamer() {
       const url =
         response?.short_url ||
         response?.shortUrl ||
+        response?.short_link ||
+        response?.shortLink ||
         response?.android_url ||
+        response?.auth_url ||
+        response?.authUrl ||
         response?.url;
       if (url) {
         setAndroidAuthUrl(url);
@@ -173,7 +181,7 @@ export default function BeginStreamer() {
               className="mt-2 w-full rounded-[8px] bg-[#12162a] border border-white/10 px-2 py-1 text-[11px] text-white/80"
               value={androidAuthUrl ?? ""}
               readOnly
-              placeholder="Ссылка подгружается..."
+              placeholder={androidAuthLoading ? "Ссылка подгружается..." : "Не удалось получить ссылку"}
               onFocus={(e) => e.currentTarget.select()}
             />
           </div>
