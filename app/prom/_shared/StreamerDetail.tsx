@@ -370,7 +370,7 @@ export default function StreamerDetail() {
             activeTab === "conditions" ? "bg-[#5B4BFF] text-white" : "bg-white/5 text-[#b3b3ff]"
           }`}
         >
-          <span className="inline-flex items-center gap-2">
+          <span className="inline-flex items-center justify-center w-full gap-2">
             <img
               src={allConditionsMet ? insuranceIcon : termsIcon}
               alt=""

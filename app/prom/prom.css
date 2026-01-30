@@ -88,6 +88,16 @@
   line-height: 1.05;
 }
 
+.tg-android .prom-prize-meta {
+  font-size: 12px;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.tg-android .prom-prize-trigger {
+  line-height: 1.25;
+}
+
 .prom-tracked-card {
   container-type: inline-size;
 }

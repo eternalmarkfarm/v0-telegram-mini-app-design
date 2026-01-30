@@ -61,6 +61,12 @@ export default function Home() {
   const twitchNickname = viewerDisplayName || twitchLogin || 'Twitch User';
   const avatarSrc = viewerAvatar || twitchAvatar;
 
+  const pickAndroidAuthUrl = (response: any) =>
+    response?.short_url ||
+    response?.shortUrl ||
+    response?.android_url ||
+    response?.url;
+
   const handleTwitchConnect = async () => {
     try {
       await ensureAuth();
@@ -79,9 +85,10 @@ export default function Home() {
     try {
       await ensureAuth();
       const response = await apiGet("/twitch/authorize-viewer-link");
-      if (response?.url) {
-        setAndroidAuthUrl(response.url);
-        window.open(response.url, "_blank");
+      const url = pickAndroidAuthUrl(response);
+      if (url) {
+        setAndroidAuthUrl(url);
+        window.open(url, "_blank");
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);

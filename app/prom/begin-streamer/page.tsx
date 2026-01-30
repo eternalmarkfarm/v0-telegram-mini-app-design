@@ -30,9 +30,14 @@ export default function BeginStreamer() {
     try {
       await ensureAuth();
       const response = await apiGet("/twitch/authorize-streamer-link");
-      if (response?.url) {
-        setAndroidAuthUrl(response.url);
-        window.open(response.url, "_blank");
+      const url =
+        response?.short_url ||
+        response?.shortUrl ||
+        response?.android_url ||
+        response?.url;
+      if (url) {
+        setAndroidAuthUrl(url);
+        window.open(url, "_blank");
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);
