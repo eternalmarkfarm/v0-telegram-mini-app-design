@@ -17,76 +17,75 @@
   scrollbar-gutter: stable;
 }
 
-.tg-linux .prom-prize-meta,
-.tg-tdesktop .prom-prize-meta {
+.tg-linux .prom-prize-meta {
   font-size: 10px;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-prize-trigger,
-.tg-tdesktop .prom-prize-trigger {
+.tg-linux .prom-prize-trigger {
   font-size: 11px;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-name,
-.tg-tdesktop .prom-tracked-name {
+.tg-linux .prom-tracked-name {
   font-size: 17px;
   line-height: 1.1;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-viewers,
-.tg-tdesktop .prom-tracked-viewers {
+.tg-linux .prom-tracked-viewers {
   font-size: 13px;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-timer,
-.tg-tdesktop .prom-tracked-timer {
+.tg-linux .prom-tracked-timer {
   font-size: 14px;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-stat,
-.tg-tdesktop .prom-tracked-stat {
+.tg-linux .prom-tracked-stat {
   font-size: 14px;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-integrations-row,
-.tg-tdesktop .prom-integrations-row {
+.tg-linux .prom-integrations-row {
   gap: 12px;
+  align-items: stretch;
 }
 
-.tg-linux .prom-integrations-btn,
-.tg-tdesktop .prom-integrations-btn {
+.tg-linux .prom-integrations-btn {
   padding-left: 10px;
   padding-right: 10px;
+  min-height: 50px;
+  overflow: hidden;
 }
 
-.tg-linux .prom-integrations-label,
-.tg-tdesktop .prom-integrations-label {
+.tg-linux .prom-integrations-label {
   font-size: 13px;
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-main,
-.tg-tdesktop .prom-tracked-main {
+.tg-linux .prom-tracked-main {
   min-width: 120px;
 }
 
-.tg-linux .prom-tracked-side,
-.tg-tdesktop .prom-tracked-side {
+.tg-linux .prom-tracked-side {
   gap: 10px;
 }
 
-.tg-linux .prom-live-badge,
-.tg-tdesktop .prom-live-badge {
+.tg-linux .prom-live-badge {
   width: 40px;
   height: 40px;
+}
+
+.tg-linux .prom-tracked-stats {
+  gap: 6px 10px;
+}
+
+.tg-linux .prom-tracked-prizes {
+  margin-left: 0;
 }
 
 @keyframes pulse-glow {
