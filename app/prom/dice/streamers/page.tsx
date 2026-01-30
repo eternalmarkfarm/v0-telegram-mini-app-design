@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import StarsBurst from "@/app/prom/components/StarsBurst";
-import { apiGet } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
+import { ensureAuth } from "@/lib/ensureAuth";
 
 const leftArrowIcon = "/prom/left-arrow.svg";
 const star = "/prom/star.svg";
@@ -16,6 +17,8 @@ type LiveStreamer = {
   nickname: string;
   avatar?: string | null;
   matchStartMs: number;
+  matchId?: number | null;
+  matchStatus?: string | null;
 };
 
 export default function DiceStreamers() {
@@ -23,6 +26,8 @@ export default function DiceStreamers() {
   const [nowMs, setNowMs] = useState(Date.now());
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [streamers, setStreamers] = useState<LiveStreamer[]>([]);
+  const [amounts, setAmounts] = useState<Record<number, string>>({});
+  const [sendingId, setSendingId] = useState<number | null>(null);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -40,6 +45,8 @@ export default function DiceStreamers() {
           nickname: s.twitch_display_name || s.twitch_login || `#${s.id}`,
           avatar: s.profile_image_url || null,
           matchStartMs: s.started_at ? Date.parse(s.started_at) : 0,
+          matchId: s.match_id ?? null,
+          matchStatus: s.match_status ?? null,
         }));
         setStreamers(mapped);
       } catch (e) {
@@ -58,6 +65,44 @@ export default function DiceStreamers() {
       hours: String(hours).padStart(2, "0"),
       minutes: String(minutes).padStart(2, "0"),
     };
+  };
+
+  const handleSend = async (streamer: LiveStreamer) => {
+    try {
+      const raw = (amounts[streamer.id] ?? "").trim();
+      const stars = Number.parseInt(raw || "0", 10);
+      if (!streamer.matchId || streamer.matchStatus !== "live") {
+        alert("Донат доступен только во время матча.");
+        return;
+      }
+      if (!Number.isFinite(stars) || stars <= 0) {
+        alert("Введите количество Stars больше 0.");
+        return;
+      }
+      setSendingId(streamer.id);
+      await ensureAuth();
+      const res = await apiPost("/dice/contribute", {
+        match_id: streamer.matchId,
+        stars_amount: stars,
+      });
+      const invoiceUrl = res?.invoice_url;
+      if (!invoiceUrl) {
+        throw new Error("Ссылка на оплату не получена");
+      }
+      const tg = (window as any)?.Telegram?.WebApp;
+      if (tg?.openInvoice) {
+        tg.openInvoice(invoiceUrl);
+      } else if (tg?.openLink) {
+        tg.openLink(invoiceUrl);
+      } else {
+        window.open(invoiceUrl, "_blank");
+      }
+    } catch (e) {
+      console.error("Failed to create invoice:", e);
+      alert("Не удалось создать счет. Попробуйте еще раз.");
+    } finally {
+      setSendingId(null);
+    }
   };
 
   return (
@@ -124,11 +169,15 @@ export default function DiceStreamers() {
               </div>
               <div className="flex flex-col -mt-0.5">
                 <span className="text-white font-semibold text-base">{streamer.nickname}</span>
-                <span className="text-[12px] text-white/70 font-medium">
-                  {formatDuration(streamer.matchStartMs, nowMs).hours}
-                  <span className="mx-0.5 blink-strong">:</span>
-                  {formatDuration(streamer.matchStartMs, nowMs).minutes}
-                </span>
+                {streamer.matchStatus === "live" ? (
+                  <span className="text-[12px] text-white/70 font-medium">
+                    {formatDuration(streamer.matchStartMs, nowMs).hours}
+                    <span className="mx-0.5 blink-strong">:</span>
+                    {formatDuration(streamer.matchStartMs, nowMs).minutes}
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-white/50 font-medium">Матч не идет</span>
+                )}
               </div>
               <img src={starDon} alt="" className="w-8 h-8 ml-1" aria-hidden="true" />
               <input
@@ -137,13 +186,20 @@ export default function DiceStreamers() {
                 pattern="[0-9]*"
                 placeholder="0"
                 className="w-16 h-8 ml-2 rounded-[6px] bg-white/10 border border-white/15 text-white text-sm px-2 text-center outline-none"
+                value={amounts[streamer.id] ?? ""}
+                onChange={(e) =>
+                  setAmounts((prev) => ({ ...prev, [streamer.id]: e.target.value }))
+                }
+                disabled={streamer.matchStatus !== "live"}
               />
             </div>
             <button
               type="button"
+              onClick={() => handleSend(streamer)}
+              disabled={sendingId === streamer.id || streamer.matchStatus !== "live"}
               className="px-4 py-1.5 rounded-[10px] text-[15px] font-['Space_Grotesk'] font-semibold text-[#3b2a00] shadow-[0_8px_18px_rgba(255,200,61,0.35)] bg-gradient-to-r from-[#FFD666] to-[#FFC83D] hover:brightness-110 active:translate-y-[1px] transition"
             >
-              Отправить
+              {sendingId === streamer.id ? "..." : "Отправить"}
             </button>
           </div>
         ))}
