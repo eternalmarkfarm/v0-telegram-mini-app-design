@@ -379,7 +379,7 @@ export default function Home() {
                   ? '#5a2a3a'
                   : '#9146FF',
                 border: 'none',
-                boxShadow: '0 14px 26px rgba(6, 9, 24, 0.45)',
+                boxShadow: 'none',
               }}
             >
               <div className="flex items-center gap-3">
@@ -408,7 +408,7 @@ export default function Home() {
                   ? '#5a2a3a'
                   : 'linear-gradient(140deg, #2E4A62 0%, #27364A 55%, #3E6C90 100%)',
                 border: '0.5px solid rgba(255,255,255,0.2)',
-                boxShadow: '0 14px 26px rgba(6, 9, 24, 0.45)',
+                boxShadow: 'none',
               }}
             >
               <div className="flex items-center gap-3">
