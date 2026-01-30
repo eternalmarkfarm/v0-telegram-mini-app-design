@@ -17,6 +17,47 @@
   scrollbar-gutter: stable;
 }
 
+.prom-integrations-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.prom-integrations-btn {
+  min-width: 0;
+}
+
+.prom-integrations-label {
+  white-space: nowrap;
+}
+
+.prom-tracked-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.prom-tracked-side {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 160px;
+}
+
+.prom-tracked-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+}
+
+.prom-tracked-prizes {
+  margin-left: 0;
+}
+
 .tg-linux .prom-prize-meta {
   font-size: 10px;
   line-height: 1.2;
@@ -50,31 +91,8 @@
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-integrations-row {
-  gap: 10px;
-  align-items: stretch;
-  flex-direction: column;
-}
-
-.tg-linux .prom-integrations-btn {
-  padding-left: 10px;
-  padding-right: 10px;
-  min-height: 50px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.tg-linux .prom-integrations-label {
-  font-size: 13px;
-  letter-spacing: -0.01em;
-}
-
 .tg-linux .prom-tracked-main {
   min-width: 140px;
-}
-
-.tg-linux .prom-tracked-side {
-  gap: 8px;
 }
 
 .tg-linux .prom-live-badge {
@@ -82,23 +100,21 @@
   height: 40px;
 }
 
-.tg-linux .prom-tracked-stats {
-  gap: 6px 10px;
+.tg-linux .prom-integrations-btn {
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 50px;
+  overflow: hidden;
 }
 
-.tg-linux .prom-tracked-prizes {
-  margin-left: 0;
-}
-
-.tg-linux .prom-tracked-row {
-  flex-wrap: wrap;
-  align-items: flex-start;
+.tg-linux .prom-integrations-label {
+  font-size: 13px;
+  letter-spacing: -0.01em;
 }
 
 .tg-linux .prom-tracked-side {
-  width: 100%;
-  justify-content: flex-end;
-  margin-top: 4px;
+  gap: 8px;
+  max-width: 150px;
 }
 
 @keyframes pulse-glow {
