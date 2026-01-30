@@ -376,11 +376,11 @@ export default function Home() {
               className="prom-integrations-btn flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
               style={{
                 background: twitchLinked
-                  ? 'linear-gradient(140deg, rgba(255,85,85,0.18), rgba(255,85,85,0.28))'
+                  ? '#5a2a3a'
                   : '#9146FF',
                 border: 'none',
                 boxShadow: twitchLinked
-                  ? '0 12px 24px rgba(255, 85, 85, 0.25)'
+                  ? '0 10px 22px rgba(255, 85, 85, 0.18)'
                   : '0 16px 28px rgba(145, 70, 255, 0.45)',
               }}
             >
@@ -407,11 +407,11 @@ export default function Home() {
               className="prom-integrations-btn flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
               style={{
                 background: steamLinked
-                  ? 'linear-gradient(140deg, rgba(255,85,85,0.18), rgba(255,85,85,0.28))'
+                  ? '#5a2a3a'
                   : 'linear-gradient(140deg, #2E4A62 0%, #27364A 55%, #3E6C90 100%)',
                 border: '0.5px solid rgba(255,255,255,0.2)',
                 boxShadow: steamLinked
-                  ? '0 12px 24px rgba(255, 85, 85, 0.25)'
+                  ? '0 10px 22px rgba(255, 85, 85, 0.18)'
                   : '0 16px 28px rgba(27, 40, 56, 0.55)',
               }}
             >
