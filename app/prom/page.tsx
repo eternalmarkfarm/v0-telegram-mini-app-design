@@ -340,7 +340,9 @@ export default function Home() {
 
         <div
           className={`transition-all duration-300 ${
-            isIntegrationsOpen ? 'mt-4 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
+            isIntegrationsOpen
+              ? `mt-4 ${isAndroid ? 'max-h-[360px]' : 'max-h-40'} opacity-100`
+              : 'mt-0 max-h-0 opacity-0'
           } overflow-hidden`}
         >
           {isAndroid && !twitchLinked && (
