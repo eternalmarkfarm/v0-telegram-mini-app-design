@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet } from "@/lib/api";
+import { readCache, writeCache } from "@/lib/cache";
 import { getEventLabel } from "@/lib/event-labels";
 
 const chooseStream = "/prom/choosing.svg";
@@ -30,7 +31,9 @@ const mapStatus = (status?: string | null): PrizeData["status"] => {
 };
 
 export default function Dice() {
-  const [prizes, setPrizes] = useState<PrizeData[]>([]);
+  const [prizes, setPrizes] = useState<PrizeData[]>(
+    () => readCache<PrizeData[]>("prom:dice:recent") ?? []
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -52,9 +55,9 @@ export default function Dice() {
           } as PrizeData;
         });
         setPrizes(mapped);
+        writeCache("prom:dice:recent", mapped);
       } catch (e) {
         console.error("Failed to load dice prizes:", e);
-        setPrizes([]);
       }
     };
     load();

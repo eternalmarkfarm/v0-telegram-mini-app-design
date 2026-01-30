@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, Headphones, Gift, Eye } from 'lucide-react';
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet, apiPost } from "@/lib/api";
+import { readCache, writeCache } from "@/lib/cache";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
 import { getEventLabel } from "@/lib/event-labels";
@@ -43,8 +44,12 @@ export default function Home() {
   const [steamTradeUrl, setSteamTradeUrl] = useState('');
   const [nowMs, setNowMs] = useState(Date.now());
   const [isIntegrationsOpen, setIsIntegrationsOpen] = useState(false);
-  const [tracked, setTracked] = useState<TrackedStreamer[]>([]);
-  const [prizes, setPrizes] = useState<HomePrize[]>([]);
+  const [tracked, setTracked] = useState<TrackedStreamer[]>(
+    () => readCache<TrackedStreamer[]>("prom:home:tracked") ?? []
+  );
+  const [prizes, setPrizes] = useState<HomePrize[]>(
+    () => readCache<HomePrize[]>("prom:home:prizes") ?? []
+  );
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
   const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(null);
   const needsConnections = !twitchLinked || !steamLinked;
@@ -191,9 +196,12 @@ export default function Home() {
           totalPrizes: 12,
           totalValue: "$345.00",
         };
-        setTracked(hasFake ? mapped : [fake, ...mapped]);
+        const next = hasFake ? mapped : [fake, ...mapped];
+        setTracked(next);
+        writeCache("prom:home:tracked", next);
       } else {
         setTracked(mapped);
+        writeCache("prom:home:tracked", mapped);
       }
     } catch (e) {
       console.error("Failed to load tracked:", e);
@@ -208,9 +216,9 @@ export default function Home() {
           totalPrizes: 12,
           totalValue: "$345.00",
         };
-        setTracked([fake]);
-      } else {
-        setTracked([]);
+        const next = [fake];
+        setTracked(next);
+        writeCache("prom:home:tracked", next);
       }
     }
   };
@@ -238,9 +246,9 @@ export default function Home() {
         game: "dota",
       })) as HomePrize[];
       setPrizes(mapped);
+      writeCache("prom:home:prizes", mapped);
     } catch (e) {
       console.error("Failed to load prizes:", e);
-      setPrizes([]);
     }
   };
 
