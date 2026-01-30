@@ -51,8 +51,9 @@
 }
 
 .tg-linux .prom-integrations-row {
-  gap: 12px;
+  gap: 10px;
   align-items: stretch;
+  flex-direction: column;
 }
 
 .tg-linux .prom-integrations-btn {
@@ -60,6 +61,7 @@
   padding-right: 10px;
   min-height: 50px;
   overflow: hidden;
+  width: 100%;
 }
 
 .tg-linux .prom-integrations-label {
@@ -68,11 +70,11 @@
 }
 
 .tg-linux .prom-tracked-main {
-  min-width: 120px;
+  min-width: 140px;
 }
 
 .tg-linux .prom-tracked-side {
-  gap: 10px;
+  gap: 8px;
 }
 
 .tg-linux .prom-live-badge {
@@ -86,6 +88,17 @@
 
 .tg-linux .prom-tracked-prizes {
   margin-left: 0;
+}
+
+.tg-linux .prom-tracked-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.tg-linux .prom-tracked-side {
+  width: 100%;
+  justify-content: flex-end;
+  margin-top: 4px;
 }
 
 @keyframes pulse-glow {

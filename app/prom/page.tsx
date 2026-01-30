@@ -421,7 +421,7 @@ export default function Home() {
                   href={`${base}/streamer/${streamer.id}`}
                   className="prom-tracked-card block yuze-glass rounded-[12px] px-5 py-3 hover:bg-white/[0.14] transition-all duration-300"
                 >
-                  <div className="flex items-center gap-3 -ml-2">
+                  <div className="prom-tracked-row flex items-center gap-3 -ml-2">
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-br from-[#9146FF] to-[#5B4BFF] rounded-full blur-sm opacity-50"></div>
                       <div className="relative w-14 h-14 rounded-[12px] border border-white/30 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center">
