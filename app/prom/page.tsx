@@ -187,6 +187,10 @@ export default function Home() {
   const loadPrizes = async () => {
     try {
       await ensureAuth();
+      const profile = await apiGet("/viewer/profile").catch(() => null);
+      const avatar = profile?.profile_image_url ?? null;
+      if (avatar) setViewerAvatar(avatar);
+      if (profile?.display_name) setViewerDisplayName(profile.display_name);
       await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
       const res = await apiGet("/viewer/prizes?limit=3");
       const items = res?.items ?? [];
@@ -194,7 +198,7 @@ export default function Home() {
         id: String(item.id),
         streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
         winnerNick: twitchLogin || "you",
-        winnerAvatar: viewerAvatar || undefined,
+        winnerAvatar: avatar || undefined,
         time: formatPrizeTime(item.created_at),
         trigger: getEventLabel(item.event_key),
         deadline: formatPrizeTime(item.trade_offer_expiry_at),
