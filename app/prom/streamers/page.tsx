@@ -68,7 +68,8 @@ function StreamersContent() {
           const liveRow = liveMap.get(s.id);
           const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
           const statsRow = statsById.get(s.id);
-          const nickname = liveRow?.twitch_display_name || s.display_name || s.twitch_login || "";
+          const rawName = liveRow?.twitch_display_name || s.display_name || "";
+          const nickname = rawName && rawName !== "Streamer" ? rawName : (s.twitch_login || "");
           const avatar = liveRow?.profile_image_url || s.profile_image_url || null;
           return {
             id: s.id,
