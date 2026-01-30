@@ -6,8 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import { readCache, writeCache } from "@/lib/cache";
 
-const strPrizeIcon = "/prom/str_prize.svg";
-const dollarIcon = "/prom/dollar.svg";
+const strPrizeIcon = "/prom/medal_new.svg";
+const dollarIcon = "/prom/dollar-sign.svg";
 const eyeIcon = "/prom/eye1.svg";
 const liveStreamingIcon = "/prom/live_badge.svg";
 const offlineIcon = "/prom/user.svg";
@@ -29,7 +29,7 @@ function StreamersContent() {
   const [streamers, setStreamers] = useState<StreamerItem[]>(
     () => readCache<StreamerItem[]>("prom:streamers:list") ?? []
   );
-  const [loading, setLoading] = useState<boolean>(streamers.length === 0);
+  const [loaded, setLoaded] = useState<boolean>(streamers.length > 0);
   const base = "/prom";
   const onlineOnly = searchParams.get("online") === "1";
   const visibleStreamers = onlineOnly ? streamers.filter((streamer) => streamer.isOnline) : streamers;
@@ -45,7 +45,6 @@ function StreamersContent() {
 
   useEffect(() => {
     const load = async () => {
-      setLoading(true);
       try {
         const [liveRes, listRes] = await Promise.all([
           apiGet("/streamers/live").catch(() => ({ streamers: [] })),
@@ -88,7 +87,7 @@ function StreamersContent() {
       } catch (e) {
         console.error("Failed to load streamers:", e);
       } finally {
-        setLoading(false);
+        setLoaded(true);
       }
     };
     load();
@@ -116,11 +115,7 @@ function StreamersContent() {
       </h1>
 
       <div className="space-y-3">
-        {loading ? (
-          <div className="yuze-glass rounded-[24px] p-6 text-center text-[#b3b3ff]">
-            Загрузка списка...
-          </div>
-        ) : visibleStreamers.length === 0 ? (
+        {loaded && visibleStreamers.length === 0 ? (
           <div className="yuze-glass rounded-[24px] p-6 text-center text-[#b3b3ff]">
             Онлайн-стримеров пока нет.
           </div>
