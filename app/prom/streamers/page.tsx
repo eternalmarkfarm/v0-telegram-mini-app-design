@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiGet } from "@/lib/api";
+import { readCache, writeCache } from "@/lib/cache";
 
 const strPrizeIcon = "/prom/str_prize.svg";
 const dollarIcon = "/prom/dollar.svg";
@@ -25,8 +26,10 @@ type StreamerItem = {
 function StreamersContent() {
   const searchParams = useSearchParams();
   const [nowMs, setNowMs] = useState(Date.now());
-  const [streamers, setStreamers] = useState<StreamerItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [streamers, setStreamers] = useState<StreamerItem[]>(
+    () => readCache<StreamerItem[]>("prom:streamers:list") ?? []
+  );
+  const [loading, setLoading] = useState<boolean>(streamers.length === 0);
   const base = "/prom";
   const onlineOnly = searchParams.get("online") === "1";
   const visibleStreamers = onlineOnly ? streamers.filter((streamer) => streamer.isOnline) : streamers;
@@ -67,7 +70,7 @@ function StreamersContent() {
           return {
             id: s.id,
             nickname: liveRow?.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
-            avatar: liveRow?.profile_image_url || null,
+            avatar: liveRow?.profile_image_url || s.profile_image_url || null,
             viewers: liveRow?.viewer_count ?? 0,
             streamStartMs: startedAt || 0,
             totalPrizes: typeof statsRow?.total_prizes === "number" ? statsRow.total_prizes : null,
@@ -76,9 +79,9 @@ function StreamersContent() {
           } as StreamerItem;
         });
         setStreamers(merged);
+        writeCache("prom:streamers:list", merged);
       } catch (e) {
         console.error("Failed to load streamers:", e);
-        setStreamers([]);
       } finally {
         setLoading(false);
       }

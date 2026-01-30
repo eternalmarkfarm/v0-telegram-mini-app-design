@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Headphones, Gift, Eye } from 'lucide-react';
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
@@ -9,6 +9,7 @@ import { readCache, writeCache } from "@/lib/cache";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
 import { getEventLabel } from "@/lib/event-labels";
+import { buildCacheKey, readCache as readPromCache, writeCache as writePromCache } from "@/app/prom/lib/cache";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
 const avatarCircle = "/prom/circle.svg";
@@ -40,6 +41,8 @@ type TrackedStreamer = {
 
 export default function Home() {
   const { twitchLinked, steamLinked, twitchLogin, patch: patchViewer } = useViewerStatus();
+  const viewerProfileKey = useMemo(() => buildCacheKey("prom:viewerProfile"), []);
+  const cachedProfile = readPromCache<{ profile_image_url?: string | null; display_name?: string | null }>(viewerProfileKey);
   const [showSteamModal, setShowSteamModal] = useState(false);
   const [steamTradeUrl, setSteamTradeUrl] = useState('');
   const [nowMs, setNowMs] = useState(Date.now());
@@ -50,8 +53,8 @@ export default function Home() {
   const [prizes, setPrizes] = useState<HomePrize[]>(
     () => readCache<HomePrize[]>("prom:home:prizes") ?? []
   );
-  const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
-  const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(null);
+  const [viewerAvatar, setViewerAvatar] = useState<string | null>(cachedProfile?.profile_image_url ?? null);
+  const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(cachedProfile?.display_name ?? null);
   const needsConnections = !twitchLinked || !steamLinked;
   const base = "/prom";
 
@@ -112,8 +115,11 @@ export default function Home() {
       try {
         await ensureAuth();
         const res = await apiGet("/viewer/profile");
-        setViewerAvatar(res?.profile_image_url ?? null);
-        setViewerDisplayName(res?.display_name ?? null);
+        const avatar = res?.profile_image_url ?? null;
+        const name = res?.display_name ?? null;
+        setViewerAvatar(avatar);
+        setViewerDisplayName(name);
+        writePromCache(viewerProfileKey, { profile_image_url: avatar, display_name: name });
       } catch (e) {
         console.error("Failed to load viewer profile:", e);
       }
@@ -230,6 +236,9 @@ export default function Home() {
       const avatar = profile?.profile_image_url ?? null;
       if (avatar) setViewerAvatar(avatar);
       if (profile?.display_name) setViewerDisplayName(profile.display_name);
+      if (avatar || profile?.display_name) {
+        writePromCache(viewerProfileKey, { profile_image_url: avatar, display_name: profile?.display_name ?? null });
+      }
       await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
       const res = await apiGet("/viewer/prizes?limit=3");
       const items = res?.items ?? [];
