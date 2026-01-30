@@ -47,6 +47,7 @@ export default function Home() {
   const [isAndroid, setIsAndroid] = useState(false);
   const [androidAuthUrl, setAndroidAuthUrl] = useState<string | null>(null);
   const [androidAuthLoading, setAndroidAuthLoading] = useState(false);
+  const [androidAuthError, setAndroidAuthError] = useState<string | null>(null);
   const [tracked, setTracked] = useState<TrackedStreamer[]>(
     () => readCache<TrackedStreamer[]>("prom:home:tracked") ?? []
   );
@@ -96,6 +97,7 @@ export default function Home() {
   const handleAndroidAuth = async () => {
     if (androidAuthLoading) return;
     setAndroidAuthLoading(true);
+    setAndroidAuthError(null);
     try {
       await ensureAuth();
       const response = await apiGet("/twitch/authorize-viewer-link");
@@ -103,9 +105,12 @@ export default function Home() {
       if (url) {
         setAndroidAuthUrl(url);
         openExternal(url);
+      } else {
+        setAndroidAuthError("Не удалось получить ссылку");
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);
+      setAndroidAuthError("Не удалось получить ссылку");
     } finally {
       setAndroidAuthLoading(false);
     }
@@ -155,27 +160,7 @@ export default function Home() {
     setIsAndroid(platform === "android" || /Android/i.test(ua));
   }, []);
 
-  useEffect(() => {
-    if (!isAndroid || twitchLinked || androidAuthLoading || androidAuthUrl) return;
-    let cancelled = false;
-    const prefetch = async () => {
-      setAndroidAuthLoading(true);
-      try {
-        await ensureAuth();
-        const response = await apiGet("/twitch/authorize-viewer-link");
-        const url = pickAndroidAuthUrl(response);
-        if (url && !cancelled) setAndroidAuthUrl(url);
-      } catch (e) {
-        console.warn("Android auth prefetch failed:", e);
-      } finally {
-        if (!cancelled) setAndroidAuthLoading(false);
-      }
-    };
-    prefetch();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAndroid, twitchLinked, androidAuthLoading, androidAuthUrl]);
+  // no auto-prefetch on Android; user explicitly requests link
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -400,7 +385,7 @@ export default function Home() {
                   onClick={handleAndroidAuth}
                   className="flex-1 rounded-[10px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
                 >
-                  {androidAuthLoading ? "Готовим..." : "Открыть"}
+                  {androidAuthLoading ? "Получаем..." : "Получить ссылку"}
                 </button>
                 <button
                   type="button"
@@ -416,7 +401,7 @@ export default function Home() {
                 className="mt-2 w-full rounded-[8px] bg-[#12162a] border border-white/10 px-2 py-1 text-[11px] text-white/80"
                 value={androidAuthUrl ?? ""}
                 readOnly
-                placeholder={androidAuthLoading ? "Ссылка подгружается..." : "Не удалось получить ссылку"}
+                placeholder={androidAuthLoading ? "Ссылка подгружается..." : (androidAuthError ?? "Нажмите “Получить ссылку”")}
                 onFocus={(e) => e.currentTarget.select()}
               />
             </div>

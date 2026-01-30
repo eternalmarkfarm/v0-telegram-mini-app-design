@@ -16,6 +16,7 @@ export default function BeginStreamer() {
   const [isAndroid, setIsAndroid] = useState(false);
   const [androidAuthUrl, setAndroidAuthUrl] = useState<string | null>(null);
   const [androidAuthLoading, setAndroidAuthLoading] = useState(false);
+  const [androidAuthError, setAndroidAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -24,39 +25,12 @@ export default function BeginStreamer() {
     setIsAndroid(platform === "android" || /Android/i.test(ua));
   }, []);
 
-  useEffect(() => {
-    if (!isAndroid || androidAuthLoading || androidAuthUrl) return;
-    let cancelled = false;
-    const prefetch = async () => {
-      setAndroidAuthLoading(true);
-      try {
-        await ensureAuth();
-        const response = await apiGet("/twitch/authorize-streamer-link");
-        const url =
-          response?.short_url ||
-          response?.shortUrl ||
-          response?.short_link ||
-          response?.shortLink ||
-          response?.android_url ||
-          response?.auth_url ||
-          response?.authUrl ||
-          response?.url;
-        if (url && !cancelled) setAndroidAuthUrl(url);
-      } catch (e) {
-        console.warn("Android auth prefetch failed:", e);
-      } finally {
-        if (!cancelled) setAndroidAuthLoading(false);
-      }
-    };
-    prefetch();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAndroid, androidAuthLoading, androidAuthUrl]);
+  // no auto-prefetch on Android; user explicitly requests link
 
   const handleAndroidAuth = async () => {
     if (androidAuthLoading) return;
     setAndroidAuthLoading(true);
+    setAndroidAuthError(null);
     try {
       await ensureAuth();
       const response = await apiGet("/twitch/authorize-streamer-link");
@@ -77,9 +51,12 @@ export default function BeginStreamer() {
         } else {
           window.location.href = url;
         }
+      } else {
+        setAndroidAuthError("Не удалось получить ссылку");
       }
     } catch (e) {
       console.error("Android Twitch link error:", e);
+      setAndroidAuthError("Не удалось получить ссылку");
     } finally {
       setAndroidAuthLoading(false);
     }
@@ -165,7 +142,7 @@ export default function BeginStreamer() {
                 onClick={handleAndroidAuth}
                 className="flex-1 rounded-[12px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
               >
-                {androidAuthLoading ? "Готовим..." : "Открыть"}
+                {androidAuthLoading ? "Получаем..." : "Получить ссылку"}
               </button>
               <button
                 type="button"
@@ -181,7 +158,7 @@ export default function BeginStreamer() {
               className="mt-2 w-full rounded-[8px] bg-[#12162a] border border-white/10 px-2 py-1 text-[11px] text-white/80"
               value={androidAuthUrl ?? ""}
               readOnly
-              placeholder={androidAuthLoading ? "Ссылка подгружается..." : "Не удалось получить ссылку"}
+              placeholder={androidAuthLoading ? "Ссылка подгружается..." : (androidAuthError ?? "Нажмите “Получить ссылку”")}
               onFocus={(e) => e.currentTarget.select()}
             />
           </div>
