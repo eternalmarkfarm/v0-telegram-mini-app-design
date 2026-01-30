@@ -419,7 +419,7 @@ export default function Home() {
                 <Link
                   key={streamer.id}
                   href={`${base}/streamer/${streamer.id}`}
-                  className="block yuze-glass rounded-[12px] px-5 py-3 hover:bg-white/[0.14] transition-all duration-300"
+                  className="prom-tracked-card block yuze-glass rounded-[12px] px-5 py-3 hover:bg-white/[0.14] transition-all duration-300"
                 >
                   <div className="flex items-center gap-3 -ml-2">
                     <div className="relative">
@@ -437,12 +437,12 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg">{streamer.nickname}</h3>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="prom-tracked-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
                       {streamer.isOnline && (
                         <div className="flex items-center gap-1 mt-1">
                           <img src={eyeIcon} alt="" className="w-6 h-6" aria-hidden="true" />
-                          <span className="text-sm font-semibold text-white">{streamer.viewers ?? 0}</span>
+                          <span className="prom-tracked-viewers text-sm font-semibold text-white">{streamer.viewers ?? 0}</span>
                         </div>
                       )}
                     </div>
@@ -455,7 +455,7 @@ export default function Home() {
                             className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
                             aria-hidden="true"
                           />
-                          <span className="-mt-2 text-base font-semibold text-white">
+                          <span className="prom-tracked-timer -mt-2 text-base font-semibold text-white">
                             {formatDuration(streamer.streamStartMs, nowMs).hours}
                             <span className="mx-0.5 blink-strong">:</span>
                             {formatDuration(streamer.streamStartMs, nowMs).minutes}
@@ -469,11 +469,11 @@ export default function Home() {
                       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-center">
                         <div className={`flex flex-col items-center ${streamer.isOnline ? '' : '-ml-6'}`}>
                           <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                          <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
+                          <p className="prom-tracked-stat text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
                         </div>
                         <div className="flex flex-col items-center">
                           <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
-                          <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
+                          <p className="prom-tracked-stat mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
                         </div>
                       </div>
                     </div>

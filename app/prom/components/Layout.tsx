@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import BottomNavigation from '@/app/prom/components/BottomNavigation';
 import CosmicBackground from '@/app/prom/components/CosmicBackground';
+import TgPlatformClass from '@/app/prom/components/TgPlatformClass';
 
 type LayoutProps = {
   children: ReactNode;
@@ -9,6 +10,7 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0e1c] via-[#0b1026] to-[#111c44] relative overflow-hidden">
+      <TgPlatformClass />
       {/* Космический фон с частицами */}
       <CosmicBackground />
       

@@ -17,6 +17,39 @@
   scrollbar-gutter: stable;
 }
 
+.tg-linux .prom-prize-meta {
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-prize-trigger {
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-tracked-name {
+  font-size: 17px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-tracked-viewers {
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-tracked-timer {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-tracked-stat {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
