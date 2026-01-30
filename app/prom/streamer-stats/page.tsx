@@ -6,19 +6,13 @@ import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
-const leftArrow = "/prom/left-arrow.png";
-const dollarSignIcon = "/prom/dollar-sign.png";
+const leftArrow = "/prom/left-arrow.svg";
+const dollarSignIcon = "/prom/dollar-sign.svg";
 const strPrizeIcon = "/prom/str_prize.png";
-const approvedIcon = "/prom/approved.png";
-const rewardIcon = "/prom/medal_new.png";
-const menuBarIcon = "/prom/menu-bar1.png";
+const approvedIcon = "/prom/approved.svg";
+const rewardIcon = "/prom/medal_new.svg";
+const menuBarIcon = "/prom/menu-bar1.svg";
 
-
-const BASE_SERIES = [
-  112, 118, 105, 123, 129, 121, 134, 142, 139, 150, 146, 155, 160, 158,
-  172, 168, 181, 176, 190, 185, 197, 210, 204, 218, 212, 226, 234, 229,
-  241, 248, 242, 255, 262, 258, 270, 276, 268, 283, 291, 286,
-];
 
 const DAY_OPTIONS = [7, 14, 30] as const;
 
@@ -40,19 +34,6 @@ const formatTime = (value?: string | null) => {
     minute: "2-digit",
   }).replace(",", "");
 };
-
-function getSeries(days: number) {
-  if (days >= BASE_SERIES.length) {
-    return BASE_SERIES;
-  }
-  const step = Math.floor(BASE_SERIES.length / days);
-  const start = BASE_SERIES.length - days * step;
-  const result: number[] = [];
-  for (let i = 0; i < days; i += 1) {
-    result.push(BASE_SERIES[start + i * step]);
-  }
-  return result;
-}
 
 function buildLinePath(values: number[], width: number, height: number) {
   if (values.length === 0) return "";
@@ -77,25 +58,26 @@ function buildAreaPath(values: number[], width: number, height: number) {
 
 export default function StreamerStats() {
   const [days, setDays] = useState<(typeof DAY_OPTIONS)[number]>(14);
-  const [seriesData, setSeriesData] = useState<number[]>(BASE_SERIES);
+  const [seriesData, setSeriesData] = useState<number[]>([]);
   const [totalSpent, setTotalSpent] = useState("$0.00");
   const [totalSkins, setTotalSkins] = useState("0");
   const [todayIssued, setTodayIssued] = useState("0");
   const [issuedPrizes, setIssuedPrizes] = useState<PrizeData[]>([]);
-  const series = useMemo(() => (seriesData.length ? seriesData : getSeries(days)), [days, seriesData]);
+  const series = seriesData;
+  const hasSeries = series.length > 0;
   const deltas = useMemo(
     () =>
-      series.map((value, index) =>
-        index === 0 ? 0 : value - series[index - 1]
-      ),
-    [series]
+      hasSeries
+        ? series.map((value, index) => (index === 0 ? 0 : value - series[index - 1]))
+        : [],
+    [series, hasSeries]
   );
   const totalNew = useMemo(
-    () => deltas.slice(1).reduce((sum, value) => sum + value, 0),
-    [deltas]
+    () => (hasSeries ? deltas.slice(1).reduce((sum, value) => sum + value, 0) : 0),
+    [deltas, hasSeries]
   );
-  const latest = series[series.length - 1] ?? 0;
-  const prev = series[series.length - 2] ?? latest;
+  const latest = hasSeries ? series[series.length - 1] : 0;
+  const prev = hasSeries && series.length > 1 ? series[series.length - 2] : latest;
   const delta = latest - prev;
   const deltaPct = prev ? Math.round((delta / prev) * 100) : 0;
   const trendUp = delta >= 0;
@@ -103,16 +85,16 @@ export default function StreamerStats() {
   const chartWidth = 320;
   const chartHeight = 120;
   const linePath = useMemo(
-    () => buildLinePath(series, chartWidth, chartHeight),
-    [series]
+    () => (hasSeries ? buildLinePath(series, chartWidth, chartHeight) : ""),
+    [series, hasSeries]
   );
   const areaPath = useMemo(
-    () => buildAreaPath(series, chartWidth, chartHeight),
-    [series]
+    () => (hasSeries ? buildAreaPath(series, chartWidth, chartHeight) : ""),
+    [series, hasSeries]
   );
 
-  const minValue = Math.min(...series);
-  const maxValue = Math.max(...series);
+  const minValue = hasSeries ? Math.min(...series) : 0;
+  const maxValue = hasSeries ? Math.max(...series) : 0;
   const valueRange = Math.max(maxValue - minValue, 1);
   const barBandHeight = 56;
   useEffect(() => {
@@ -207,62 +189,70 @@ export default function StreamerStats() {
 
         <div className="mt-5">
           <div className="relative h-[140px] rounded-[18px] bg-[#10131d] border border-white/5 overflow-hidden">
-            <svg
-              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id="followersArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5B4BFF" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#5B4BFF" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-              <path d={areaPath} fill="url(#followersArea)" />
-              <path
-                d={linePath}
-                fill="none"
-                stroke="#9AA1FF"
-                strokeWidth="2.5"
-              />
-            </svg>
-            <div
-              className="absolute inset-x-4 bottom-4 grid items-end gap-1"
-              style={{
-                gridTemplateColumns: `repeat(${series.length}, minmax(0, 1fr))`,
-              }}
-            >
-              {series.map((value, index) => {
-                const height =
-                  16 + ((value - minValue) / valueRange) * (barBandHeight - 16);
-                const deltaValue = deltas[index];
-                return (
-                  <div
-                    key={`${value}-${index}`}
-                    className="relative flex items-end justify-center"
-                    style={{ height: `${barBandHeight}px` }}
-                  >
-                    <div
-                      className="w-full rounded-full bg-white/10"
-                      style={{ height: `${height}px` }}
-                    />
-                    {days !== 30 && (
-                      <span
-                        className="absolute bottom-1 text-[9px] leading-none text-white/80"
-                        style={{ textShadow: "0 0 6px rgba(0,0,0,0.6)" }}
-                      >
-                        {deltaValue >= 0 ? "+" : ""}
-                        {deltaValue}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            {days === 30 && (
-              <div className="absolute top-4 left-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
-                +{totalNew} за 30 дней
+            {!hasSeries ? (
+              <div className="absolute inset-0 flex items-center justify-center text-sm text-[#b3b3ff]">
+                Нет данных
               </div>
+            ) : (
+              <>
+                <svg
+                  viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                  className="absolute inset-0 w-full h-full"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id="followersArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#5B4BFF" stopOpacity="0.5" />
+                      <stop offset="100%" stopColor="#5B4BFF" stopOpacity="0.05" />
+                    </linearGradient>
+                  </defs>
+                  <path d={areaPath} fill="url(#followersArea)" />
+                  <path
+                    d={linePath}
+                    fill="none"
+                    stroke="#9AA1FF"
+                    strokeWidth="2.5"
+                  />
+                </svg>
+                <div
+                  className="absolute inset-x-4 bottom-4 grid items-end gap-1"
+                  style={{
+                    gridTemplateColumns: `repeat(${series.length}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {series.map((value, index) => {
+                    const height =
+                      16 + ((value - minValue) / valueRange) * (barBandHeight - 16);
+                    const deltaValue = deltas[index];
+                    return (
+                      <div
+                        key={`${value}-${index}`}
+                        className="relative flex items-end justify-center"
+                        style={{ height: `${barBandHeight}px` }}
+                      >
+                        <div
+                          className="w-full rounded-full bg-white/10"
+                          style={{ height: `${height}px` }}
+                        />
+                        {days !== 30 && (
+                          <span
+                            className="absolute bottom-1 text-[9px] leading-none text-white/80"
+                            style={{ textShadow: "0 0 6px rgba(0,0,0,0.6)" }}
+                          >
+                            {deltaValue >= 0 ? "+" : ""}
+                            {deltaValue}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {days === 30 && (
+                  <div className="absolute top-4 left-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                    +{totalNew} за 30 дней
+                  </div>
+                )}
+              </>
             )}
           </div>
           <div className="mt-3 text-xs text-[#9aa1ff] flex items-center justify-between">

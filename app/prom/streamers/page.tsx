@@ -5,11 +5,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiGet } from "@/lib/api";
 
-const strPrizeIcon = "/prom/str_prize.png";
-const dollarIcon = "/prom/dollar.png";
-const eyeIcon = "/prom/eye1.png";
-const liveStreamingIcon = "/prom/live_2.png";
-const offlineIcon = "/prom/user.png";
+const strPrizeIcon = "/prom/str_prize.svg";
+const dollarIcon = "/prom/dollar.svg";
+const eyeIcon = "/prom/eye1.svg";
+const liveStreamingIcon = "/prom/live_badge.svg";
+const offlineIcon = "/prom/user.svg";
 
 type StreamerItem = {
   id: number;

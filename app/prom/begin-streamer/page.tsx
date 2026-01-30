@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Video, TrendingUp } from 'lucide-react';
 import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
-const trophyIcon = "/prom/trophy.png";
-const fireIcon = "/prom/fire.png";
-const statisticsIcon = "/prom/statistics.png";
+const trophyIcon = "/prom/trophy.svg";
+const fireIcon = "/prom/fire.svg";
+const statisticsIcon = "/prom/statistics.svg";
 
 
 export default function BeginStreamer() {

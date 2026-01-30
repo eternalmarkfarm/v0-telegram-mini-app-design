@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import StarsBurst from "@/app/prom/components/StarsBurst";
 import { apiGet } from "@/lib/api";
 
-const leftArrowIcon = "/prom/left-arrow.png";
-const star = "/prom/star.png";
-const starDon = "/prom/star_don.png";
-const infoIcon = "/prom/info.png";
+const leftArrowIcon = "/prom/left-arrow.svg";
+const star = "/prom/star.svg";
+const starDon = "/prom/star_don.svg";
+const infoIcon = "/prom/info_notice.svg";
 
 type LiveStreamer = {
   id: number;

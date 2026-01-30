@@ -7,8 +7,8 @@ import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
-const rewardIcon = "/prom/medal_new.png";
-const leftArrowIcon = "/prom/left-arrow.png";
+const rewardIcon = "/prom/medal_new.svg";
+const leftArrowIcon = "/prom/left-arrow.svg";
 
 
 export default function Prizes() {

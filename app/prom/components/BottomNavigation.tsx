@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 const iconSuperdropInactive = "/prom/medal_black.svg";
-const iconSuperdropActive = "/prom/medal_color.png";
+const iconSuperdropActive = "/prom/medal_color.svg";
 const diceIcon = "/prom/dice_bw.png";
 const diceIconActive = "/prom/dice.png";
 const homeIconMask = "/prom/home_b.svg";
 const streamerIconMask = "/prom/live_black.svg";
 const forStreamersInactive = "/prom/user-setting_new.svg";
-const forStreamersActive = "/prom/user-setting_new.png";
+const forStreamersActive = "/prom/user-setting_new.svg";
 
 
 export default function BottomNavigation() {

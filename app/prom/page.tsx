@@ -10,16 +10,18 @@ import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
 import { getEventLabel } from "@/lib/event-labels";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
-const avatarCircle = "/prom/circle.png";
-const followersIcon = "/prom/group.png";
-const rewardIcon = "/prom/medal_new.png";
-const strPrizeIcon = "/prom/str_prize.png";
-const dollarIcon = "/prom/dollar.png";
-const eyeIcon = "/prom/eye1.png";
-const liveStreamingIcon = "/prom/live_2.png";
-const offlineIcon = "/prom/user.png";
-const menuBarIcon = "/prom/menu-bar1.png";
-const blockIcon = "/prom/block.png";
+const avatarCircle = "/prom/circle.svg";
+const followersIcon = "/prom/group.svg";
+const rewardIcon = "/prom/medal_new.svg";
+const strPrizeIcon = "/prom/medal_new.svg";
+const dollarIcon = "/prom/dollar-sign.svg";
+const eyeIcon = "/prom/eye1.svg";
+const liveStreamingIcon = "/prom/live_badge.svg";
+const offlineIcon = "/prom/user.svg";
+const menuBarIcon = "/prom/menu-bar1.svg";
+const blockIcon = "/prom/block.svg";
+
+const SHOW_FAKE_STREAMER = process.env.NODE_ENV !== "production";
 
 
 type HomePrize = PrizeData;
@@ -177,10 +179,39 @@ export default function Home() {
           totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : "$0.00",
         } as TrackedStreamer;
       });
-      setTracked(mapped);
+      if (SHOW_FAKE_STREAMER) {
+        const hasFake = mapped.some((s) => s.id === 1);
+        const fake: TrackedStreamer = {
+          id: 1,
+          nickname: "DemoStreamer",
+          avatar: "/prom/twitch_avatar.webp",
+          isOnline: true,
+          viewers: 321,
+          streamStartMs: Date.now() - 42 * 60 * 1000,
+          totalPrizes: 12,
+          totalValue: "$345.00",
+        };
+        setTracked(hasFake ? mapped : [fake, ...mapped]);
+      } else {
+        setTracked(mapped);
+      }
     } catch (e) {
       console.error("Failed to load tracked:", e);
-      setTracked([]);
+      if (SHOW_FAKE_STREAMER) {
+        const fake: TrackedStreamer = {
+          id: 1,
+          nickname: "DemoStreamer",
+          avatar: "/prom/twitch_avatar.webp",
+          isOnline: true,
+          viewers: 321,
+          streamStartMs: Date.now() - 42 * 60 * 1000,
+          totalPrizes: 12,
+          totalValue: "$345.00",
+        };
+        setTracked([fake]);
+      } else {
+        setTracked([]);
+      }
     }
   };
 
@@ -441,7 +472,7 @@ export default function Home() {
                           <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
                         </div>
                         <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
                           <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
                         </div>
                       </div>

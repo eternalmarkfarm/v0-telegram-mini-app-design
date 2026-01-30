@@ -8,22 +8,24 @@ import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 
-const leftArrowIcon = "/prom/left-arrow.png";
-const avatarCircle = "/prom/circle.png";
-const addUserIcon = "/prom/add-user.png";
-const deleteUserIcon = "/prom/delete-user.png";
-const liveIcon = "/prom/live_2.png";
-const eyeIcon = "/prom/eye1.png";
-const rewardIcon = "/prom/medal_new.png";
-const trophyIcon = "/prom/trophy.png";
-const unicIcon = "/prom/unic.png";
-const dollarSignIcon = "/prom/dollar-sign.png";
-const customerExperienceIcon = "/prom/customer-experience.png";
-const checklistIcon = "/prom/checklist.png";
-const termsIcon = "/prom/terms-and-conditions.png";
-const insuranceIcon = "/prom/insurance.png";
-const checkIcon = "/prom/check.png";
-const closeIcon = "/prom/close.png";
+const leftArrowIcon = "/prom/left-arrow.svg";
+const avatarCircle = "/prom/circle.svg";
+const addUserIcon = "/prom/add-user.svg";
+const deleteUserIcon = "/prom/delete-user.svg";
+const liveIcon = "/prom/live_badge.svg";
+const eyeIcon = "/prom/eye1.svg";
+const rewardIcon = "/prom/medal_new.svg";
+const trophyIcon = "/prom/trophy.svg";
+const unicIcon = "/prom/unic.svg";
+const dollarSignIcon = "/prom/dollar-sign.svg";
+const customerExperienceIcon = "/prom/customer-experience.svg";
+const checklistIcon = "/prom/checklist.svg";
+const termsIcon = "/prom/terms_notice.svg";
+const insuranceIcon = "/prom/insurance.svg";
+const checkIcon = "/prom/check.svg";
+const closeIcon = "/prom/close.svg";
+
+const SHOW_FAKE_STREAMER = process.env.NODE_ENV !== "production";
 
 const formatTime = (value?: string | null) => {
   if (!value) return "";
@@ -140,7 +142,7 @@ export default function StreamerDetail() {
   const totalAmountLabel = Number.isFinite(Number(totalAmount)) ? `$${Number(totalAmount).toFixed(2)}` : "$0.00";
 
   const recentPrizes = useMemo(() => {
-    return (profile?.recent_prizes ?? []).map((item: any) => ({
+    const mapped = (profile?.recent_prizes ?? []).map((item: any) => ({
       id: String(item.id),
       streamerName: twitchLogin || streamTitle,
       winnerNick: item.twitch_login || "viewer",
@@ -152,6 +154,46 @@ export default function StreamerDetail() {
       status: item.delivery_status === "success" ? "received" : item.delivery_status === "sent" ? "sent" : item.delivery_status === "not_claimed" || item.delivery_status === "failed" ? "missed" : "processing",
       game: "dota",
     })) as PrizeData[];
+
+    if (mapped.length === 0 && SHOW_FAKE_STREAMER) {
+      return [
+        {
+          id: "demo-1",
+          streamerName: twitchLogin || streamTitle,
+          winnerNick: "viewer_one",
+          time: "26.01 17:34",
+          trigger: "Double Kill",
+          deadline: "26.01 17:49",
+          price: "0.12",
+          status: "processing",
+          game: "dota",
+        },
+        {
+          id: "demo-2",
+          streamerName: twitchLogin || streamTitle,
+          winnerNick: "viewer_two",
+          time: "26.01 17:12",
+          trigger: "Triple Kill",
+          deadline: "26.01 17:27",
+          price: "0.15",
+          status: "sent",
+          game: "dota",
+        },
+        {
+          id: "demo-3",
+          streamerName: twitchLogin || streamTitle,
+          winnerNick: "viewer_three",
+          time: "26.01 16:48",
+          trigger: "Rampage",
+          deadline: "26.01 17:03",
+          price: "0.25",
+          status: "received",
+          game: "dota",
+        },
+      ];
+    }
+
+    return mapped;
   }, [profile, twitchLogin, streamTitle]);
 
   const openLink = (url?: string | null) => {

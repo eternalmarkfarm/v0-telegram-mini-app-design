@@ -6,8 +6,8 @@ import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
-const rewardIcon = "/prom/medal_new.png";
-const leftArrowIcon = "/prom/left-arrow.png";
+const rewardIcon = "/prom/medal_new.svg";
+const leftArrowIcon = "/prom/left-arrow.svg";
 
 
 const formatTime = (value?: string | null) => {

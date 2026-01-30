@@ -2,17 +2,17 @@ import { Loader2 } from 'lucide-react';
 const dotaIcon = "/prom/icon8_dota.png";
 const cs2Icon = "/prom/cs2.png";
 const defaultAvatar = "/prom/twitch_avatar.webp";
-const trophyIcon = "/prom/trophy.png";
-const microphoneIcon = "/prom/microphone.png";
-const timeIcon = "/prom/time.png";
-const fireIcon = "/prom/fire.png";
-const dollarSignIcon = "/prom/dollar-sign.png";
-const deadlineIcon = "/prom/deadline.png";
-const deliveryOneIcon = "/prom/delivery_1.png";
-const iconDelivery = "/prom/delivery.png";
-const iconReceived = "/prom/secure.png";
-const warningIcon = "/prom/warning.png";
-const crossIcon = "/prom/cross.png";
+const trophyIcon = "/prom/trophy.svg";
+const microphoneIcon = "/prom/microphone.svg";
+const timeIcon = "/prom/time.svg";
+const fireIcon = "/prom/fire.svg";
+const dollarSignIcon = "/prom/dollar-sign.svg";
+const deadlineIcon = "/prom/deadline.svg";
+const deliveryOneIcon = "/prom/delivery_1.svg";
+const iconDelivery = "/prom/delivery.svg";
+const iconReceived = "/prom/secure.svg";
+const warningIcon = "/prom/warning.svg";
+const crossIcon = "/prom/cross.svg";
 
 
 export type PrizeStatus = 'processing' | 'sent' | 'received' | 'missed';
@@ -123,8 +123,8 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
                 <span className="truncate flex-1">{prize.trigger}</span>
               </div>
               <div className="flex items-center gap-2 mt-1 text-xs text-[#b3b3ff]">
-                <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-                  <img src={dollarSignIcon} alt="Price" className="w-4 h-4" />
+                <span className="w-4 h-4 shrink-0 flex items-center justify-center overflow-visible">
+                  <img src={dollarSignIcon} alt="Price" className="w-6 h-6 -ml-1 -mt-1" />
                 </span>
                 <span>{prize.price}</span>
               </div>

@@ -5,13 +5,13 @@ import { ChevronDown } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
-const leftArrowIcon = "/prom/left-arrow.png";
-const fireIcon = "/prom/fire.png";
+const leftArrowIcon = "/prom/left-arrow.svg";
+const fireIcon = "/prom/fire.svg";
 const dotaIcon = "/prom/icons8-dota-2-64.png";
-const dollarSignIcon = "/prom/dollar-sign.png";
-const customerExperienceIcon = "/prom/customer-experience.png";
-const unlockIcon = "/prom/unlock.png";
-const lockKeyIcon = "/prom/lock_key.png";
+const dollarSignIcon = "/prom/dollar-sign.svg";
+const customerExperienceIcon = "/prom/customer-experience.svg";
+const unlockIcon = "/prom/unlock.svg";
+const lockKeyIcon = "/prom/lock_key.svg";
 const cs2Icon = "/prom/cs2.png";
 
 

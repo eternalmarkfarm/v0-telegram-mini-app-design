@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
-const followersIcon = "/prom/group.png";
-const strPrizeIcon = "/prom/str_prize.png";
-const dollarIcon = "/prom/dollar.png";
-const eyeIcon = "/prom/eye1.png";
-const liveStreamingIcon = "/prom/live-streaming.png";
-const offlineIcon = "/prom/user.png";
-const leftArrowIcon = "/prom/left-arrow.png";
+const followersIcon = "/prom/group.svg";
+const strPrizeIcon = "/prom/str_prize.svg";
+const dollarIcon = "/prom/dollar.svg";
+const eyeIcon = "/prom/eye1.svg";
+const liveStreamingIcon = "/prom/live_badge.svg";
+const offlineIcon = "/prom/user.svg";
+const leftArrowIcon = "/prom/left-arrow.svg";
 
 
 type TrackedStreamer = {

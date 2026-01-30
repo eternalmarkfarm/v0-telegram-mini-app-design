@@ -6,8 +6,7 @@ import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet } from "@/lib/api";
 import { getEventLabel } from "@/lib/event-labels";
 
-const starTg = "/prom/star_tg.png";
-const chooseStream = "/prom/choosing.png";
+const chooseStream = "/prom/choosing.svg";
 const vsIcon = "/prom/vs_illustration_19920256.png";
 const vsLogoIcon = "/prom/vs_logo_3d_5985078.png";
 
@@ -66,26 +65,24 @@ export default function Dice() {
       <div className="space-y-1">
         <Link
           href="/prom/dice/streamers"
-          className="cta-sheen relative flex h-[72px] w-full items-center justify-center gap-2 rounded-[8px] px-5 py-0 text-center text-white font-semibold uppercase shadow-[0_10px_24px_rgba(75,123,255,0.22)] transition-transform duration-200 active:translate-y-[1px]"
-          style={{ background: "linear-gradient(90deg, #ffffff 0 15%, #3a63e6 15% 85%, #ffffff 85% 100%)" }}
+          className="cta-sheen relative flex h-[64px] w-full items-center rounded-[10px] px-4 text-white font-semibold shadow-[0_10px_24px_rgba(75,123,255,0.22)] transition-transform duration-200 active:translate-y-[1px]"
+          style={{ background: "linear-gradient(90deg, rgba(46,99,230,0.18), rgba(58,99,230,0.65) 45%, rgba(46,99,230,0.18))" }}
         >
-          <img src={chooseStream} alt="" className="absolute left-[7.5%] h-11 w-11 -translate-x-1/2" />
-          <span className="absolute left-[15%] top-[14px] w-[70%] text-center leading-tight">
-            <span className="block whitespace-nowrap text-[15px] text-white">Выбери своего стримера</span>
-            <span className="block whitespace-nowrap text-[10px] text-white">Мотивация на WIN</span>
-          </span>
           <img
-            src={starTg}
-            alt="Star"
-            className="spin-star absolute left-[92.5%] h-9 w-9 -translate-x-1/2"
-            style={{ filter: "brightness(1.4)" }}
+            src={chooseStream}
+            alt=""
+            className="h-10 w-10 shrink-0 ml-2"
+            aria-hidden="true"
           />
+          <span className="flex-1 text-center text-[15px] font-semibold text-white -ml-2">
+            Выбери своего стримера
+          </span>
         </Link>
       </div>
       <div className="flex flex-col items-center gap-1">
-        <div className="w-24 h-[2px] bg-white/30 mt-6" />
-        <img src={vsIcon} alt="" className="w-40 h-40 opacity-90" aria-hidden="true" />
-        <img src={vsLogoIcon} alt="" className="w-64 h-64 opacity-90 -mt-32" aria-hidden="true" />
+        <div className="w-24 h-[2px] bg-white/30 mt-14" />
+        <span className="mt-0 text-[11px] font-semibold tracking-[0.3em] text-white/70">PvP</span>
+        <img src={vsLogoIcon} alt="" className="w-64 h-64 opacity-90 -mt-24" aria-hidden="true" />
       </div>
       <div className="flex justify-center">
         <div className="flex flex-col items-center -mt-24">

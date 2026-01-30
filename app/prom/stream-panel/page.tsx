@@ -4,13 +4,13 @@ import { useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
-const softwareIcon = "/prom/block.png";
-const fireIcon = "/prom/fire.png";
-const statisticsIcon = "/prom/statistics.png";
+const softwareIcon = "/prom/block.svg";
+const fireIcon = "/prom/fire.svg";
+const statisticsIcon = "/prom/statistics.svg";
 const cs2Icon = "/prom/cs2.png";
 const dotaIcon = "/prom/icons8-dota-2-64.png";
-const fastDeliveryIcon = "/prom/fast-delivery.png";
-const trophyIcon = "/prom/trophy.png";
+const fastDeliveryIcon = "/prom/fast-delivery.svg";
+const trophyIcon = "/prom/trophy.svg";
 
 
 export default function StreamPanel() {

@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { ChevronDown } from 'lucide-react';
 import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
-const leftArrowIcon = "/prom/left-arrow.png";
-const flyIcon = "/prom/fly.png";
+const leftArrowIcon = "/prom/left-arrow.svg";
+const flyIcon = "/prom/fly.svg";
 const steamIcon = "/prom/icons8-steam-94.png";
-const infoIcon = "/prom/info.png";
-const keyIcon = "/prom/key.png";
-const unlockIcon = "/prom/unlock.png";
-const lockKeyIcon = "/prom/lock_key.png";
-const medalNewIcon = "/prom/medal_new.png";
+const infoIcon = "/prom/info_notice.svg";
+const keyIcon = "/prom/key.svg";
+const unlockIcon = "/prom/unlock.svg";
+const lockKeyIcon = "/prom/lock_key.svg";
+const medalNewIcon = "/prom/medal_new.svg";
 
 
 export default function StreamerIntegrations() {
