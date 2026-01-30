@@ -45,12 +45,6 @@ export default function BeginStreamer() {
         response?.url;
       if (url) {
         setAndroidAuthUrl(url);
-        const tg = (window as any)?.Telegram?.WebApp;
-        if (tg?.openLink) {
-          tg.openLink(url, { try_instant_view: false });
-        } else {
-          window.location.href = url;
-        }
       } else {
         setAndroidAuthError("Не удалось получить ссылку");
       }

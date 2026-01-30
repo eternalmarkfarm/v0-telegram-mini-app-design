@@ -104,7 +104,6 @@ export default function Home() {
       const url = pickAndroidAuthUrl(response);
       if (url) {
         setAndroidAuthUrl(url);
-        openExternal(url);
       } else {
         setAndroidAuthError("Не удалось получить ссылку");
       }
