@@ -27,6 +27,9 @@
 
 .prom-integrations-btn {
   min-width: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background-clip: padding-box;
 }
 
 .prom-integrations-label {
@@ -151,6 +154,7 @@
   padding-right: 10px;
   min-height: 50px;
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 .tg-linux .prom-integrations-label {
@@ -159,8 +163,15 @@
 }
 
 .tg-linux .prom-tracked-side {
-  gap: 8px;
+  gap: 6px;
   max-width: 150px;
+  flex-wrap: nowrap;
+  transform: scale(0.92);
+  transform-origin: right center;
+}
+
+.tg-linux .prom-tracked-stats {
+  gap: 4px 6px;
 }
 
 @keyframes pulse-glow {
