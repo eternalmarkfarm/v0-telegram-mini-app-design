@@ -7,6 +7,7 @@ import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
+import { getEventLabel } from "@/lib/event-labels";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
 const avatarCircle = "/prom/circle.png";
