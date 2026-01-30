@@ -51,7 +51,7 @@ export default function StreamPanel() {
         <div className="yuze-glass rounded-[20px] p-4 text-[#b3b3ff]">
           <p className="text-white font-semibold mb-2">Кабинет стримера не создан</p>
           <Link
-            href="/prom/begin-streamer"
+            href="/begin-streamer"
             className="inline-flex items-center justify-center rounded-[14px] bg-[#5B4BFF] px-4 py-2 text-white font-semibold"
           >
             Создать кабинет
@@ -60,7 +60,7 @@ export default function StreamPanel() {
       )}
 
       <Link
-        href="/prom/streamer-integrations"
+        href="/streamer-integrations"
         className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
       >
         <div className="flex items-center gap-4">
@@ -75,7 +75,7 @@ export default function StreamPanel() {
       </Link>
 
       <Link
-        href="/prom/streamer-events"
+        href="/streamer-events"
         className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
       >
         <div className="flex items-center gap-4">
@@ -89,7 +89,7 @@ export default function StreamPanel() {
       </Link>
 
       <Link
-        href="/prom/streamer-stats"
+        href="/streamer-stats"
         className="block yuze-glass-soft rounded-[20px] p-3 hover:bg-white/[0.12] transition-all duration-300"
       >
         <div className="flex items-center gap-4">
@@ -162,7 +162,7 @@ export default function StreamPanel() {
       </div>
 
       <Link
-        href="/prom/superdrop-settings"
+        href="/superdrop-settings"
         className="block yuze-glass rounded-[24px] p-6 hover:bg-white/[0.14] transition-all duration-300"
       >
         <div className="flex items-center gap-4">

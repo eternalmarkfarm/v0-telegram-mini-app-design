@@ -67,7 +67,7 @@ export default function Dice() {
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
       <div className="space-y-1">
         <Link
-          href="/prom/dice/streamers"
+          href="/dice/streamers"
           className="cta-sheen relative flex h-[64px] w-full items-center rounded-[10px] px-4 text-white font-semibold shadow-[0_10px_24px_rgba(75,123,255,0.22)] transition-transform duration-200 active:translate-y-[1px]"
           style={{ background: "linear-gradient(90deg, rgba(46,99,230,0.18), rgba(58,99,230,0.65) 45%, rgba(46,99,230,0.18))" }}
         >

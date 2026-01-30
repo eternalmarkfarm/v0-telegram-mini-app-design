@@ -57,7 +57,7 @@ export default function Home() {
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(cachedProfile?.profile_image_url ?? null);
   const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(cachedProfile?.display_name ?? null);
   const needsConnections = !twitchLinked || !steamLinked;
-  const base = "/prom";
+  const base = "";
 
   const twitchNickname = viewerDisplayName || twitchLogin || 'Twitch User';
   const avatarSrc = viewerAvatar || twitchAvatar;
@@ -472,7 +472,7 @@ export default function Home() {
           <img src={followersIcon} alt="" className="w-6 h-6" aria-hidden="true" />
           <span>Отслеживаемые стримеры</span>
         </h3>
-        <Link href="/prom/following" className="inline-flex">
+        <Link href="/following" className="inline-flex">
           <img src={menuBarIcon} alt="" className="w-4.5 h-4.5 mr-2 mt-1" aria-hidden="true" />
         </Link>
       </div>
@@ -560,7 +560,7 @@ export default function Home() {
           <img src={rewardIcon} alt="" className="w-6 h-6" aria-hidden="true" />
           <span>Выданные призы</span>
         </h3>
-        <Link href="/prom/prizes" className="inline-flex">
+        <Link href="/prizes" className="inline-flex">
           <img src={menuBarIcon} alt="" className="w-4.5 h-4.5 mr-2 mt-1" aria-hidden="true" />
         </Link>
       </div>

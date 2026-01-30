@@ -28,7 +28,7 @@ type TrackedStreamer = {
 export default function Following() {
   const router = useRouter();
   const [nowMs, setNowMs] = useState(Date.now());
-  const base = "/prom";
+  const base = "";
   const [tracked, setTracked] = useState<TrackedStreamer[]>([]);
 
   useEffect(() => {

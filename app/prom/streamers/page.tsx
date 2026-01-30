@@ -30,7 +30,7 @@ function StreamersContent() {
     () => readCache<StreamerItem[]>("prom:streamers:list") ?? []
   );
   const [loaded, setLoaded] = useState<boolean>(streamers.length > 0);
-  const base = "/prom";
+  const base = "";
   const onlineOnly = searchParams.get("online") === "1";
   const visibleStreamers = onlineOnly ? streamers.filter((streamer) => streamer.isOnline) : streamers;
   const onlineStreamers = visibleStreamers.filter((streamer) => streamer.isOnline);

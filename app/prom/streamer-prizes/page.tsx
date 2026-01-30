@@ -64,7 +64,7 @@ export default function StreamerPrizes() {
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <Link
-          href="/prom/streamer-stats"
+          href="/streamer-stats"
           className="w-8 h-8 rounded-[8px] bg-white/5 border border-white/10 flex items-center justify-center"
           aria-label="Назад"
         >

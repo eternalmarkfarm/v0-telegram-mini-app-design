@@ -145,7 +145,7 @@ export default function StreamerStats() {
     <div className="max-w-md mx-auto px-4 py-6 space-y-6 font-['Space_Grotesk'] text-[17px]">
       <div className="flex items-center gap-3">
         <Link
-          href="/prom/stream-panel"
+          href="/stream-panel"
           className="w-10 h-10 flex items-center justify-center rounded-full yuze-glass-soft hover:bg-white/[0.12] transition"
         >
           <img src={leftArrow} alt="Назад" className="w-4 h-4" />
@@ -299,7 +299,7 @@ export default function StreamerStats() {
           <img src={rewardIcon} alt="" className="w-6 h-6" aria-hidden="true" />
           <span>Выданные призы</span>
         </h3>
-        <Link href="/prom/streamer-prizes" className="inline-flex">
+        <Link href="/streamer-prizes" className="inline-flex">
           <img src={menuBarIcon} alt="" className="w-4.5 h-4.5 mr-2 mt-1" aria-hidden="true" />
         </Link>
       </div>

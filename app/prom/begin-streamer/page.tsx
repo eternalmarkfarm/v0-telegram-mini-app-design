@@ -63,7 +63,7 @@ export default function BeginStreamer() {
       const me = await apiGet("/me").catch(() => null);
       const displayName = me?.first_name || me?.username || "Streamer";
       await apiPost("/streamer/me", { display_name: displayName });
-      router.push("/prom/stream-panel");
+      router.push("/stream-panel");
     } catch (e) {
       console.error("Failed to create streamer:", e);
     } finally {

@@ -20,9 +20,9 @@ export default function BottomNavigation() {
   const [liveStreamersCount] = useState(3); // Моковые данные для LIVE индикатора
   const hasStreamPanel = Boolean(streamerMe?.streamer?.id);
 
-  const base = "/prom";
+  const base = "";
   const path = pathname?.startsWith(base) ? pathname.slice(base.length) || "/" : pathname || "/";
-  const to = (p: string) => (p === "/" ? base : `${base}${p}`);
+  const to = (p: string) => (p === "/" ? "/" : `${base}${p}`);
   const streamPanelPath = hasStreamPanel ? to('/stream-panel') : to('/begin-streamer');
   const streamPanelLabel = 'For Streamers';
   const diceCutoutMask = 'radial-gradient(46px 46px at 50% 2px, transparent 98%, black 100%)';

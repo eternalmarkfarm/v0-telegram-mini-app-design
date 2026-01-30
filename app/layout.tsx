@@ -4,7 +4,9 @@ import { Geist, Geist_Mono, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { I18nProvider } from "@/lib/i18n"
 import Script from "next/script"
+import RouteLayoutSwitch from "@/app/components/RouteLayoutSwitch"
 import "./globals.css"
+import "./prom/prom.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -52,7 +54,9 @@ export default function RootLayout({
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       </head>
       <body className={`font-sans antialiased`}>
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          <RouteLayoutSwitch>{children}</RouteLayoutSwitch>
+        </I18nProvider>
         <Analytics />
       </body>
     </html>
