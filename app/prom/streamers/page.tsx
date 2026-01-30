@@ -51,36 +51,18 @@ function StreamersContent() {
           apiGet("/streamers").catch(() => ({ streamers: [] })),
         ]);
         const live = liveRes?.streamers ?? [];
-        const all = listRes?.streamers ?? [];
+        const all = (listRes?.streamers ?? []).filter((s: any) => Boolean(s?.twitch_login));
         const liveMap = new Map<number, any>();
         live.forEach((s: any) => liveMap.set(s.id, s));
-        const statsResponses = await Promise.all(
-          all.map((s: any) => apiGet(`/streamers/${s.id}`).catch(() => null))
-        );
-        const statsById = new Map<number, any>();
-        const streamerById = new Map<number, any>();
-        statsResponses.forEach((res: any) => {
-          if (res?.streamer?.id) {
-            statsById.set(res.streamer.id, res.stats);
-            streamerById.set(res.streamer.id, res.streamer);
-          }
-        });
 
         const merged = all
           .map((s: any) => {
-          const liveRow = liveMap.get(s.id);
-          const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
-          const statsRow = statsById.get(s.id);
-          const streamerRow = streamerById.get(s.id);
-          const rawName =
-            liveRow?.twitch_display_name ||
-            streamerRow?.display_name ||
-            s.display_name ||
-            "";
+            const liveRow = liveMap.get(s.id);
+            const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
+          const rawName = liveRow?.twitch_display_name || s.display_name || "";
           const nickname = rawName && rawName !== "Streamer" ? rawName : (s.twitch_login || "");
           const avatar =
             liveRow?.profile_image_url ||
-            streamerRow?.profile_image_url ||
             s.profile_image_url ||
             null;
           return {
@@ -89,8 +71,8 @@ function StreamersContent() {
             avatar,
             viewers: liveRow?.viewer_count ?? 0,
             streamStartMs: startedAt || 0,
-            totalPrizes: typeof statsRow?.total_prizes === "number" ? statsRow.total_prizes : null,
-            totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : null,
+            totalPrizes: typeof s?.total_prizes === "number" ? s.total_prizes : null,
+            totalValue: s?.total_amount ? `$${Number(s.total_amount).toFixed(2)}` : null,
             isOnline: Boolean(liveRow?.is_live),
           } as StreamerItem;
           })
