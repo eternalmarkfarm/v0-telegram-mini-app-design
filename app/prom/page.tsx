@@ -23,9 +23,6 @@ const offlineIcon = "/prom/user.svg";
 const menuBarIcon = "/prom/menu-bar1.svg";
 const blockIcon = "/prom/block.svg";
 
-const SHOW_FAKE_STREAMER = process.env.NODE_ENV !== "production";
-
-
 type HomePrize = PrizeData;
 
 type TrackedStreamer = {
@@ -190,42 +187,10 @@ export default function Home() {
           totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : "$0.00",
         } as TrackedStreamer;
       });
-      if (SHOW_FAKE_STREAMER) {
-        const hasFake = mapped.some((s) => s.id === 1);
-        const fake: TrackedStreamer = {
-          id: 1,
-          nickname: "DemoStreamer",
-          avatar: "/prom/twitch_avatar.webp",
-          isOnline: true,
-          viewers: 321,
-          streamStartMs: Date.now() - 42 * 60 * 1000,
-          totalPrizes: 12,
-          totalValue: "$345.00",
-        };
-        const next = hasFake ? mapped : [fake, ...mapped];
-        setTracked(next);
-        writeCache("prom:home:tracked", next);
-      } else {
-        setTracked(mapped);
-        writeCache("prom:home:tracked", mapped);
-      }
+      setTracked(mapped);
+      writeCache("prom:home:tracked", mapped);
     } catch (e) {
       console.error("Failed to load tracked:", e);
-      if (SHOW_FAKE_STREAMER) {
-        const fake: TrackedStreamer = {
-          id: 1,
-          nickname: "DemoStreamer",
-          avatar: "/prom/twitch_avatar.webp",
-          isOnline: true,
-          viewers: 321,
-          streamStartMs: Date.now() - 42 * 60 * 1000,
-          totalPrizes: 12,
-          totalValue: "$345.00",
-        };
-        const next = [fake];
-        setTracked(next);
-        writeCache("prom:home:tracked", next);
-      }
     }
   };
 

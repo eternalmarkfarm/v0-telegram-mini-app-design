@@ -63,21 +63,25 @@ function StreamersContent() {
           if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
         });
 
-        const merged = all.map((s: any) => {
+        const merged = all
+          .map((s: any) => {
           const liveRow = liveMap.get(s.id);
           const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
           const statsRow = statsById.get(s.id);
+          const nickname = liveRow?.twitch_display_name || s.display_name || s.twitch_login || "";
+          const avatar = liveRow?.profile_image_url || s.profile_image_url || null;
           return {
             id: s.id,
-            nickname: liveRow?.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
-            avatar: liveRow?.profile_image_url || s.profile_image_url || null,
+            nickname,
+            avatar,
             viewers: liveRow?.viewer_count ?? 0,
             streamStartMs: startedAt || 0,
             totalPrizes: typeof statsRow?.total_prizes === "number" ? statsRow.total_prizes : null,
             totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : null,
             isOnline: Boolean(liveRow?.is_live),
           } as StreamerItem;
-        });
+          })
+          .filter((s: StreamerItem) => Boolean(s.nickname));
         setStreamers(merged);
         writeCache("prom:streamers:list", merged);
       } catch (e) {
@@ -133,9 +137,7 @@ function StreamersContent() {
                     <div className="relative w-14 h-14 rounded-[12px] border border-white/30 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center">
                       {streamer.avatar ? (
                         <img src={streamer.avatar} alt={streamer.nickname} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-xs text-[#b3b3ff]">Avatar</span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
 
@@ -203,9 +205,7 @@ function StreamersContent() {
                     <div className="relative w-14 h-14 rounded-[12px] border border-white/30 overflow-hidden bg-gradient-to-br from-[#101426] to-[#1a2140] flex items-center justify-center">
                       {streamer.avatar ? (
                         <img src={streamer.avatar} alt={streamer.nickname} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-xs text-[#b3b3ff]">Avatar</span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
 
