@@ -82,7 +82,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
   const avatarSrc = prize.winnerAvatar || defaultAvatar;
 
   return (
-    <div className="yuze-glass rounded-[16px] px-5 py-4">
+    <div className="yuze-glass rounded-[16px] px-5 py-4 overflow-hidden">
       <div className="flex items-start">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           <div className="relative w-[68px] h-[68px] shrink-0">
@@ -98,44 +98,44 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               <img src={gameIcon} alt={gameLabel} className="w-4 h-4" />
             </div>
           </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_56px] items-start gap-2 min-w-0">
-            <div className="flex flex-col min-w-0 order-1">
-              <div className="flex items-center gap-0.5 text-xs text-[#b3b3ff] -ml-1 h-6 min-w-0">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_64px] items-start gap-2 min-w-0">
+            <div className="flex flex-col min-w-0 order-1 overflow-hidden">
+              <div className="flex items-center gap-0.5 text-[11px] text-[#b3b3ff] -ml-1 h-6 min-w-0">
                 <img src={trophyIcon} alt="Trophy" className="w-6 h-6 -ml-0.5" />
                 <span className="ml-0.5 truncate flex-1">@{prize.winnerNick}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
+              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
                 <img src={microphoneIcon} alt="Streamer" className="w-4 h-4" />
                 <span className="truncate flex-1">@{prize.streamerName}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#b3b3ff] mt-1 -ml-0.5">
+              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={timeIcon} alt="Time" className="w-4 h-4" />
                 </span>
-                <span>{prize.time}</span>
+                <span className="truncate">{prize.time}</span>
               </div>
             </div>
-            <div className="flex flex-col min-w-0 order-2">
-              <div className="flex items-center gap-2 text-sm text-white font-medium h-6 min-w-0">
+            <div className="flex flex-col min-w-0 order-2 overflow-hidden">
+              <div className="flex items-center gap-2 text-[12px] text-white font-medium h-6 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={fireIcon} alt="Fire" className="w-4 h-4" />
                 </span>
                 <span className="truncate flex-1">{prize.trigger}</span>
               </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-[#b3b3ff]">
+              <div className="flex items-center gap-2 mt-1 text-[11px] text-[#b3b3ff]">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center overflow-visible">
                   <img src={dollarSignIcon} alt="Price" className="w-6 h-6 -ml-1 -mt-1" />
                 </span>
                 <span>{prize.price}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#b3b3ff] mt-1">
+              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={deadlineIcon} alt="Deadline" className="w-4 h-4" />
                 </span>
-                <span>{prize.deadline}</span>
+                <span className="truncate">{prize.deadline}</span>
               </div>
             </div>
-            <div className="flex flex-col items-center order-3 w-[56px]">
+            <div className="flex flex-col items-center order-3 w-[64px] shrink-0">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>

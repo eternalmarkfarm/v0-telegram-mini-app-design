@@ -8,6 +8,8 @@
   height: 100vh;
   min-height: 100vh;
   overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   overflow-anchor: none;
 }
 
