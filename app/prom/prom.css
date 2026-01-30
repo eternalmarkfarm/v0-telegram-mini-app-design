@@ -93,13 +93,13 @@
 }
 
 @container (max-width: 360px) {
-  .prom-tracked-row {
+  .tg-linux .prom-tracked-row {
     grid-template-columns: 56px minmax(0, 1fr);
     grid-template-rows: auto auto;
     row-gap: 6px;
   }
 
-  .prom-tracked-side {
+  .tg-linux .prom-tracked-side {
     grid-column: 1 / -1;
     justify-content: space-between;
     max-width: none;
