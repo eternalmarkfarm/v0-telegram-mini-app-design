@@ -319,7 +319,7 @@ export default function Home() {
         )}
 
         {/* Блок интеграций */}
-        <div className="yuze-glass-soft rounded-[16px] px-4 py-2">
+        <div className="prom-integrations-card yuze-glass-soft rounded-[16px] px-4 py-2">
         <button
           type="button"
           onClick={() => setIsIntegrationsOpen((prev) => !prev)}

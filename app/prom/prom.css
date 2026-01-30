@@ -25,6 +25,10 @@
   container-type: inline-size;
 }
 
+.prom-integrations-card {
+  box-shadow: 0 12px 32px rgba(5, 8, 24, 0.4);
+}
+
 .prom-integrations-btn {
   min-width: 0;
   overflow: hidden;
