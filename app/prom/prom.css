@@ -20,7 +20,7 @@
 .prom-integrations-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: 0;
   align-items: stretch;
   container-type: inline-size;
 }
@@ -53,6 +53,18 @@
   overflow: hidden;
   border-radius: 10px;
   background-clip: border-box;
+  mix-blend-mode: normal;
+  isolation: isolate;
+}
+
+.prom-integrations-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.prom-integrations-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .prom-integrations-label {
