@@ -38,24 +38,25 @@
 
 .prom-tracked-row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-columns: 56px minmax(0, 1fr) max-content;
   gap: 12px;
   align-items: center;
 }
 
 .prom-tracked-side {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  max-width: 160px;
+  max-width: 220px;
+  white-space: nowrap;
 }
 
 .prom-tracked-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .prom-tracked-prizes {
@@ -149,6 +150,11 @@
   height: 40px;
 }
 
+.tg-linux .prom-tracked-side {
+  gap: 8px;
+  max-width: 200px;
+}
+
 .tg-linux .prom-integrations-btn {
   padding-left: 10px;
   padding-right: 10px;
@@ -162,16 +168,17 @@
   letter-spacing: -0.01em;
 }
 
-.tg-linux .prom-tracked-side {
-  gap: 6px;
-  max-width: 150px;
-  flex-wrap: nowrap;
-  transform: scale(0.92);
-  transform-origin: right center;
+.tg-linux .prom-tracked-name {
+  font-size: 16px;
 }
 
-.tg-linux .prom-tracked-stats {
-  gap: 4px 6px;
+.tg-linux .prom-tracked-stat {
+  font-size: 13px;
+}
+
+.tg-linux .prom-live-badge {
+  width: 36px;
+  height: 36px;
 }
 
 @keyframes pulse-glow {
