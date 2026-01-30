@@ -7,6 +7,7 @@ import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
+import { buildCacheKey, readCache, writeCache } from "@/app/prom/lib/cache";
 
 const leftArrowIcon = "/prom/left-arrow.svg";
 const avatarCircle = "/prom/circle.svg";
@@ -78,10 +79,26 @@ export default function StreamerDetail() {
   const streamerId = typeof params?.streamerId === "string" ? params.streamerId : params?.streamerId?.[0];
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>("stats");
-  const [profile, setProfile] = useState<StreamerProfile | null>(null);
-  const [eligibility, setEligibility] = useState<Eligibility | null>(null);
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [events, setEvents] = useState<Array<{ id: string; name: string; isActive: boolean }>>([]);
+  const cacheKeyBase = useMemo(
+    () => (streamerId ? buildCacheKey(`prom:streamer:${streamerId}`) : null),
+    [streamerId],
+  );
+  const profileCacheKey = cacheKeyBase ? `${cacheKeyBase}:profile` : null;
+  const eligibilityCacheKey = cacheKeyBase ? `${cacheKeyBase}:eligibility` : null;
+  const eventsCacheKey = cacheKeyBase ? `${cacheKeyBase}:events` : null;
+
+  const [profile, setProfile] = useState<StreamerProfile | null>(() =>
+    profileCacheKey ? readCache<StreamerProfile>(profileCacheKey) : null,
+  );
+  const [eligibility, setEligibility] = useState<Eligibility | null>(() =>
+    eligibilityCacheKey ? readCache<Eligibility>(eligibilityCacheKey) : null,
+  );
+  const [isFollowed, setIsFollowed] = useState(() =>
+    eligibilityCacheKey ? Boolean(readCache<Eligibility>(eligibilityCacheKey)?.is_tracked) : false,
+  );
+  const [events, setEvents] = useState<Array<{ id: string; name: string; isActive: boolean }>>(() =>
+    eventsCacheKey ? readCache<Array<{ id: string; name: string; isActive: boolean }>>(eventsCacheKey) ?? [] : [],
+  );
 
   useEffect(() => {
     if (!streamerId) return;
@@ -89,13 +106,13 @@ export default function StreamerDetail() {
       try {
         const res = await apiGet(`/streamers/${streamerId}`);
         setProfile(res);
+        if (profileCacheKey) writeCache(profileCacheKey, res);
       } catch (e) {
         console.error("Failed to load streamer profile:", e);
-        setProfile(null);
       }
     };
     load();
-  }, [streamerId]);
+  }, [streamerId, profileCacheKey]);
 
   useEffect(() => {
     if (!streamerId) return;
@@ -105,12 +122,13 @@ export default function StreamerDetail() {
         const res = await apiGet(`/viewer/eligibility?streamer_id=${streamerId}`);
         setEligibility(res);
         setIsFollowed(Boolean(res?.is_tracked));
+        if (eligibilityCacheKey) writeCache(eligibilityCacheKey, res);
       } catch (e) {
         console.error("Failed to load eligibility:", e);
       }
     };
     load();
-  }, [streamerId]);
+  }, [streamerId, eligibilityCacheKey]);
 
   useEffect(() => {
     if (!streamerId) return;
@@ -123,13 +141,13 @@ export default function StreamerDetail() {
           isActive: Boolean(item.enabled),
         }));
         setEvents(items);
+        if (eventsCacheKey) writeCache(eventsCacheKey, items);
       } catch (e) {
         console.error("Failed to load events:", e);
-        setEvents([]);
       }
     };
     load();
-  }, [streamerId]);
+  }, [streamerId, eventsCacheKey]);
 
   const streamTitle = profile?.streamer?.twitch_display_name || profile?.streamer?.display_name || profile?.streamer?.twitch_login || "Streamer";
   const avatarSrc = profile?.streamer?.profile_image_url || "/prom/twitch_avatar.webp";
