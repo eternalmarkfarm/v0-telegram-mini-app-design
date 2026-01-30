@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { Video, TrendingUp } from 'lucide-react';
 import { apiGet, apiPost } from "@/lib/api";
@@ -13,6 +13,33 @@ const statisticsIcon = "/prom/statistics.svg";
 export default function BeginStreamer() {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [androidAuthUrl, setAndroidAuthUrl] = useState<string | null>(null);
+  const [androidAuthLoading, setAndroidAuthLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ua = navigator.userAgent || "";
+    const platform = (window as any)?.Telegram?.WebApp?.platform;
+    setIsAndroid(platform === "android" || /Android/i.test(ua));
+  }, []);
+
+  const handleAndroidAuth = async () => {
+    if (androidAuthLoading) return;
+    setAndroidAuthLoading(true);
+    try {
+      await ensureAuth();
+      const response = await apiGet("/twitch/authorize-streamer-link");
+      if (response?.url) {
+        setAndroidAuthUrl(response.url);
+        window.open(response.url, "_blank");
+      }
+    } catch (e) {
+      console.error("Android Twitch link error:", e);
+    } finally {
+      setAndroidAuthLoading(false);
+    }
+  };
 
   const handleCreatePanel = async () => {
     setIsCreating(true);
@@ -81,6 +108,32 @@ export default function BeginStreamer() {
             <p className="text-[#b3b3ff] text-sm">Необходимо для доступа к панели</p>
           </div>
         </div>
+
+        {isAndroid && (
+          <div className="mb-4 rounded-[14px] border border-[#5B4BFF]/40 bg-[#1a1f3a]/70 px-3 py-2 text-xs text-[#b3b3ff]">
+            <p className="font-semibold text-white mb-1">Android: возможна проблема с авторизацией</p>
+            <p className="mb-2">
+              Если Telegram не открывает Twitch, используйте кнопку ниже — откроется браузер с авторизацией.
+            </p>
+            <button
+              type="button"
+              onClick={handleAndroidAuth}
+              className="w-full rounded-[12px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
+            >
+              {androidAuthLoading ? "Готовим ссылку..." : "Открыть авторизацию"}
+            </button>
+            {androidAuthUrl && (
+              <a
+                href={androidAuthUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex text-[#7BB6FF] underline"
+              >
+                Открыть ссылку в браузере
+              </a>
+            )}
+          </div>
+        )}
 
         <button
           onClick={handleCreatePanel}

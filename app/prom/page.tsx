@@ -44,6 +44,9 @@ export default function Home() {
   const [steamTradeUrl, setSteamTradeUrl] = useState('');
   const [nowMs, setNowMs] = useState(Date.now());
   const [isIntegrationsOpen, setIsIntegrationsOpen] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [androidAuthUrl, setAndroidAuthUrl] = useState<string | null>(null);
+  const [androidAuthLoading, setAndroidAuthLoading] = useState(false);
   const [tracked, setTracked] = useState<TrackedStreamer[]>(
     () => readCache<TrackedStreamer[]>("prom:home:tracked") ?? []
   );
@@ -67,6 +70,23 @@ export default function Home() {
       }
     } catch (e) {
       console.error("Twitch connect error:", e);
+    }
+  };
+
+  const handleAndroidAuth = async () => {
+    if (androidAuthLoading) return;
+    setAndroidAuthLoading(true);
+    try {
+      await ensureAuth();
+      const response = await apiGet("/twitch/authorize-viewer-link");
+      if (response?.url) {
+        setAndroidAuthUrl(response.url);
+        window.open(response.url, "_blank");
+      }
+    } catch (e) {
+      console.error("Android Twitch link error:", e);
+    } finally {
+      setAndroidAuthLoading(false);
     }
   };
 
@@ -105,6 +125,13 @@ export default function Home() {
       setNowMs(Date.now());
     }, 1000);
     return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ua = navigator.userAgent || "";
+    const platform = (window as any)?.Telegram?.WebApp?.platform;
+    setIsAndroid(platform === "android" || /Android/i.test(ua));
   }, []);
 
   useEffect(() => {
@@ -316,6 +343,31 @@ export default function Home() {
             isIntegrationsOpen ? 'mt-4 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
           } overflow-hidden`}
         >
+          {isAndroid && !twitchLinked && (
+            <div className="mb-3 rounded-[12px] border border-[#5B4BFF]/40 bg-[#1a1f3a]/70 px-3 py-2 text-xs text-[#b3b3ff]">
+              <p className="font-semibold text-white mb-1">Android: возможна проблема с авторизацией</p>
+              <p className="mb-2">
+                Если Telegram не открывает Twitch, используйте кнопку ниже — откроется браузер с авторизацией.
+              </p>
+              <button
+                type="button"
+                onClick={handleAndroidAuth}
+                className="w-full rounded-[10px] bg-[#3b6bff] py-2 text-white font-semibold shadow-[0_4px_18px_rgba(59,107,255,0.45)]"
+              >
+                {androidAuthLoading ? "Готовим ссылку..." : "Открыть авторизацию"}
+              </button>
+              {androidAuthUrl && (
+                <a
+                  href={androidAuthUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-flex text-[#7BB6FF] underline"
+                >
+                  Открыть ссылку в браузере
+                </a>
+              )}
+            </div>
+          )}
           <div className="prom-integrations-row flex gap-5">
             <button
               onClick={twitchLinked ? handleTwitchDisconnect : handleTwitchConnect}
