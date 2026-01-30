@@ -334,10 +334,10 @@ export default function Home() {
             isIntegrationsOpen ? 'mt-4 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
           } overflow-hidden`}
         >
-          <div className="flex gap-5">
+          <div className="prom-integrations-row flex gap-5">
             <button
               onClick={twitchLinked ? handleTwitchDisconnect : handleTwitchConnect}
-              className="flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
+              className="prom-integrations-btn flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
               style={{
                 background: twitchLinked
                   ? 'linear-gradient(140deg, rgba(255,85,85,0.18), rgba(255,85,85,0.28))'
@@ -360,7 +360,7 @@ export default function Home() {
                     <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
                   </svg>
                 </div>
-                <span className="text-white font-bold">
+                <span className="prom-integrations-label text-white font-bold">
                   {twitchLinked ? 'Удалить' : 'Привязать'}
                 </span>
               </div>
@@ -368,7 +368,7 @@ export default function Home() {
 
             <button
               onClick={steamLinked ? handleSteamDisconnect : () => setShowSteamModal(true)}
-              className="flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
+              className="prom-integrations-btn flex-1 rounded-[10px] py-2 px-4 transition-all duration-300 hover:scale-[1.02]"
               style={{
                 background: steamLinked
                   ? 'linear-gradient(140deg, rgba(255,85,85,0.18), rgba(255,85,85,0.28))'
@@ -388,7 +388,7 @@ export default function Home() {
                     style={{ filter: steamLinked ? 'none' : 'brightness(0.85) saturate(1.1) drop-shadow(0 0 6px rgba(80,60,140,0.5))' }}
                   />
                 </div>
-                <span className="text-white font-bold">
+                <span className="prom-integrations-label text-white font-bold">
                   {steamLinked ? 'Удалить' : 'Привязать'}
                 </span>
               </div>
@@ -437,8 +437,8 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="prom-tracked-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
+                  <div className="prom-tracked-main flex-1 min-w-0">
+                    <h3 className="prom-tracked-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
                       {streamer.isOnline && (
                         <div className="flex items-center gap-1 mt-1">
                           <img src={eyeIcon} alt="" className="w-6 h-6" aria-hidden="true" />
@@ -446,13 +446,13 @@ export default function Home() {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-end gap-4 -mt-2">
+                    <div className="prom-tracked-side flex items-end gap-4 -mt-2">
                       {streamer.isOnline ? (
                         <div className="flex flex-col items-center gap-0 -mt-1 w-20">
                           <img
                             src={liveStreamingIcon}
                             alt=""
-                            className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
+                            className="prom-live-badge w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
                             aria-hidden="true"
                           />
                           <span className="prom-tracked-timer -mt-2 text-base font-semibold text-white">

@@ -50,6 +50,33 @@
   letter-spacing: -0.01em;
 }
 
+.tg-linux .prom-integrations-row {
+  gap: 12px;
+}
+
+.tg-linux .prom-integrations-btn {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.tg-linux .prom-integrations-label {
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.tg-linux .prom-tracked-main {
+  min-width: 120px;
+}
+
+.tg-linux .prom-tracked-side {
+  gap: 10px;
+}
+
+.tg-linux .prom-live-badge {
+  width: 40px;
+  height: 40px;
+}
+
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
