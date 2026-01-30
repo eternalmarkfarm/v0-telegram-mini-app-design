@@ -27,6 +27,8 @@
 
 .prom-integrations-card {
   box-shadow: 0 12px 32px rgba(5, 8, 24, 0.4);
+  border: none;
+  background: linear-gradient(135deg, rgba(28, 32, 56, 0.92), rgba(36, 42, 72, 0.92));
 }
 
 .prom-integrations-btn {
