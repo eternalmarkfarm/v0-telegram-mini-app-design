@@ -329,19 +329,15 @@
    Works across all platforms (Android, Windows, Linux)
    ============================================= */
 
-/* Game icon positioning fix - always bottom-right of avatar */
-.prom-prize-avatar>div {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  top: auto !important;
+/* Game icon - scale with avatar */
+.prom-game-icon {
+  width: 24px;
+  height: 24px;
 }
 
-/* Status column base - allow it to shrink */
-.prom-prize-grid>div:last-child {
-  width: auto;
-  min-width: 48px;
-  max-width: 64px;
+.prom-game-icon img {
+  width: 16px;
+  height: 16px;
 }
 
 /* When card has less than 360px width */
@@ -349,6 +345,16 @@
   .prom-prize-avatar {
     width: 56px !important;
     height: 56px !important;
+  }
+
+  .prom-game-icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .prom-game-icon img {
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .prom-prize-grid {
@@ -363,14 +369,10 @@
     font-size: 11px;
   }
 
-  /* Reduce status badge */
+  /* Reduce status badge slightly */
   .prom-status-icon {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  .prom-status-text {
-    font-size: 10px;
+    width: 48px !important;
+    height: 48px !important;
   }
 
   .prom-status-text span {
@@ -389,12 +391,12 @@
     height: 48px !important;
   }
 
-  .prom-prize-avatar>div {
+  .prom-game-icon {
     width: 18px !important;
     height: 18px !important;
   }
 
-  .prom-prize-avatar>div img {
+  .prom-game-icon img {
     width: 12px !important;
     height: 12px !important;
   }
@@ -424,17 +426,16 @@
 
   /* Reduce status badge more */
   .prom-status-icon {
-    width: 32px !important;
-    height: 32px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
 
   .prom-status-text {
-    display: none;
+    font-size: 9px;
   }
 
-  .prom-prize-grid>div:last-child {
-    min-width: 36px;
-    max-width: 48px;
+  .prom-status-text span {
+    font-size: 9px !important;
   }
 }
 
@@ -449,9 +450,14 @@
     height: 40px !important;
   }
 
-  .prom-prize-avatar>div {
+  .prom-game-icon {
     width: 16px !important;
     height: 16px !important;
+  }
+
+  .prom-game-icon img {
+    width: 10px !important;
+    height: 10px !important;
   }
 
   .prom-prize-col-left,
@@ -464,12 +470,11 @@
   }
 
   .prom-status-icon {
-    width: 28px !important;
-    height: 28px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
 
-  .prom-prize-grid>div:last-child {
-    min-width: 32px;
-    max-width: 40px;
+  .prom-status-text {
+    display: none;
   }
 }

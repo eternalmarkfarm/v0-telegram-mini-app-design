@@ -92,23 +92,23 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               className="w-full h-full rounded-full object-cover border border-white/10 shadow-[0_0_16px_rgba(91,75,255,0.25)]"
             />
             <div
-              className="absolute right-0 top-[44px] w-6 h-6 rounded-full bg-[#0e1220] border border-white/10 flex items-center justify-center"
+              className="prom-game-icon absolute right-0 bottom-0 w-6 h-6 rounded-full bg-[#0e1220] border border-white/10 flex items-center justify-center"
               title={gameLabel}
             >
               <img src={gameIcon} alt={gameLabel} className="w-4 h-4" />
             </div>
           </div>
-          <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto_64px] items-start gap-2 min-w-0">
+          <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto_56px] items-start gap-2 min-w-0">
             <div className="prom-prize-col-left flex flex-col min-w-0 order-1 overflow-hidden">
-              <div className="flex items-center gap-0.5 text-[11px] text-[#b3b3ff] -ml-1 h-6 min-w-0">
-                <img src={trophyIcon} alt="Trophy" className="prom-prize-icon w-6 h-6 -ml-0.5 shrink-0" />
-                <span className="prom-prize-meta prom-prize-nick ml-0.5 truncate flex-1 min-w-0">@{prize.winnerNick}</span>
+              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] h-6 min-w-0">
+                <img src={trophyIcon} alt="Trophy" className="prom-prize-icon w-5 h-5 shrink-0" />
+                <span className="prom-prize-meta prom-prize-nick truncate flex-1 min-w-0">@{prize.winnerNick}</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
+              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
                 <img src={microphoneIcon} alt="Streamer" className="prom-prize-icon w-4 h-4 shrink-0" />
                 <span className="prom-prize-meta prom-prize-nick truncate flex-1 min-w-0">@{prize.streamerName}</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
+              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={timeIcon} alt="Time" className="prom-prize-icon w-4 h-4" />
                 </span>
