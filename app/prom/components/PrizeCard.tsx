@@ -109,7 +109,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               <img src={gameIcon} alt={gameLabel} className="w-4 h-4" />
             </div>
           </div>
-          <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto_56px] items-start gap-2 min-w-0">
+          <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 min-w-0">
             <div className="prom-prize-col-left flex flex-col min-w-0 order-1 overflow-hidden">
               <div className="flex items-center gap-1.5 text-[11px] text-[#b3b3ff] h-6 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
@@ -150,7 +150,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
                 <span className="prom-prize-meta prom-prize-deadline whitespace-nowrap">{prize.deadline}</span>
               </div>
             </div>
-            <div className="prom-prize-status order-3 shrink-0">
+            <div className="prom-prize-status">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>

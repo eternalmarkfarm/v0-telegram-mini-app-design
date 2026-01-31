@@ -88,13 +88,22 @@
   line-height: 1.05;
 }
 
+.prom-prize-card {
+  position: relative;
+}
+
+.prom-prize-grid {
+  padding-right: 72px;
+}
+
 .prom-prize-status {
-  width: 64px;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 56px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  align-self: flex-start;
-  margin-top: 6px;
 }
 
 .prom-status-badge {
@@ -140,6 +149,15 @@
 }
 
 @container (max-width: 360px) {
+  .prom-prize-grid {
+    padding-right: 60px;
+  }
+
+  .prom-prize-status {
+    top: 12px;
+    right: 12px;
+    width: 48px;
+  }
   .prom-prize-status {
     margin-top: 4px;
   }
@@ -176,6 +194,15 @@
 }
 
 @container (max-width: 320px) {
+  .prom-prize-grid {
+    padding-right: 52px;
+  }
+
+  .prom-prize-status {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+  }
   .prom-prize-status {
     margin-top: 3px;
   }
@@ -528,6 +555,15 @@
 
 /* When card has less than 280px width - extreme case */
 @container (max-width: 280px) {
+  .prom-prize-grid {
+    padding-right: 44px;
+  }
+
+  .prom-prize-status {
+    top: 8px;
+    right: 8px;
+    width: 32px;
+  }
   .prom-prize-status {
     margin-top: 2px;
   }
