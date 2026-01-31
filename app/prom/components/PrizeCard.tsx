@@ -37,11 +37,11 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
   switch (status) {
     case 'processing':
       return (
-        <div className="prom-status-badge flex flex-col items-center gap-0.5 text-[#7BB6FF] -mt-1">
-          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
-            <img src={deliveryOneIcon} alt="Delivery" className="prom-status-icon w-11 h-11 mt-1.5 object-contain" />
+        <div className="prom-status-badge text-[#7BB6FF]">
+          <div className="prom-status-wrapper">
+            <img src={deliveryOneIcon} alt="Delivery" className="prom-status-icon object-contain" />
           </div>
-          <div className="prom-status-text flex items-center gap-1">
+          <div className="prom-status-text">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span className="text-xs">Processing</span>
           </div>
@@ -49,11 +49,11 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
       );
     case 'sent':
       return (
-        <div className="prom-status-badge flex flex-col items-center gap-1 text-[#b3b3ff] -mt-2">
-          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
-            <img src={iconDelivery} alt="Delivery" className="prom-status-icon w-14 h-14 translate-y-2.5 object-contain" />
+        <div className="prom-status-badge text-[#b3b3ff]">
+          <div className="prom-status-wrapper">
+            <img src={iconDelivery} alt="Delivery" className="prom-status-icon object-contain" />
           </div>
-          <div className="prom-status-text flex items-center gap-1">
+          <div className="prom-status-text">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-[#7BB6FF]" />
             <span className="text-xs">Delivery</span>
           </div>
@@ -61,21 +61,24 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
       );
     case 'received':
       return (
-        <div className="prom-status-badge flex items-center justify-center h-full">
-          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
-            <img src={iconReceived} alt="Received" className="prom-status-icon w-14 h-14 translate-y-2 object-contain" />
+        <div className="prom-status-badge text-[#b3b3ff]">
+          <div className="prom-status-wrapper">
+            <img src={iconReceived} alt="Received" className="prom-status-icon object-contain" />
+          </div>
+          <div className="prom-status-text" aria-hidden="true">
+            &nbsp;
           </div>
         </div>
       );
     case 'missed':
       return (
-        <div className="prom-status-badge flex flex-col items-center gap-1 text-[#ff9b9b] -mt-1">
-          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
-            <img src={warningIcon} alt="Warning" className="prom-status-icon w-12 h-12 object-contain" />
+        <div className="prom-status-badge text-[#ff9b9b]">
+          <div className="prom-status-wrapper">
+            <img src={warningIcon} alt="Warning" className="prom-status-icon object-contain" />
           </div>
-          <div className="prom-status-text flex items-center gap-1 text-xs text-[#b3b3ff]">
+          <div className="prom-status-text text-[#b3b3ff]">
             <img src={crossIcon} alt="Missed" className="w-4 h-4" />
-            <span>{getDeadlineTime(deadline)}</span>
+            <span className="text-xs">{getDeadlineTime(deadline)}</span>
           </div>
         </div>
       );
@@ -147,7 +150,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
                 <span className="prom-prize-meta prom-prize-deadline whitespace-nowrap">{prize.deadline}</span>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center order-3 shrink-0">
+            <div className="prom-prize-status order-3 shrink-0">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>

@@ -88,6 +88,41 @@
   line-height: 1.05;
 }
 
+.prom-prize-status {
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prom-status-badge {
+  display: grid;
+  grid-template-rows: 56px 16px;
+  align-items: center;
+  justify-items: center;
+  gap: 2px;
+}
+
+.prom-status-wrapper {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prom-status-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.prom-status-text {
+  min-height: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .tg-android .prom-prize-meta {
   font-size: 12px;
   line-height: 1.25;
@@ -103,6 +138,28 @@
 }
 
 @container (max-width: 360px) {
+  .prom-prize-status {
+    width: 52px;
+  }
+
+  .prom-status-badge {
+    grid-template-rows: 48px 14px;
+  }
+
+  .prom-status-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .prom-status-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .prom-status-text {
+    min-height: 14px;
+  }
+
   .prom-integrations-row {
     gap: 12px;
   }
@@ -114,6 +171,28 @@
 }
 
 @container (max-width: 320px) {
+  .prom-prize-status {
+    width: 44px;
+  }
+
+  .prom-status-badge {
+    grid-template-rows: 40px 12px;
+  }
+
+  .prom-status-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .prom-status-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .prom-status-text {
+    min-height: 12px;
+  }
+
   .prom-integrations-row {
     gap: 10px;
   }
@@ -441,6 +520,24 @@
 
 /* When card has less than 280px width - extreme case */
 @container (max-width: 280px) {
+  .prom-prize-status {
+    width: 36px;
+  }
+
+  .prom-status-badge {
+    grid-template-rows: 32px 0;
+  }
+
+  .prom-status-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .prom-status-icon {
+    width: 24px;
+    height: 24px;
+  }
+
   .prom-prize-card {
     padding: 10px !important;
   }
@@ -476,27 +573,5 @@
 
   .prom-status-text {
     display: none;
-  }
-}
-
-/* Status wrapper responsive rules */
-@container (max-width: 360px) {
-  .prom-status-wrapper {
-    width: 48px !important;
-    height: 48px !important;
-  }
-}
-
-@container (max-width: 320px) {
-  .prom-status-wrapper {
-    width: 40px !important;
-    height: 40px !important;
-  }
-}
-
-@container (max-width: 280px) {
-  .prom-status-wrapper {
-    width: 32px !important;
-    height: 32px !important;
   }
 }
