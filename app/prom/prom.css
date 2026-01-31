@@ -93,7 +93,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  align-self: center;
+  align-self: flex-start;
+  margin-top: 6px;
 }
 
 .prom-status-badge {
@@ -140,6 +141,9 @@
 
 @container (max-width: 360px) {
   .prom-prize-status {
+    margin-top: 4px;
+  }
+  .prom-prize-status {
     width: 52px;
   }
 
@@ -172,6 +176,9 @@
 }
 
 @container (max-width: 320px) {
+  .prom-prize-status {
+    margin-top: 3px;
+  }
   .prom-prize-status {
     width: 44px;
   }
@@ -521,6 +528,9 @@
 
 /* When card has less than 280px width - extreme case */
 @container (max-width: 280px) {
+  .prom-prize-status {
+    margin-top: 2px;
+  }
   .prom-prize-status {
     width: 36px;
   }

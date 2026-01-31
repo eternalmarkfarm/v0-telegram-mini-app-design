@@ -150,7 +150,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
                 <span className="prom-prize-meta prom-prize-deadline whitespace-nowrap">{prize.deadline}</span>
               </div>
             </div>
-            <div className="prom-prize-status order-3 shrink-0 self-center">
+            <div className="prom-prize-status order-3 shrink-0">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>
