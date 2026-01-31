@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 const leftArrow = "/prom/left-arrow.svg";
@@ -12,6 +12,7 @@ const strPrizeIcon = "/prom/str_prize.png";
 const approvedIcon = "/prom/approved.svg";
 const rewardIcon = "/prom/medal_new.svg";
 const menuBarIcon = "/prom/menu-bar1.svg";
+const starIcon = "/prom/star_don.svg";
 
 
 const DAY_OPTIONS = [7, 14, 30] as const;
@@ -63,6 +64,9 @@ export default function StreamerStats() {
   const [totalSkins, setTotalSkins] = useState("0");
   const [todayIssued, setTodayIssued] = useState("0");
   const [issuedPrizes, setIssuedPrizes] = useState<PrizeData[]>([]);
+  const [starsSummary, setStarsSummary] = useState<any>(null);
+  const [tonWallet, setTonWallet] = useState("");
+  const [savingWallet, setSavingWallet] = useState(false);
   const series = seriesData;
   const hasSeries = series.length > 0;
   const deltas = useMemo(
@@ -115,6 +119,12 @@ export default function StreamerStats() {
           setTodayIssued(String(followersToday.count_today));
         }
         const streamerId = streamerMe?.streamer?.id;
+        if (streamerMe?.stars_summary) {
+          setStarsSummary(streamerMe.stars_summary);
+        }
+        if (streamerMe?.streamer?.ton_wallet) {
+          setTonWallet(streamerMe.streamer.ton_wallet);
+        }
         if (streamerId) {
           const profile = await apiGet(`/streamers/${streamerId}`);
           const stats = profile?.stats ?? {};
@@ -140,6 +150,20 @@ export default function StreamerStats() {
     };
     load();
   }, [days]);
+
+  const handleSaveWallet = async () => {
+    try {
+      setSavingWallet(true);
+      await ensureAuth();
+      const res = await apiPost("/streamer/ton-wallet", { ton_wallet: tonWallet });
+      if (res?.ton_wallet) setTonWallet(res.ton_wallet);
+    } catch (e) {
+      console.error("Failed to save TON wallet:", e);
+      alert("Не удалось сохранить TON-кошелек.");
+    } finally {
+      setSavingWallet(false);
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6 font-['Space_Grotesk'] text-[17px]">
@@ -260,6 +284,83 @@ export default function StreamerStats() {
             <span>Обновлено: сегодня</span>
           </div>
         </div>
+      </div>
+
+      <div className="yuze-glass rounded-[22px] p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src={starIcon} alt="" className="w-8 h-8" aria-hidden="true" />
+            <div>
+              <p className="text-white font-semibold">Stars</p>
+              <p className="text-sm text-[#b3b3ff]">Баланс и вывод</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-[#b3b3ff]">К выводу</p>
+            <p className="text-xl font-bold text-white">
+              {starsSummary ? starsSummary.total_net : 0} ⭐
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="yuze-glass-soft rounded-[16px] p-3">
+            <p className="text-xs text-[#b3b3ff]">Всего донатов</p>
+            <p className="text-lg font-semibold text-white">
+              {starsSummary ? starsSummary.total_gross : 0} ⭐
+            </p>
+          </div>
+          <div className="yuze-glass-soft rounded-[16px] p-3">
+            <p className="text-xs text-[#b3b3ff]">Комиссия бота</p>
+            <p className="text-lg font-semibold text-white">
+              {starsSummary ? starsSummary.total_commission : 0} ⭐
+            </p>
+          </div>
+          <div className="yuze-glass-soft rounded-[16px] p-3">
+            <p className="text-xs text-[#b3b3ff]">Минимум</p>
+            <p className="text-lg font-semibold text-white">
+              {starsSummary ? starsSummary.min_gross : 0} ⭐
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white/5 border border-white/10 rounded-[16px] px-4 py-3 text-sm text-[#d7d7ff]">
+          Вывод доступен, когда сумма донатов за всё время достигает 1000 ⭐ + 2%
+          комиссии (минимум 1 ⭐). Средства выводятся владельцем бота после 21 дня
+          ожидания.
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm text-[#b3b3ff]">TON-кошелек</label>
+          <div className="flex gap-2">
+            <input
+              value={tonWallet}
+              onChange={(e) => setTonWallet(e.target.value)}
+              placeholder="EQC..."
+              className="flex-1 h-11 rounded-[12px] bg-white/10 border border-white/10 px-3 text-white outline-none"
+            />
+            <button
+              type="button"
+              onClick={handleSaveWallet}
+              disabled={savingWallet}
+              className="px-4 h-11 rounded-[12px] bg-white/10 text-white font-semibold hover:bg-white/20 transition disabled:opacity-60"
+            >
+              {savingWallet ? "..." : "Сохранить"}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          disabled={!starsSummary?.can_withdraw}
+          className={`w-full h-11 rounded-[14px] font-semibold transition ${
+            starsSummary?.can_withdraw
+              ? "bg-[#5B4BFF] text-white shadow-[0_0_16px_rgba(91,75,255,0.45)]"
+              : "bg-white/10 text-white/50"
+          }`}
+        >
+          Вывести Stars
+        </button>
       </div>
 
       <div className="yuze-glass-soft rounded-[20px] p-5">

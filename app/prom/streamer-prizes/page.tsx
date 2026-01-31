@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 const rewardIcon = "/prom/medal_new.svg";
@@ -39,6 +39,7 @@ export default function StreamerPrizes() {
         const me = await apiGet("/streamer/me");
         const streamerId = me?.streamer?.id;
         if (!streamerId) return;
+        await apiPost("/streamer/lis-skins/refresh", {}).catch(() => {});
         const res = await apiGet(`/streamers/${streamerId}/prizes?limit=50&offset=0`);
         const mapped = (res?.items ?? []).map((item: any) => ({
           id: String(item.id),
@@ -59,6 +60,8 @@ export default function StreamerPrizes() {
       }
     };
     load();
+    const interval = window.setInterval(load, 30000);
+    return () => window.clearInterval(interval);
   }, []);
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">
