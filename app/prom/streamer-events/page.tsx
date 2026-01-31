@@ -148,10 +148,14 @@ export default function StreamerEvents() {
   const sortedEvents = useMemo(() => {
     return [...eventsState].sort((a, b) => a.order - b.order);
   }, [eventsState]);
+  const activeEvents = useMemo(() => sortedEvents.filter((e) => e.active), [sortedEvents]);
+  const inactiveEvents = useMemo(() => sortedEvents.filter((e) => !e.active), [sortedEvents]);
 
   const sortedCs2Events = useMemo(() => {
     return [...cs2State].sort((a, b) => a.order - b.order);
   }, [cs2State]);
+  const activeCs2Events = useMemo(() => sortedCs2Events.filter((e) => e.active), [sortedCs2Events]);
+  const inactiveCs2Events = useMemo(() => sortedCs2Events.filter((e) => !e.active), [sortedCs2Events]);
 
   const toggleEvent = (code: string) => {
     setEventsState((prev) =>
@@ -339,7 +343,12 @@ export default function StreamerEvents() {
           className={`mt-3 space-y-2 ${isDotaOpen ? 'block' : 'hidden'}`}
           style={{ overflowAnchor: 'none' }}
         >
-          {sortedEvents.map((event) => (
+          {activeEvents.length > 0 && (
+            <div className="text-[11px] uppercase tracking-[0.2em] text-white/50 px-1">
+              Активные
+            </div>
+          )}
+          {activeEvents.map((event) => (
             <div
               key={event.code}
               className="rounded-[16px]"
@@ -419,6 +428,92 @@ export default function StreamerEvents() {
               </div>
             </div>
           ))}
+
+          {inactiveEvents.length > 0 && (
+            <div className="pt-2 text-[11px] uppercase tracking-[0.2em] text-white/50 px-1">
+              Неактивные
+            </div>
+          )}
+          {inactiveEvents.map((event) => (
+            <div
+              key={event.code}
+              className="rounded-[16px]"
+            >
+              <div
+                className="yuze-glass rounded-[16px] px-4 py-3 transition-colors"
+                style={
+                  event.active
+                    ? {
+                        background:
+                          'linear-gradient(135deg, rgba(115, 160, 255, 0.18), rgba(60, 110, 255, 0.08))',
+                        borderColor: 'rgba(115, 160, 255, 0.4)',
+                      }
+                    : undefined
+                }
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-white font-semibold">{event.title}</p>
+                  <div
+                    role="switch"
+                    aria-checked={event.active}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      toggleEvent(event.code);
+                    }}
+                    className={`relative h-6 w-12 rounded-full transition-colors ${
+                      event.active ? 'bg-[#5B4BFF]' : 'bg-white/15'
+                    }`}
+                  >
+                    <span
+                      className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                        event.active ? 'translate-x-6' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="flex items-center gap-2 flex-1">
+                    <img src={dollarSignIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={event.maxPrice}
+                      onChange={(e) => updateEventPrice(event.code, e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm text-white placeholder:text-[#b3b3ff]/70 focus:outline-none focus:border-[#5B4BFF] transition-colors"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 flex-1">
+                    <img src={customerExperienceIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={event.winnersCount}
+                      onChange={(e) => updateEventWinners(event.code, e.target.value)}
+                      placeholder="0"
+                      className="w-full bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm text-white placeholder:text-[#b3b3ff]/70 focus:outline-none focus:border-[#5B4BFF] transition-colors"
+                    />
+                  </div>
+                  <div
+                    role="button"
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      toggleEventLock(event.code);
+                    }}
+                    className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+                    aria-pressed={event.locked}
+                  >
+                    <img
+                      src={event.locked ? lockKeyIcon : unlockIcon}
+                      alt=""
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -491,7 +586,98 @@ export default function StreamerEvents() {
           className={`mt-3 space-y-2 ${isCs2Open ? 'block' : 'hidden'}`}
           style={{ overflowAnchor: 'none' }}
         >
-          {sortedCs2Events.map((event) => (
+          {activeCs2Events.length > 0 && (
+            <div className="text-[11px] uppercase tracking-[0.2em] text-white/50 px-1">
+              Активные
+            </div>
+          )}
+          {activeCs2Events.map((event) => (
+            <div
+              key={event.code}
+              className="rounded-[16px]"
+            >
+              <div
+                className="yuze-glass rounded-[16px] px-4 py-3 transition-colors"
+                style={
+                  event.active
+                    ? {
+                        background:
+                          'linear-gradient(135deg, rgba(115, 160, 255, 0.18), rgba(60, 110, 255, 0.08))',
+                        borderColor: 'rgba(115, 160, 255, 0.4)',
+                      }
+                    : undefined
+                }
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-white font-semibold">{event.title}</p>
+                  <div
+                    role="switch"
+                    aria-checked={event.active}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      toggleCs2Event(event.code);
+                    }}
+                    className={`relative h-6 w-12 rounded-full transition-colors ${
+                      event.active ? 'bg-[#5B4BFF]' : 'bg-white/15'
+                    }`}
+                  >
+                    <span
+                      className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                        event.active ? 'translate-x-6' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="flex items-center gap-2 flex-1">
+                    <img src={dollarSignIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={event.maxPrice}
+                      onChange={(e) => updateCs2Price(event.code, e.target.value)}
+                      placeholder="0.00"
+                      className="w-full bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm text-white placeholder:text-[#b3b3ff]/70 focus:outline-none focus:border-[#5B4BFF] transition-colors"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 flex-1">
+                    <img src={customerExperienceIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={event.winnersCount}
+                      onChange={(e) => updateCs2Winners(event.code, e.target.value)}
+                      placeholder="0"
+                      className="w-full bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm text-white placeholder:text-[#b3b3ff]/70 focus:outline-none focus:border-[#5B4BFF] transition-colors"
+                    />
+                  </div>
+                  <div
+                    role="button"
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      toggleCs2Lock(event.code);
+                    }}
+                    className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+                    aria-pressed={event.locked}
+                  >
+                    <img
+                      src={event.locked ? lockKeyIcon : unlockIcon}
+                      alt=""
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {inactiveCs2Events.length > 0 && (
+            <div className="pt-2 text-[11px] uppercase tracking-[0.2em] text-white/50 px-1">
+              Неактивные
+            </div>
+          )}
+          {inactiveCs2Events.map((event) => (
             <div
               key={event.code}
               className="rounded-[16px]"
