@@ -159,6 +159,7 @@ export default function StreamerDetail() {
   const totalAmount = profile?.stats?.total_amount ?? 0;
   const uniqueWinners = profile?.stats?.unique_winners ?? 0;
   const streamParticipants = profile?.stats?.stream_participants ?? 0;
+  const totalPrizes = profile?.stats?.total_prizes ?? 0;
   const totalAmountLabel = Number.isFinite(Number(totalAmount)) ? `$${Number(totalAmount).toFixed(2)}` : "$0.00";
 
   const recentPrizes = useMemo(() => {
@@ -328,9 +329,9 @@ export default function StreamerDetail() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
-          <img src={unicIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
-          <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. участники</p>
-          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{participants}</p>
+          <img src={trophyIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
+          <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Всего призов выдано</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{totalPrizes}</p>
         </div>
         <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={dollarSignIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
@@ -338,11 +339,20 @@ export default function StreamerDetail() {
           <p className="text-xl font-['Space_Grotesk'] font-bold text-[#00FF9D]">{totalAmountLabel}</p>
         </div>
         <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
-          <img src={trophyIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
+          <img src={unicIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. победители</p>
           <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{uniqueWinners}</p>
         </div>
-        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+        <div
+          className="yuze-glass rounded-[20px] px-4 py-2 text-center hover:bg-white/[0.12] transition"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.location.href = `/streamer/${streamerId}/participants`;
+            }
+          }}
+        >
           <img src={customerExperienceIcon} alt="" className="w-8 h-8 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 -mt-2 mb-1">Сейчас участвуют</p>
           <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{streamParticipants}</p>
