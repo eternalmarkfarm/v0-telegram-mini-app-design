@@ -82,10 +82,10 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
   const avatarSrc = prize.winnerAvatar || defaultAvatar;
 
   return (
-    <div className="prom-prize-card yuze-glass rounded-[16px] px-5 py-4 overflow-hidden">
+    <div className="prom-prize-card yuze-glass rounded-[16px] px-5 py-4 overflow-hidden" style={{ containerType: 'inline-size' }}>
       <div className="flex items-start">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="relative w-[68px] h-[68px] shrink-0">
+          <div className="prom-prize-avatar relative w-[68px] h-[68px] shrink-0">
             <img
               src={avatarSrc}
               alt={prize.winnerNick}
@@ -98,41 +98,41 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               <img src={gameIcon} alt={gameLabel} className="w-4 h-4" />
             </div>
           </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_64px] items-start gap-2 min-w-0">
-            <div className="flex flex-col min-w-0 order-1 overflow-hidden">
+          <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto_64px] items-start gap-2 min-w-0">
+            <div className="prom-prize-col-left flex flex-col min-w-0 order-1 overflow-hidden">
               <div className="flex items-center gap-0.5 text-[11px] text-[#b3b3ff] -ml-1 h-6 min-w-0">
-                <img src={trophyIcon} alt="Trophy" className="w-6 h-6 -ml-0.5" />
-                <span className="prom-prize-meta ml-0.5 truncate flex-1 min-w-0">@{prize.winnerNick}</span>
+                <img src={trophyIcon} alt="Trophy" className="prom-prize-icon w-6 h-6 -ml-0.5 shrink-0" />
+                <span className="prom-prize-meta prom-prize-nick ml-0.5 truncate flex-1 min-w-0">@{prize.winnerNick}</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
-                <img src={microphoneIcon} alt="Streamer" className="w-4 h-4" />
-                <span className="prom-prize-meta truncate flex-1 min-w-0">@{prize.streamerName}</span>
+                <img src={microphoneIcon} alt="Streamer" className="prom-prize-icon w-4 h-4 shrink-0" />
+                <span className="prom-prize-meta prom-prize-nick truncate flex-1 min-w-0">@{prize.streamerName}</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 -ml-0.5 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-                  <img src={timeIcon} alt="Time" className="w-4 h-4" />
+                  <img src={timeIcon} alt="Time" className="prom-prize-icon w-4 h-4" />
                 </span>
-                <span className="prom-prize-meta truncate min-w-0">{prize.time}</span>
+                <span className="prom-prize-meta prom-prize-time whitespace-nowrap">{prize.time}</span>
               </div>
             </div>
-            <div className="flex flex-col min-w-0 order-2 overflow-hidden">
+            <div className="prom-prize-col-right flex flex-col min-w-0 order-2">
               <div className="flex items-center gap-2 text-[12px] text-white font-medium h-6 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-                  <img src={fireIcon} alt="Fire" className="w-4 h-4" />
+                  <img src={fireIcon} alt="Fire" className="prom-prize-icon w-4 h-4" />
                 </span>
                 <span className="prom-prize-trigger truncate flex-1 min-w-0">{prize.trigger}</span>
               </div>
               <div className="flex items-center gap-2 mt-1 text-[11px] text-[#b3b3ff] min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center overflow-visible">
-                  <img src={dollarSignIcon} alt="Price" className="w-6 h-6 -ml-1 -mt-1" />
+                  <img src={dollarSignIcon} alt="Price" className="prom-prize-icon w-6 h-6 -ml-1 -mt-1" />
                 </span>
-                <span className="prom-prize-meta min-w-0">{prize.price}</span>
+                <span className="prom-prize-meta prom-prize-price whitespace-nowrap">{prize.price}</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-                  <img src={deadlineIcon} alt="Deadline" className="w-4 h-4" />
+                  <img src={deadlineIcon} alt="Deadline" className="prom-prize-icon w-4 h-4" />
                 </span>
-                <span className="prom-prize-meta truncate min-w-0">{prize.deadline}</span>
+                <span className="prom-prize-meta prom-prize-deadline whitespace-nowrap">{prize.deadline}</span>
               </div>
             </div>
             <div className="flex flex-col items-center order-3 w-[64px] shrink-0">

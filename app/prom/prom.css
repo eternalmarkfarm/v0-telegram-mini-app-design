@@ -308,3 +308,105 @@
     animation: star-burst-2 3s ease-out infinite 1.1s;
   }
 }
+
+/* =============================================
+   Container Queries for PrizeCard responsiveness
+   Works across all platforms (Android, Windows, Linux)
+   ============================================= */
+
+/* When card has less than 360px width */
+@container (max-width: 360px) {
+  .prom-prize-avatar {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .prom-prize-avatar > div {
+    top: 36px !important;
+  }
+
+  .prom-prize-grid {
+    gap: 4px !important;
+  }
+
+  .prom-prize-meta {
+    font-size: 11px;
+  }
+
+  .prom-prize-trigger {
+    font-size: 11px;
+  }
+}
+
+/* When card has less than 320px width - more aggressive */
+@container (max-width: 320px) {
+  .prom-prize-card {
+    padding: 12px !important;
+  }
+
+  .prom-prize-avatar {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .prom-prize-avatar > div {
+    top: 30px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .prom-prize-avatar > div img {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .prom-prize-grid {
+    gap: 2px !important;
+  }
+
+  .prom-prize-icon {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .prom-prize-meta {
+    font-size: 10px;
+  }
+
+  .prom-prize-trigger {
+    font-size: 10px;
+  }
+
+  .prom-prize-time,
+  .prom-prize-price,
+  .prom-prize-deadline {
+    font-size: 10px;
+  }
+}
+
+/* When card has less than 280px width - extreme case */
+@container (max-width: 280px) {
+  .prom-prize-card {
+    padding: 10px !important;
+  }
+
+  .prom-prize-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .prom-prize-avatar > div {
+    top: 24px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .prom-prize-col-left,
+  .prom-prize-col-right {
+    gap: 0 !important;
+  }
+
+  .prom-prize-nick {
+    max-width: 60px;
+  }
+}
