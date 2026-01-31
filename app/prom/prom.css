@@ -43,7 +43,7 @@
   z-index: 0;
 }
 
-.prom-integrations-card > * {
+.prom-integrations-card>* {
   position: relative;
   z-index: 1;
 }
@@ -131,19 +131,26 @@
 /* Linux-specific tweaks removed to match other platforms */
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
 }
 
 @keyframes blink-strong {
-  0%, 49% {
+
+  0%,
+  49% {
     opacity: 1;
   }
-  50%, 100% {
+
+  50%,
+  100% {
     opacity: 0;
   }
 }
@@ -152,6 +159,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -161,6 +169,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -171,9 +180,11 @@
     transform: translate(-50%, -50%) scale(0.6);
     opacity: 0;
   }
+
   20% {
     opacity: 0.85;
   }
+
   100% {
     transform: translate(-80%, -120%) scale(1.35);
     opacity: 0;
@@ -185,9 +196,11 @@
     transform: translate(-50%, -50%) scale(0.5);
     opacity: 0;
   }
+
   25% {
     opacity: 0.7;
   }
+
   100% {
     transform: translate(-20%, -120%) scale(1.5);
     opacity: 0;
@@ -198,6 +211,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -278,6 +292,7 @@
       transform: translateX(-120%);
       opacity: 0.9;
     }
+
     100% {
       transform: translateX(120%);
       opacity: 0.9;
@@ -314,15 +329,26 @@
    Works across all platforms (Android, Windows, Linux)
    ============================================= */
 
+/* Game icon positioning fix - always bottom-right of avatar */
+.prom-prize-avatar>div {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  top: auto !important;
+}
+
+/* Status column base - allow it to shrink */
+.prom-prize-grid>div:last-child {
+  width: auto;
+  min-width: 48px;
+  max-width: 64px;
+}
+
 /* When card has less than 360px width */
 @container (max-width: 360px) {
   .prom-prize-avatar {
     width: 56px !important;
     height: 56px !important;
-  }
-
-  .prom-prize-avatar > div {
-    top: 36px !important;
   }
 
   .prom-prize-grid {
@@ -335,6 +361,20 @@
 
   .prom-prize-trigger {
     font-size: 11px;
+  }
+
+  /* Reduce status badge */
+  .prom-status-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .prom-status-text {
+    font-size: 10px;
+  }
+
+  .prom-status-text span {
+    font-size: 10px !important;
   }
 }
 
@@ -349,13 +389,12 @@
     height: 48px !important;
   }
 
-  .prom-prize-avatar > div {
-    top: 30px !important;
-    width: 20px !important;
-    height: 20px !important;
+  .prom-prize-avatar>div {
+    width: 18px !important;
+    height: 18px !important;
   }
 
-  .prom-prize-avatar > div img {
+  .prom-prize-avatar>div img {
     width: 12px !important;
     height: 12px !important;
   }
@@ -365,8 +404,8 @@
   }
 
   .prom-prize-icon {
-    width: 14px !important;
-    height: 14px !important;
+    width: 12px !important;
+    height: 12px !important;
   }
 
   .prom-prize-meta {
@@ -382,6 +421,21 @@
   .prom-prize-deadline {
     font-size: 10px;
   }
+
+  /* Reduce status badge more */
+  .prom-status-icon {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .prom-status-text {
+    display: none;
+  }
+
+  .prom-prize-grid>div:last-child {
+    min-width: 36px;
+    max-width: 48px;
+  }
 }
 
 /* When card has less than 280px width - extreme case */
@@ -395,8 +449,7 @@
     height: 40px !important;
   }
 
-  .prom-prize-avatar > div {
-    top: 24px !important;
+  .prom-prize-avatar>div {
     width: 16px !important;
     height: 16px !important;
   }
@@ -407,6 +460,16 @@
   }
 
   .prom-prize-nick {
-    max-width: 60px;
+    max-width: 50px;
+  }
+
+  .prom-status-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .prom-prize-grid>div:last-child {
+    min-width: 32px;
+    max-width: 40px;
   }
 }
