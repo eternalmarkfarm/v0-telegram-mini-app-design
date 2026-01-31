@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/lib/api";
@@ -87,11 +87,6 @@ export default function StreamerEvents() {
   const [bulkWinners, setBulkWinners] = useState('');
   const [bulkPriceCs2, setBulkPriceCs2] = useState('');
   const [bulkWinnersCs2, setBulkWinnersCs2] = useState('');
-  const itemRefs = useRef(new Map<string, HTMLDivElement>());
-  const positionsRef = useRef(new Map<string, DOMRect>());
-  const cs2ItemRefs = useRef(new Map<string, HTMLDivElement>());
-  const cs2PositionsRef = useRef(new Map<string, DOMRect>());
-
   useEffect(() => {
     const load = async () => {
       try {
@@ -151,85 +146,12 @@ export default function StreamerEvents() {
   };
 
   const sortedEvents = useMemo(() => {
-    return [...eventsState].sort((a, b) => {
-      if (a.active === b.active) return a.order - b.order;
-      return a.active ? -1 : 1;
-    });
+    return [...eventsState].sort((a, b) => a.order - b.order);
   }, [eventsState]);
 
   const sortedCs2Events = useMemo(() => {
-    return [...cs2State].sort((a, b) => {
-      if (a.active === b.active) return a.order - b.order;
-      return a.active ? -1 : 1;
-    });
+    return [...cs2State].sort((a, b) => a.order - b.order);
   }, [cs2State]);
-
-  useLayoutEffect(() => {
-    const newPositions = new Map<string, DOMRect>();
-
-    sortedEvents.forEach((event) => {
-      const element = itemRefs.current.get(event.code);
-      if (!element) return;
-      const rect = element.getBoundingClientRect();
-      newPositions.set(event.code, rect);
-
-      const prevRect = positionsRef.current.get(event.code);
-      if (prevRect) {
-        const dx = prevRect.left - rect.left;
-        const dy = prevRect.top - rect.top;
-        if (dx || dy) {
-          element.style.transition = 'none';
-          element.style.transform = `translate(${dx}px, ${dy}px)`;
-          element.getBoundingClientRect();
-          requestAnimationFrame(() => {
-            element.style.transition = 'transform 260ms ease-out';
-            element.style.transform = 'translate(0, 0)';
-            const handle = () => {
-              element.style.transition = '';
-              element.removeEventListener('transitionend', handle);
-            };
-            element.addEventListener('transitionend', handle);
-          });
-        }
-      }
-    });
-
-    positionsRef.current = newPositions;
-
-  }, [sortedEvents]);
-
-  useLayoutEffect(() => {
-    const newPositions = new Map<string, DOMRect>();
-
-    sortedCs2Events.forEach((event) => {
-      const element = cs2ItemRefs.current.get(event.code);
-      if (!element) return;
-      const rect = element.getBoundingClientRect();
-      newPositions.set(event.code, rect);
-
-      const prevRect = cs2PositionsRef.current.get(event.code);
-      if (prevRect) {
-        const dx = prevRect.left - rect.left;
-        const dy = prevRect.top - rect.top;
-        if (dx || dy) {
-          element.style.transition = 'none';
-          element.style.transform = `translate(${dx}px, ${dy}px)`;
-          element.getBoundingClientRect();
-          requestAnimationFrame(() => {
-            element.style.transition = 'transform 260ms ease-out';
-            element.style.transform = 'translate(0, 0)';
-            const handle = () => {
-              element.style.transition = '';
-              element.removeEventListener('transitionend', handle);
-            };
-            element.addEventListener('transitionend', handle);
-          });
-        }
-      }
-    });
-
-    cs2PositionsRef.current = newPositions;
-  }, [sortedCs2Events]);
 
   const toggleEvent = (code: string) => {
     setEventsState((prev) =>
@@ -420,10 +342,6 @@ export default function StreamerEvents() {
           {sortedEvents.map((event) => (
             <div
               key={event.code}
-              ref={(node) => {
-                if (node) itemRefs.current.set(event.code, node);
-                else itemRefs.current.delete(event.code);
-              }}
               className="rounded-[16px]"
             >
               <div
@@ -576,10 +494,6 @@ export default function StreamerEvents() {
           {sortedCs2Events.map((event) => (
             <div
               key={event.code}
-              ref={(node) => {
-                if (node) cs2ItemRefs.current.set(event.code, node);
-                else cs2ItemRefs.current.delete(event.code);
-              }}
               className="rounded-[16px]"
             >
               <div
