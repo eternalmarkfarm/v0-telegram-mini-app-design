@@ -50,7 +50,7 @@ export default function Following() {
           avatar: s.profile_image_url || null,
           isOnline: Boolean(s.is_live),
           viewers: s.viewer_count ?? null,
-          streamStartMs: 0,
+          streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
           totalPrizes: 0,
           totalValue: "$0.00",
         }));
