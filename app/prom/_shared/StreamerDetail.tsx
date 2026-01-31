@@ -153,10 +153,10 @@ export default function StreamerDetail() {
   const avatarSrc = profile?.streamer?.profile_image_url || "/prom/twitch_avatar.webp";
   const twitchLogin = profile?.streamer?.twitch_login;
   const liveViewers = profile?.live?.viewer_count ?? 0;
-  const participants = profile?.stats?.stream_participants ?? 0;
+  const participants = profile?.stats?.total_participants ?? 0;
   const totalAmount = profile?.stats?.total_amount ?? 0;
-  const totalPrizes = profile?.stats?.total_prizes ?? 0;
-  const streamPrizes = profile?.stats?.stream_prizes ?? 0;
+  const uniqueWinners = profile?.stats?.unique_winners ?? 0;
+  const streamParticipants = profile?.stats?.stream_participants ?? 0;
   const totalAmountLabel = Number.isFinite(Number(totalAmount)) ? `$${Number(totalAmount).toFixed(2)}` : "$0.00";
 
   const recentPrizes = useMemo(() => {
@@ -338,12 +338,12 @@ export default function StreamerDetail() {
         <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={trophyIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. победители</p>
-          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{totalPrizes}</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{uniqueWinners}</p>
         </div>
         <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={customerExperienceIcon} alt="" className="w-8 h-8 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 -mt-2 mb-1">Сейчас участвуют</p>
-          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{streamPrizes}</p>
+          <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{streamParticipants}</p>
         </div>
       </div>
 
