@@ -44,7 +44,11 @@ export default function DiceStreamers() {
           id: s.id,
           nickname: s.twitch_display_name || s.twitch_login || `#${s.id}`,
           avatar: s.profile_image_url || null,
-          matchStartMs: s.started_at ? Date.parse(s.started_at) : 0,
+          matchStartMs: s.match_started_at
+            ? Date.parse(s.match_started_at)
+            : s.started_at
+              ? Date.parse(s.started_at)
+              : 0,
           matchId: s.match_id ?? null,
           matchStatus: s.match_status ?? null,
         }));
@@ -71,7 +75,8 @@ export default function DiceStreamers() {
     try {
       const raw = (amounts[streamer.id] ?? "").trim();
       const stars = Number.parseInt(raw || "0", 10);
-      if (!streamer.matchId || streamer.matchStatus !== "live") {
+      const isMatchActive = streamer.matchStatus === "live" || streamer.matchStatus === "pending";
+      if (!streamer.matchId || !isMatchActive) {
         alert("Донат доступен только во время матча.");
         return;
       }
@@ -169,7 +174,7 @@ export default function DiceStreamers() {
               </div>
               <div className="flex flex-col -mt-0.5">
                 <span className="text-white font-semibold text-base">{streamer.nickname}</span>
-                {streamer.matchStatus === "live" ? (
+                {streamer.matchStatus === "live" || streamer.matchStatus === "pending" ? (
                   <span className="text-[12px] text-white/70 font-medium">
                     {formatDuration(streamer.matchStartMs, nowMs).hours}
                     <span className="mx-0.5 blink-strong">:</span>
@@ -190,13 +195,16 @@ export default function DiceStreamers() {
                 onChange={(e) =>
                   setAmounts((prev) => ({ ...prev, [streamer.id]: e.target.value }))
                 }
-                disabled={streamer.matchStatus !== "live"}
+                disabled={streamer.matchStatus !== "live" && streamer.matchStatus !== "pending"}
               />
             </div>
             <button
               type="button"
               onClick={() => handleSend(streamer)}
-              disabled={sendingId === streamer.id || streamer.matchStatus !== "live"}
+              disabled={
+                sendingId === streamer.id ||
+                (streamer.matchStatus !== "live" && streamer.matchStatus !== "pending")
+              }
               className="px-4 py-1.5 rounded-[10px] text-[15px] font-['Space_Grotesk'] font-semibold text-[#3b2a00] shadow-[0_8px_18px_rgba(255,200,61,0.35)] bg-gradient-to-r from-[#FFD666] to-[#FFC83D] hover:brightness-110 active:translate-y-[1px] transition"
             >
               {sendingId === streamer.id ? "..." : "Отправить"}
