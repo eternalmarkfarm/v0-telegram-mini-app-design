@@ -37,9 +37,11 @@ export default function DiceStreamers() {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
     const load = async () => {
       try {
         const res = await apiGet("/streamers/live");
+        if (!mounted) return;
         const mapped = (res?.streamers ?? []).map((s: any) => ({
           id: s.id,
           nickname: s.twitch_display_name || s.twitch_login || `#${s.id}`,
@@ -55,10 +57,15 @@ export default function DiceStreamers() {
         setStreamers(mapped);
       } catch (e) {
         console.error("Failed to load live streamers:", e);
-        setStreamers([]);
+        if (mounted) setStreamers([]);
       }
     };
     load();
+    const interval = window.setInterval(load, 15000);
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+    };
   }, []);
 
   const formatDuration = (startMs: number, currentMs: number) => {
