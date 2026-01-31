@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import StarsBurst from "@/app/prom/components/StarsBurst";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
+import useSWR from "swr";
+import { REFRESH_LIVE } from "@/app/prom/lib/refresh";
 
 const leftArrowIcon = "/prom/left-arrow.svg";
 const star = "/prom/star.svg";
@@ -36,37 +38,26 @@ export default function DiceStreamers() {
     return () => window.clearInterval(intervalId);
   }, []);
 
+  const { data } = useSWR("/streamers/live", undefined, { refreshInterval: REFRESH_LIVE });
+
+  const mappedStreamers = useMemo(() => {
+    return (data?.streamers ?? []).map((s: any) => ({
+      id: s.id,
+      nickname: s.twitch_display_name || s.twitch_login || `#${s.id}`,
+      avatar: s.profile_image_url || null,
+      matchStartMs: s.match_started_at
+        ? Date.parse(s.match_started_at)
+        : s.started_at
+          ? Date.parse(s.started_at)
+          : 0,
+      matchId: s.match_id ?? null,
+      matchStatus: s.match_status ?? null,
+    }));
+  }, [data]);
+
   useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      try {
-        const res = await apiGet("/streamers/live");
-        if (!mounted) return;
-        const mapped = (res?.streamers ?? []).map((s: any) => ({
-          id: s.id,
-          nickname: s.twitch_display_name || s.twitch_login || `#${s.id}`,
-          avatar: s.profile_image_url || null,
-          matchStartMs: s.match_started_at
-            ? Date.parse(s.match_started_at)
-            : s.started_at
-              ? Date.parse(s.started_at)
-              : 0,
-          matchId: s.match_id ?? null,
-          matchStatus: s.match_status ?? null,
-        }));
-        setStreamers(mapped);
-      } catch (e) {
-        console.error("Failed to load live streamers:", e);
-        if (mounted) setStreamers([]);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 15000);
-    return () => {
-      mounted = false;
-      window.clearInterval(interval);
-    };
-  }, []);
+    setStreamers(mappedStreamers);
+  }, [mappedStreamers]);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     const totalSeconds = Math.max(0, Math.floor((currentMs - startMs) / 1000));

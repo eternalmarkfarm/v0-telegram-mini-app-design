@@ -4,12 +4,19 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Headphones, Gift, Eye } from 'lucide-react';
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiGetFresh, apiPost } from "@/lib/api";
 import { readCache, writeCache } from "@/lib/cache";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
 import { getEventLabel } from "@/lib/event-labels";
+import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
 import { buildCacheKey, readCache as readPromCache, writeCache as writePromCache } from "@/app/prom/lib/cache";
+import useSWR from "swr";
+import {
+  REFRESH_PRIZES,
+  REFRESH_PROFILE,
+  REFRESH_TRACKED,
+} from "@/app/prom/lib/refresh";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
 const avatarCircle = "/prom/circle.svg";
@@ -162,22 +169,7 @@ export default function Home() {
   // no auto-prefetch on Android; user explicitly requests link
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        await ensureAuth();
-        const res = await apiGet("/viewer/profile");
-        const avatar = res?.profile_image_url ?? null;
-        const name = res?.display_name ?? null;
-        setViewerAvatar(avatar);
-        setViewerDisplayName(name);
-        writePromCache(viewerProfileKey, { profile_image_url: avatar, display_name: name });
-      } catch (e) {
-        console.error("Failed to load viewer profile:", e);
-      }
-    };
-    if (twitchLinked) {
-      loadProfile();
-    } else {
+    if (!twitchLinked) {
       setViewerAvatar(null);
       setViewerDisplayName(null);
     }
@@ -196,99 +188,97 @@ export default function Home() {
     };
   };
 
-  const formatPrizeTime = (value?: string | null) => {
-    if (!value) return "";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-    return date.toLocaleString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).replace(",", "");
+  const fetchTracked = async () => {
+    await ensureAuth();
+    return apiGetFresh("/viewer/tracked");
   };
 
-  const mapPrizeStatus = (status?: string | null): PrizeData["status"] => {
-    if (status === "success") return "received";
-    if (status === "not_claimed" || status === "failed") return "missed";
-    if (status === "sent") return "sent";
-    return "processing";
+  const { data: trackedRes } = useSWR("/viewer/tracked", fetchTracked, {
+    refreshInterval: REFRESH_TRACKED,
+  });
+
+  const fetchViewerProfile = async () => {
+    await ensureAuth();
+    return apiGetFresh("/viewer/profile");
   };
 
-  const loadTracked = async () => {
-    try {
-      await ensureAuth();
-      const res = await apiGet("/viewer/tracked");
-      const streamers = res?.streamers ?? [];
-      const top = streamers.slice(0, 3);
-      const statsResponses = await Promise.all(
-        top.map((s: any) => apiGet(`/streamers/${s.id}`).catch(() => null))
-      );
-      const statsById = new Map<number, any>();
-      statsResponses.forEach((res: any) => {
-        if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
-      });
-      const mapped = streamers.map((s: any) => {
-        const statsRow = statsById.get(s.id);
-        return {
-          id: s.id,
-          nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
-          avatar: s.profile_image_url || null,
-          isOnline: Boolean(s.is_live),
-          viewers: s.viewer_count ?? null,
-          streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
-          totalPrizes: statsRow?.total_prizes ?? 0,
-          totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : "$0.00",
-        } as TrackedStreamer;
-      });
-      setTracked(mapped);
-      writeCache("prom:home:tracked", mapped);
-    } catch (e) {
-      console.error("Failed to load tracked:", e);
-    }
+  const { data: viewerProfile } = useSWR("/viewer/profile", fetchViewerProfile, {
+    refreshInterval: REFRESH_PROFILE,
+  });
+
+  const fetchViewerPrizes = async () => {
+    await ensureAuth();
+    await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
+    return apiGetFresh("/viewer/prizes?limit=3");
   };
 
-  const loadPrizes = async () => {
-    try {
-      await ensureAuth();
-      const profile = await apiGet("/viewer/profile").catch(() => null);
-      const avatar = profile?.profile_image_url ?? null;
-      if (avatar) setViewerAvatar(avatar);
-      if (profile?.display_name) setViewerDisplayName(profile.display_name);
-      if (avatar || profile?.display_name) {
-        writePromCache(viewerProfileKey, { profile_image_url: avatar, display_name: profile?.display_name ?? null });
-      }
-      await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
-      const res = await apiGet("/viewer/prizes?limit=3");
-      const items = res?.items ?? [];
-      const mapped = items.map((item: any) => ({
-        id: String(item.id),
-        streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
-        winnerNick: twitchLogin || "you",
-        winnerAvatar: avatar || undefined,
-        time: formatPrizeTime(item.created_at),
-        trigger: getEventLabel(item.event_key),
-        deadline: formatPrizeTime(item.trade_offer_expiry_at),
-        price: item.skin_price ? String(item.skin_price) : "0.00",
-        status: mapPrizeStatus(item.delivery_status),
-        game: "dota",
-      })) as HomePrize[];
-      setPrizes(mapped);
-      writeCache("prom:home:prizes", mapped);
-    } catch (e) {
-      console.error("Failed to load prizes:", e);
-    }
-  };
+  const { data: prizesRes } = useSWR("/viewer/prizes?limit=3", fetchViewerPrizes, {
+    refreshInterval: REFRESH_PRIZES,
+  });
 
   useEffect(() => {
-    loadTracked();
-    loadPrizes();
-    const interval = window.setInterval(() => {
-      loadTracked();
-      loadPrizes();
-    }, 10000);
-    return () => window.clearInterval(interval);
-  }, []);
+    if (!trackedRes?.streamers) return;
+    const hydrate = async () => {
+      try {
+        const streamers = trackedRes.streamers ?? [];
+        const top = streamers.slice(0, 3);
+        const statsResponses = await Promise.all(
+          top.map((s: any) => apiGetFresh(`/streamers/${s.id}`).catch(() => null))
+        );
+        const statsById = new Map<number, any>();
+        statsResponses.forEach((res: any) => {
+          if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
+        });
+        const mapped = streamers.map((s: any) => {
+          const statsRow = statsById.get(s.id);
+          return {
+            id: s.id,
+            nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
+            avatar: s.profile_image_url || null,
+            isOnline: Boolean(s.is_live),
+            viewers: s.viewer_count ?? null,
+            streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
+            totalPrizes: statsRow?.total_prizes ?? 0,
+            totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : "$0.00",
+          } as TrackedStreamer;
+        });
+        setTracked(mapped);
+        writeCache("prom:home:tracked", mapped);
+      } catch (e) {
+        console.error("Failed to load tracked:", e);
+      }
+    };
+    hydrate();
+  }, [trackedRes]);
+
+  useEffect(() => {
+    const avatar = viewerProfile?.profile_image_url ?? null;
+    if (avatar) setViewerAvatar(avatar);
+    if (viewerProfile?.display_name) setViewerDisplayName(viewerProfile.display_name);
+    if (avatar || viewerProfile?.display_name) {
+      writePromCache(viewerProfileKey, { profile_image_url: avatar, display_name: viewerProfile?.display_name ?? null });
+    }
+  }, [viewerProfile, viewerProfileKey]);
+
+  useEffect(() => {
+    if (!prizesRes?.items) return;
+    const avatar = viewerProfile?.profile_image_url ?? null;
+    const items = prizesRes.items ?? [];
+    const mapped = items.map((item: any) => ({
+      id: String(item.id),
+      streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
+      winnerNick: twitchLogin || "you",
+      winnerAvatar: avatar || undefined,
+      time: formatPrizeTime(item.created_at),
+      trigger: getEventLabel(item.event_key),
+      deadline: formatPrizeTime(item.trade_offer_expiry_at),
+      price: item.skin_price ? String(item.skin_price) : "0.00",
+      status: mapPrizeStatus(item.delivery_status),
+      game: "dota",
+    })) as HomePrize[];
+    setPrizes(mapped);
+    writeCache("prom:home:prizes", mapped);
+  }, [prizesRes, viewerProfile, twitchLogin]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">

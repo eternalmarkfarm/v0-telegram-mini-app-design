@@ -40,6 +40,16 @@ export function apiGet(path: string) {
   });
 }
 
+export function apiGetFresh(path: string) {
+  return apiRequest(path, {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "Pragma": "no-cache",
+    },
+  });
+}
+
 export function apiPost(path: string, body?: any) {
   return apiRequest(path, {
     method: "POST",

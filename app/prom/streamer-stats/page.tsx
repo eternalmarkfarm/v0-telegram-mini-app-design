@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGetFresh, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
+import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
+import useSWR from "swr";
+import { REFRESH_PRIZES, REFRESH_STATS } from "@/app/prom/lib/refresh";
 const leftArrow = "/prom/left-arrow.svg";
 const dollarSignIcon = "/prom/dollar-sign.svg";
 const strPrizeIcon = "/prom/str_prize.png";
@@ -16,25 +19,6 @@ const starIcon = "/prom/star_don.svg";
 
 
 const DAY_OPTIONS = [7, 14, 30] as const;
-
-const mapStatus = (status?: string | null): PrizeData["status"] => {
-  if (status === "success") return "received";
-  if (status === "not_claimed" || status === "failed") return "missed";
-  if (status === "sent") return "sent";
-  return "processing";
-};
-
-const formatTime = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).replace(",", "");
-};
 
 function buildLinePath(values: number[], width: number, height: number) {
   if (values.length === 0) return "";
@@ -101,57 +85,72 @@ export default function StreamerStats() {
   const maxValue = hasSeries ? Math.max(...series) : 0;
   const valueRange = Math.max(maxValue - minValue, 1);
   const barBandHeight = 56;
+  const fetchAuthed = async (path: string) => {
+    await ensureAuth();
+    return apiGetFresh(path);
+  };
+
+  const { data: followersStats } = useSWR(
+    "/streamer/followers/stats",
+    () => fetchAuthed("/streamer/followers/stats"),
+    { refreshInterval: REFRESH_STATS }
+  );
+  const { data: followersToday } = useSWR(
+    "/streamer/followers/today",
+    () => fetchAuthed("/streamer/followers/today"),
+    { refreshInterval: REFRESH_STATS }
+  );
+  const { data: streamerMe } = useSWR(
+    "/streamer/me",
+    () => fetchAuthed("/streamer/me"),
+    { refreshInterval: REFRESH_STATS }
+  );
+  const streamerId = streamerMe?.streamer?.id;
+  const { data: profile } = useSWR(
+    streamerId ? `/streamers/${streamerId}` : null,
+    () => apiGetFresh(`/streamers/${streamerId}`),
+    { refreshInterval: REFRESH_PRIZES }
+  );
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        await ensureAuth();
-        const [followersStats, followersToday, streamerMe] = await Promise.all([
-          apiGet("/streamer/followers/stats").catch(() => null),
-          apiGet("/streamer/followers/today").catch(() => null),
-          apiGet("/streamer/me").catch(() => null),
-        ]);
-        const key = days === 7 ? "5" : days === 14 ? "15" : "30";
-        const range = followersStats?.ranges?.[key] ?? [];
-        if (Array.isArray(range) && range.length > 0) {
-          setSeriesData(range.map((r: any) => Number(r.count ?? 0)));
-        }
-        if (followersToday?.count_today != null) {
-          setTodayIssued(String(followersToday.count_today));
-        }
-        const streamerId = streamerMe?.streamer?.id;
-        if (streamerMe?.stars_summary) {
-          setStarsSummary(streamerMe.stars_summary);
-        }
-        if (streamerMe?.streamer?.ton_wallet) {
-          setTonWallet(streamerMe.streamer.ton_wallet);
-        }
-        if (streamerId) {
-          const profile = await apiGet(`/streamers/${streamerId}`);
-          const stats = profile?.stats ?? {};
-          setTotalSpent(`$${Number(stats.total_amount ?? 0).toFixed(2)}`);
-          setTotalSkins(String(stats.total_prizes ?? 0));
-          const recent = profile?.recent_prizes ?? [];
-          const mapped = recent.map((item: any) => ({
-            id: String(item.id),
-            streamerName: profile?.streamer?.twitch_login || profile?.streamer?.display_name || "Streamer",
-            winnerNick: item.twitch_login || "viewer",
-            time: formatTime(item.created_at),
-            trigger: getEventLabel(item.event_key),
-            deadline: formatTime(item.trade_offer_expiry_at),
-            price: item.skin_price ? String(item.skin_price) : "0.00",
-            status: mapStatus(item.delivery_status),
-            game: "dota",
-          })) as PrizeData[];
-          setIssuedPrizes(mapped);
-        }
-      } catch (e) {
-        console.error("Failed to load stats:", e);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 10000);
-    return () => window.clearInterval(interval);
-  }, [days]);
+    const key = days === 7 ? "5" : days === 14 ? "15" : "30";
+    const range = followersStats?.ranges?.[key] ?? [];
+    if (Array.isArray(range) && range.length > 0) {
+      setSeriesData(range.map((r: any) => Number(r.count ?? 0)));
+    }
+    if (followersToday?.count_today != null) {
+      setTodayIssued(String(followersToday.count_today));
+    }
+  }, [followersStats, followersToday, days]);
+
+  useEffect(() => {
+    if (streamerMe?.stars_summary) {
+      setStarsSummary(streamerMe.stars_summary);
+    }
+    if (streamerMe?.streamer?.ton_wallet) {
+      setTonWallet(streamerMe.streamer.ton_wallet);
+    }
+  }, [streamerMe]);
+
+  useEffect(() => {
+    if (!profile) return;
+    const stats = profile?.stats ?? {};
+    setTotalSpent(`$${Number(stats.total_amount ?? 0).toFixed(2)}`);
+    setTotalSkins(String(stats.total_prizes ?? 0));
+    const recent = profile?.recent_prizes ?? [];
+    const mapped = recent.map((item: any) => ({
+      id: String(item.id),
+      streamerName: profile?.streamer?.twitch_login || profile?.streamer?.display_name || "Streamer",
+      winnerNick: item.twitch_login || "viewer",
+      time: formatPrizeTime(item.created_at),
+      trigger: getEventLabel(item.event_key),
+      deadline: formatPrizeTime(item.trade_offer_expiry_at),
+      price: item.skin_price ? String(item.skin_price) : "0.00",
+      status: mapPrizeStatus(item.delivery_status),
+      game: "dota",
+    })) as PrizeData[];
+    setIssuedPrizes(mapped);
+  }, [profile]);
 
   const handleSaveWallet = async () => {
     try {

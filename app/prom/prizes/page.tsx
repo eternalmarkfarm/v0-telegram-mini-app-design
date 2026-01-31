@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from "next/navigation";
 import PrizeCard, { PrizeData } from '@/app/prom/components/PrizeCard';
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGetFresh, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
+import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
+import useSWR from "swr";
+import { REFRESH_PRIZES, REFRESH_PROFILE } from "@/app/prom/lib/refresh";
 const rewardIcon = "/prom/medal_new.svg";
 const leftArrowIcon = "/prom/left-arrow.svg";
 
@@ -18,55 +21,44 @@ export default function Prizes() {
   const { twitchLogin } = useViewerStatus();
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
 
-  const mapStatus = (status?: string | null): PrizeData["status"] => {
-    if (status === "success") return "received";
-    if (status === "not_claimed" || status === "failed") return "missed";
-    if (status === "sent") return "sent";
-    return "processing";
+  const { data: profile } = useSWR("/viewer/profile", undefined, { refreshInterval: REFRESH_PROFILE });
+
+  const fetchPrizes = async () => {
+    await ensureAuth();
+    await apiPost("/viewer/prizes/refresh", {});
+    return apiGetFresh("/viewer/prizes?limit=30");
   };
 
-  const formatTime = (value?: string | null) => {
-    if (!value) return "";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-    return date.toLocaleString("ru-RU", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).replace(",", "");
-  };
+  const { data: prizeRes } = useSWR("/viewer/prizes?limit=30", fetchPrizes, {
+    refreshInterval: REFRESH_PRIZES,
+  });
+
+  const mappedItems = useMemo(() => {
+    const avatar = profile?.profile_image_url ?? null;
+    const resItems = prizeRes?.items ?? [];
+    return resItems.map((item: any) => ({
+      id: String(item.id),
+      streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
+      winnerNick: twitchLogin || "you",
+      winnerAvatar: avatar ?? undefined,
+      time: formatPrizeTime(item.created_at),
+      trigger: getEventLabel(item.event_key),
+      deadline: formatPrizeTime(item.trade_offer_expiry_at),
+      price: item.skin_price ? String(item.skin_price) : "0.00",
+      status: mapPrizeStatus(item.delivery_status),
+      game: "dota",
+    })) as PrizeData[];
+  }, [prizeRes, profile, twitchLogin]);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        await ensureAuth();
-        const profile = await apiGet("/viewer/profile").catch(() => null);
-        setViewerAvatar(profile?.profile_image_url ?? null);
-        await apiPost("/viewer/prizes/refresh", {});
-        const res = await apiGet("/viewer/prizes?limit=30");
-        const mapped = (res?.items ?? []).map((item: any) => ({
-          id: String(item.id),
-          streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
-          winnerNick: twitchLogin || "you",
-          winnerAvatar: profile?.profile_image_url ?? undefined,
-          time: formatTime(item.created_at),
-          trigger: getEventLabel(item.event_key),
-          deadline: formatTime(item.trade_offer_expiry_at),
-          price: item.skin_price ? String(item.skin_price) : "0.00",
-          status: mapStatus(item.delivery_status),
-          game: "dota",
-        })) as PrizeData[];
-        setItems(mapped);
-      } catch (e) {
-        console.error("Failed to load prizes:", e);
-        setItems([]);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 10000);
-    return () => window.clearInterval(interval);
-  }, [twitchLogin]);
+    if (profile?.profile_image_url) setViewerAvatar(profile.profile_image_url);
+  }, [profile]);
+
+  useEffect(() => {
+    if (mappedItems.length > 0) {
+      setItems(mappedItems);
+    }
+  }, [mappedItems]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">

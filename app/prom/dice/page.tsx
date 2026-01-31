@@ -1,69 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet } from "@/lib/api";
+import useSWR from "swr";
+import { apiGetFresh } from "@/lib/api";
 import { readCache, writeCache } from "@/lib/cache";
 import { getEventLabel } from "@/lib/event-labels";
+import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
+import { REFRESH_PRIZES } from "@/app/prom/lib/refresh";
 
 const chooseStream = "/prom/choosing.svg";
 const vsIcon = "/prom/vs_illustration_19920256.png";
 const vsLogoIcon = "/prom/vs_logo_3d_5985078.png";
 
-const formatTime = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).replace(",", "");
-};
-
-const mapStatus = (status?: string | null): PrizeData["status"] => {
-  if (status === "success") return "received";
-  if (status === "not_claimed" || status === "failed") return "missed";
-  if (status === "sent") return "sent";
-  return "processing";
-};
-
 export default function Dice() {
-  const [prizes, setPrizes] = useState<PrizeData[]>(
-    () => readCache<PrizeData[]>("prom:dice:recent") ?? []
-  );
+  const cached = readCache<PrizeData[]>("prom:dice:recent") ?? [];
+
+  const fetchPrizes = async () => {
+    const res = await apiGetFresh("/public/recent-prizes?limit=10");
+    const items = res?.items ?? [];
+    return items.map((item: any) => {
+      const time = formatPrizeTime(item.created_at);
+      return {
+        id: String(item.id),
+        streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
+        winnerNick: item.winner_twitch_login || "viewer",
+        winnerAvatar: item.winner_profile_image_url || undefined,
+        time,
+        trigger: getEventLabel(item.event_key),
+        deadline: time,
+        price: item.skin_price ? String(item.skin_price) : "0.00",
+        status: mapPrizeStatus(item.delivery_status),
+        game: "dota",
+      } as PrizeData;
+    });
+  };
+
+  const { data: prizes = cached } = useSWR("/public/recent-prizes?limit=10", fetchPrizes, {
+    refreshInterval: REFRESH_PRIZES,
+    fallbackData: cached,
+  });
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await apiGet("/public/recent-prizes?limit=10");
-        const mapped = (res?.items ?? []).map((item: any) => {
-          const time = formatTime(item.created_at);
-          return {
-            id: String(item.id),
-            streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
-            winnerNick: item.winner_twitch_login || "viewer",
-            winnerAvatar: item.winner_profile_image_url || undefined,
-            time,
-            trigger: getEventLabel(item.event_key),
-            deadline: time,
-            price: item.skin_price ? String(item.skin_price) : "0.00",
-            status: mapStatus(item.delivery_status),
-            game: "dota",
-          } as PrizeData;
-        });
-        setPrizes(mapped);
-        writeCache("prom:dice:recent", mapped);
-      } catch (e) {
-        console.error("Failed to load dice prizes:", e);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 10000);
-    return () => window.clearInterval(interval);
-  }, []);
+    if (prizes.length > 0) writeCache("prom:dice:recent", prizes);
+  }, [prizes]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">

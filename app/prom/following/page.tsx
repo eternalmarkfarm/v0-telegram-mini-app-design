@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { apiGet } from "@/lib/api";
+import { apiGetFresh } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
+import useSWR from "swr";
+import { REFRESH_TRACKED } from "@/app/prom/lib/refresh";
 const followersIcon = "/prom/group.svg";
 const strPrizeIcon = "/prom/str_prize.svg";
 const dollarIcon = "/prom/dollar.svg";
@@ -38,32 +40,30 @@ export default function Following() {
     return () => window.clearInterval(intervalId);
   }, []);
 
+  const fetchTracked = async () => {
+    await ensureAuth();
+    return apiGetFresh("/viewer/tracked");
+  };
+
+  const { data } = useSWR("/viewer/tracked", fetchTracked, { refreshInterval: REFRESH_TRACKED });
+
+  const mappedTracked = useMemo(() => {
+    const streamers = data?.streamers ?? [];
+    return streamers.map((s: any) => ({
+      id: s.id,
+      nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
+      avatar: s.profile_image_url || null,
+      isOnline: Boolean(s.is_live),
+      viewers: s.viewer_count ?? null,
+      streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
+      totalPrizes: 0,
+      totalValue: "$0.00",
+    }));
+  }, [data]);
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        await ensureAuth();
-        const res = await apiGet("/viewer/tracked");
-        const streamers = res?.streamers ?? [];
-        const mapped = streamers.map((s: any) => ({
-          id: s.id,
-          nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
-          avatar: s.profile_image_url || null,
-          isOnline: Boolean(s.is_live),
-          viewers: s.viewer_count ?? null,
-          streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
-          totalPrizes: 0,
-          totalValue: "$0.00",
-        }));
-        setTracked(mapped);
-      } catch (e) {
-        console.error("Failed to load tracked streamers:", e);
-        setTracked([]);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 30000);
-    return () => window.clearInterval(interval);
-  }, []);
+    setTracked(mappedTracked);
+  }, [mappedTracked]);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {

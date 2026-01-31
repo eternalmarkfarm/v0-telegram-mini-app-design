@@ -1,68 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGetFresh, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
+import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
+import useSWR from "swr";
+import { REFRESH_PRIZES, REFRESH_STATS } from "@/app/prom/lib/refresh";
 const rewardIcon = "/prom/medal_new.svg";
 const leftArrowIcon = "/prom/left-arrow.svg";
 
 
-const formatTime = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).replace(",", "");
-};
-
-const mapStatus = (status?: string | null): PrizeData["status"] => {
-  if (status === "success") return "received";
-  if (status === "not_claimed" || status === "failed") return "missed";
-  if (status === "sent") return "sent";
-  return "processing";
-};
-
 export default function StreamerPrizes() {
   const [items, setItems] = useState<PrizeData[]>([]);
 
+  const fetchMe = async () => {
+    await ensureAuth();
+    return apiGetFresh("/streamer/me");
+  };
+
+  const { data: me } = useSWR("/streamer/me", fetchMe, { refreshInterval: REFRESH_STATS });
+  const streamerId = me?.streamer?.id;
+
+  const fetchPrizes = async () => {
+    await ensureAuth();
+    await apiPost("/streamer/lis-skins/refresh", {}).catch(() => {});
+    return apiGetFresh(`/streamers/${streamerId}/prizes?limit=50&offset=0`);
+  };
+
+  const { data: prizeRes } = useSWR(
+    streamerId ? `/streamers/${streamerId}/prizes?limit=50&offset=0` : null,
+    fetchPrizes,
+    { refreshInterval: REFRESH_PRIZES }
+  );
+
+  const mappedItems = useMemo(() => {
+    const resItems = prizeRes?.items ?? [];
+    return resItems.map((item: any) => ({
+      id: String(item.id),
+      streamerName: me?.streamer?.twitch_login || me?.streamer?.display_name || "Streamer",
+      winnerNick: item.twitch_login || "viewer",
+      winnerAvatar: item.winner_profile_image_url || undefined,
+      time: formatPrizeTime(item.created_at),
+      trigger: getEventLabel(item.event_key),
+      deadline: formatPrizeTime(item.trade_offer_expiry_at),
+      price: item.skin_price ? String(item.skin_price) : "0.00",
+      status: mapPrizeStatus(item.delivery_status),
+      game: "dota",
+    })) as PrizeData[];
+  }, [prizeRes, me]);
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        await ensureAuth();
-        const me = await apiGet("/streamer/me");
-        const streamerId = me?.streamer?.id;
-        if (!streamerId) return;
-        await apiPost("/streamer/lis-skins/refresh", {}).catch(() => {});
-        const res = await apiGet(`/streamers/${streamerId}/prizes?limit=50&offset=0`);
-        const mapped = (res?.items ?? []).map((item: any) => ({
-          id: String(item.id),
-          streamerName: me?.streamer?.twitch_login || me?.streamer?.display_name || "Streamer",
-          winnerNick: item.twitch_login || "viewer",
-          winnerAvatar: item.winner_profile_image_url || undefined,
-          time: formatTime(item.created_at),
-          trigger: getEventLabel(item.event_key),
-          deadline: formatTime(item.trade_offer_expiry_at),
-          price: item.skin_price ? String(item.skin_price) : "0.00",
-          status: mapStatus(item.delivery_status),
-          game: "dota",
-        })) as PrizeData[];
-        setItems(mapped);
-      } catch (e) {
-        console.error("Failed to load streamer prizes:", e);
-        setItems([]);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 10000);
-    return () => window.clearInterval(interval);
-  }, []);
+    if (mappedItems.length > 0) {
+      setItems(mappedItems);
+    }
+  }, [mappedItems]);
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">

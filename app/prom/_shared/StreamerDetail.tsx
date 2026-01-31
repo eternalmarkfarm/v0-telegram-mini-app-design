@@ -8,6 +8,9 @@ import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import { getEventLabel } from "@/lib/event-labels";
 import { buildCacheKey, readCache, writeCache } from "@/app/prom/lib/cache";
+import { formatPrizeTime } from "@/app/prom/lib/prize-utils";
+import useSWR from "swr";
+import { REFRESH_EVENTS, REFRESH_PRIZES } from "@/app/prom/lib/refresh";
 
 const leftArrowIcon = "/prom/left-arrow.svg";
 const avatarCircle = "/prom/circle.svg";
@@ -27,18 +30,6 @@ const checkIcon = "/prom/check.svg";
 const closeIcon = "/prom/close.svg";
 
 const SHOW_FAKE_STREAMER = process.env.NODE_ENV !== "production";
-
-const formatTime = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).replace(",", "");
-};
 
 type StreamerProfile = {
   streamer: {
@@ -100,56 +91,52 @@ export default function StreamerDetail() {
     eventsCacheKey ? readCache<Array<{ id: string; name: string; isActive: boolean }>>(eventsCacheKey) ?? [] : [],
   );
 
-  useEffect(() => {
-    if (!streamerId) return;
-    const load = async () => {
-      try {
-        const res = await apiGet(`/streamers/${streamerId}`);
-        setProfile(res);
-        if (profileCacheKey) writeCache(profileCacheKey, res);
-      } catch (e) {
-        console.error("Failed to load streamer profile:", e);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 10000);
-    return () => window.clearInterval(interval);
-  }, [streamerId, profileCacheKey]);
+  const { data: profileData } = useSWR(
+    streamerId ? `/streamers/${streamerId}` : null,
+    undefined,
+    { refreshInterval: REFRESH_PRIZES }
+  );
 
   useEffect(() => {
-    if (!streamerId) return;
-    const load = async () => {
-      try {
-        await ensureAuth();
-        const res = await apiGet(`/viewer/eligibility?streamer_id=${streamerId}`);
-        setEligibility(res);
-        setIsFollowed(Boolean(res?.is_tracked));
-        if (eligibilityCacheKey) writeCache(eligibilityCacheKey, res);
-      } catch (e) {
-        console.error("Failed to load eligibility:", e);
-      }
-    };
-    load();
-  }, [streamerId, eligibilityCacheKey]);
+    if (!profileData) return;
+    setProfile(profileData);
+    if (profileCacheKey) writeCache(profileCacheKey, profileData);
+  }, [profileData, profileCacheKey]);
+
+  const fetchEligibility = async () => {
+    await ensureAuth();
+    return apiGet(`/viewer/eligibility?streamer_id=${streamerId}`);
+  };
+
+  const { data: eligibilityData } = useSWR(
+    streamerId ? `/viewer/eligibility?streamer_id=${streamerId}` : null,
+    fetchEligibility,
+    { refreshInterval: REFRESH_PRIZES }
+  );
 
   useEffect(() => {
-    if (!streamerId) return;
-    const load = async () => {
-      try {
-        const res = await apiGet(`/streamers/${streamerId}/events`);
-        const items = (res?.items ?? []).map((item: any) => ({
-          id: String(item.event_key ?? item.id ?? Math.random()),
-          name: getEventLabel(item.event_key) || item.event_key,
-          isActive: Boolean(item.enabled),
-        }));
-        setEvents(items);
-        if (eventsCacheKey) writeCache(eventsCacheKey, items);
-      } catch (e) {
-        console.error("Failed to load events:", e);
-      }
-    };
-    load();
-  }, [streamerId, eventsCacheKey]);
+    if (!eligibilityData) return;
+    setEligibility(eligibilityData);
+    setIsFollowed(Boolean(eligibilityData?.is_tracked));
+    if (eligibilityCacheKey) writeCache(eligibilityCacheKey, eligibilityData);
+  }, [eligibilityData, eligibilityCacheKey]);
+
+  const { data: eventsData } = useSWR(
+    streamerId ? `/streamers/${streamerId}/events` : null,
+    undefined,
+    { refreshInterval: REFRESH_EVENTS }
+  );
+
+  useEffect(() => {
+    if (!eventsData) return;
+    const items = (eventsData?.items ?? []).map((item: any) => ({
+      id: String(item.event_key ?? item.id ?? Math.random()),
+      name: getEventLabel(item.event_key) || item.event_key,
+      isActive: Boolean(item.enabled),
+    }));
+    setEvents(items);
+    if (eventsCacheKey) writeCache(eventsCacheKey, items);
+  }, [eventsData, eventsCacheKey]);
 
   const streamTitle = profile?.streamer?.twitch_display_name || profile?.streamer?.display_name || profile?.streamer?.twitch_login || "Streamer";
   const avatarSrc = profile?.streamer?.profile_image_url || "/prom/twitch_avatar.webp";
@@ -168,9 +155,9 @@ export default function StreamerDetail() {
       streamerName: twitchLogin || streamTitle,
       winnerNick: item.twitch_login || "viewer",
       winnerAvatar: item.winner_profile_image_url || undefined,
-      time: formatTime(item.created_at),
+      time: formatPrizeTime(item.created_at),
       trigger: getEventLabel(item.event_key),
-      deadline: formatTime(item.trade_offer_expiry_at),
+      deadline: formatPrizeTime(item.trade_offer_expiry_at),
       price: item.skin_price ? String(item.skin_price) : "0.00",
       status: item.delivery_status === "success" ? "received" : item.delivery_status === "sent" ? "sent" : item.delivery_status === "not_claimed" || item.delivery_status === "failed" ? "missed" : "processing",
       game: "dota",

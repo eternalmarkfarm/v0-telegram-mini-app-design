@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { apiGet } from "@/lib/api";
+import useSWR from "swr";
 import { readCache, writeCache } from "@/lib/cache";
+import { REFRESH_LIVE } from "@/app/prom/lib/refresh";
 
 const strPrizeIcon = "/prom/medal_new.svg";
 const dollarIcon = "/prom/dollar-sign.svg";
@@ -43,52 +44,42 @@ function StreamersContent() {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [liveRes, listRes] = await Promise.all([
-          apiGet("/streamers/live").catch(() => ({ streamers: [] })),
-          apiGet("/streamers").catch(() => ({ streamers: [] })),
-        ]);
-        const live = liveRes?.streamers ?? [];
-        const all = (listRes?.streamers ?? []).filter((s: any) => Boolean(s?.twitch_login));
-        const liveMap = new Map<number, any>();
-        live.forEach((s: any) => liveMap.set(s.id, s));
+  const { data: liveRes } = useSWR("/streamers/live", undefined, { refreshInterval: REFRESH_LIVE });
+  const { data: listRes } = useSWR("/streamers", undefined, { refreshInterval: REFRESH_LIVE });
 
-        const merged = all
-          .map((s: any) => {
-            const liveRow = liveMap.get(s.id);
-            const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
-          const rawName = liveRow?.twitch_display_name || s.display_name || "";
-          const nickname = rawName && rawName !== "Streamer" ? rawName : (s.twitch_login || "");
-          const avatar =
-            liveRow?.profile_image_url ||
-            s.profile_image_url ||
-            null;
-          return {
-            id: s.id,
-            nickname,
-            avatar,
-            viewers: liveRow?.viewer_count ?? 0,
-            streamStartMs: startedAt || 0,
-            totalPrizes: typeof s?.total_prizes === "number" ? s.total_prizes : null,
-            totalValue: s?.total_amount ? `$${Number(s.total_amount).toFixed(2)}` : null,
-            isOnline: Boolean(liveRow?.is_live),
-          } as StreamerItem;
-          })
-          .filter((s: StreamerItem) => Boolean(s.nickname));
-        setStreamers(merged);
-        writeCache("prom:streamers:list", merged);
-      } catch (e) {
-        console.error("Failed to load streamers:", e);
-      } finally {
-        setLoaded(true);
-      }
-    };
-    load();
-    const interval = window.setInterval(load, 30000);
-    return () => window.clearInterval(interval);
-  }, []);
+  const mergedStreamers = useMemo(() => {
+    const live = liveRes?.streamers ?? [];
+    const all = (listRes?.streamers ?? []).filter((s: any) => Boolean(s?.twitch_login));
+    const liveMap = new Map<number, any>();
+    live.forEach((s: any) => liveMap.set(s.id, s));
+    return all
+      .map((s: any) => {
+        const liveRow = liveMap.get(s.id);
+        const startedAt = liveRow?.started_at ? Date.parse(liveRow.started_at) : 0;
+        const rawName = liveRow?.twitch_display_name || s.display_name || "";
+        const nickname = rawName && rawName !== "Streamer" ? rawName : (s.twitch_login || "");
+        const avatar = liveRow?.profile_image_url || s.profile_image_url || null;
+        return {
+          id: s.id,
+          nickname,
+          avatar,
+          viewers: liveRow?.viewer_count ?? 0,
+          streamStartMs: startedAt || 0,
+          totalPrizes: typeof s?.total_prizes === "number" ? s.total_prizes : null,
+          totalValue: s?.total_amount ? `$${Number(s.total_amount).toFixed(2)}` : null,
+          isOnline: Boolean(liveRow?.is_live),
+        } as StreamerItem;
+      })
+      .filter((s: StreamerItem) => Boolean(s.nickname));
+  }, [liveRes, listRes]);
+
+  useEffect(() => {
+    if (mergedStreamers.length >= 0) {
+      setStreamers(mergedStreamers);
+      writeCache("prom:streamers:list", mergedStreamers);
+      setLoaded(true);
+    }
+  }, [mergedStreamers]);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {
