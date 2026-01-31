@@ -100,15 +100,19 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
           </div>
           <div className="prom-prize-grid grid grid-cols-[minmax(0,1fr)_auto_56px] items-start gap-2 min-w-0">
             <div className="prom-prize-col-left flex flex-col min-w-0 order-1 overflow-hidden">
-              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] h-6 min-w-0">
-                <img src={trophyIcon} alt="Trophy" className="prom-prize-icon w-5 h-5 shrink-0" />
+              <div className="flex items-center gap-1.5 text-[11px] text-[#b3b3ff] h-6 min-w-0">
+                <span className="w-4 h-4 shrink-0 flex items-center justify-center">
+                  <img src={trophyIcon} alt="Trophy" className="prom-prize-icon w-4 h-4" />
+                </span>
                 <span className="prom-prize-meta prom-prize-nick truncate flex-1 min-w-0">@{prize.winnerNick}</span>
               </div>
-              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
-                <img src={microphoneIcon} alt="Streamer" className="prom-prize-icon w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-1.5 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
+                <span className="w-4 h-4 shrink-0 flex items-center justify-center">
+                  <img src={microphoneIcon} alt="Streamer" className="prom-prize-icon w-4 h-4" />
+                </span>
                 <span className="prom-prize-meta prom-prize-nick truncate flex-1 min-w-0">@{prize.streamerName}</span>
               </div>
-              <div className="flex items-center gap-1 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
+              <div className="flex items-center gap-1.5 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={timeIcon} alt="Time" className="prom-prize-icon w-4 h-4" />
                 </span>
@@ -116,26 +120,26 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               </div>
             </div>
             <div className="prom-prize-col-right flex flex-col min-w-0 order-2">
-              <div className="flex items-center gap-2 text-[12px] text-white font-medium h-6 min-w-0">
+              <div className="flex items-center gap-1.5 text-[12px] text-white font-medium h-6 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={fireIcon} alt="Fire" className="prom-prize-icon w-4 h-4" />
                 </span>
                 <span className="prom-prize-trigger truncate flex-1 min-w-0">{prize.trigger}</span>
               </div>
-              <div className="flex items-center gap-2 mt-1 text-[11px] text-[#b3b3ff] min-w-0">
-                <span className="w-4 h-4 shrink-0 flex items-center justify-center overflow-visible">
-                  <img src={dollarSignIcon} alt="Price" className="prom-prize-icon w-6 h-6 -ml-1 -mt-1" />
+              <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[#b3b3ff] min-w-0">
+                <span className="w-4 h-4 shrink-0 flex items-center justify-center">
+                  <img src={dollarSignIcon} alt="Price" className="prom-prize-icon w-4 h-4" />
                 </span>
                 <span className="prom-prize-meta prom-prize-price whitespace-nowrap">{prize.price}</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
+              <div className="flex items-center gap-1.5 text-[11px] text-[#b3b3ff] mt-1 min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
                   <img src={deadlineIcon} alt="Deadline" className="prom-prize-icon w-4 h-4" />
                 </span>
                 <span className="prom-prize-meta prom-prize-deadline whitespace-nowrap">{prize.deadline}</span>
               </div>
             </div>
-            <div className="flex flex-col items-center order-3 w-[64px] shrink-0">
+            <div className="flex flex-col items-end justify-center order-3 shrink-0">
               <StatusBadge status={prize.status} deadline={prize.deadline} />
             </div>
           </div>
