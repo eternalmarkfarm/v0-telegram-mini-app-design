@@ -478,3 +478,25 @@
     display: none;
   }
 }
+
+/* Status wrapper responsive rules */
+@container (max-width: 360px) {
+  .prom-status-wrapper {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+@container (max-width: 320px) {
+  .prom-status-wrapper {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+@container (max-width: 280px) {
+  .prom-status-wrapper {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}

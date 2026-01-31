@@ -38,7 +38,9 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
     case 'processing':
       return (
         <div className="prom-status-badge flex flex-col items-center gap-0.5 text-[#7BB6FF] -mt-1">
-          <img src={deliveryOneIcon} alt="Delivery" className="prom-status-icon w-11 h-11 mt-1.5" />
+          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
+            <img src={deliveryOneIcon} alt="Delivery" className="prom-status-icon w-11 h-11 mt-1.5 object-contain" />
+          </div>
           <div className="prom-status-text flex items-center gap-1">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span className="text-xs">Processing</span>
@@ -48,7 +50,9 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
     case 'sent':
       return (
         <div className="prom-status-badge flex flex-col items-center gap-1 text-[#b3b3ff] -mt-2">
-          <img src={iconDelivery} alt="Delivery" className="prom-status-icon w-14 h-14 translate-y-2.5" />
+          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
+            <img src={iconDelivery} alt="Delivery" className="prom-status-icon w-14 h-14 translate-y-2.5 object-contain" />
+          </div>
           <div className="prom-status-text flex items-center gap-1">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-[#7BB6FF]" />
             <span className="text-xs">Delivery</span>
@@ -57,14 +61,18 @@ const StatusBadge = ({ status, deadline }: { status: PrizeStatus; deadline: stri
       );
     case 'received':
       return (
-        <div className="prom-status-badge flex items-center">
-          <img src={iconReceived} alt="Received" className="prom-status-icon w-14 h-14 translate-y-2 ml-1" />
+        <div className="prom-status-badge flex items-center justify-center h-full">
+          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
+            <img src={iconReceived} alt="Received" className="prom-status-icon w-14 h-14 translate-y-2 object-contain" />
+          </div>
         </div>
       );
     case 'missed':
       return (
         <div className="prom-status-badge flex flex-col items-center gap-1 text-[#ff9b9b] -mt-1">
-          <img src={warningIcon} alt="Warning" className="prom-status-icon w-12 h-12" />
+          <div className="prom-status-wrapper flex items-center justify-center w-14 h-14">
+            <img src={warningIcon} alt="Warning" className="prom-status-icon w-12 h-12 object-contain" />
+          </div>
           <div className="prom-status-text flex items-center gap-1 text-xs text-[#b3b3ff]">
             <img src={crossIcon} alt="Missed" className="w-4 h-4" />
             <span>{getDeadlineTime(deadline)}</span>
