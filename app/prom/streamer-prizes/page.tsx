@@ -60,7 +60,7 @@ export default function StreamerPrizes() {
       }
     };
     load();
-    const interval = window.setInterval(load, 30000);
+    const interval = window.setInterval(load, 10000);
     return () => window.clearInterval(interval);
   }, []);
   return (

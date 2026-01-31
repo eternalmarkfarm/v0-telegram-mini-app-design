@@ -149,6 +149,8 @@ export default function StreamerStats() {
       }
     };
     load();
+    const interval = window.setInterval(load, 10000);
+    return () => window.clearInterval(interval);
   }, [days]);
 
   const handleSaveWallet = async () => {

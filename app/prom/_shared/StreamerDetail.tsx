@@ -112,6 +112,8 @@ export default function StreamerDetail() {
       }
     };
     load();
+    const interval = window.setInterval(load, 10000);
+    return () => window.clearInterval(interval);
   }, [streamerId, profileCacheKey]);
 
   useEffect(() => {

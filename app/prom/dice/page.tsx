@@ -61,6 +61,8 @@ export default function Dice() {
       }
     };
     load();
+    const interval = window.setInterval(load, 10000);
+    return () => window.clearInterval(interval);
   }, []);
 
   return (

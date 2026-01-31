@@ -286,7 +286,7 @@ export default function Home() {
     const interval = window.setInterval(() => {
       loadTracked();
       loadPrizes();
-    }, 30000);
+    }, 10000);
     return () => window.clearInterval(interval);
   }, []);
 
