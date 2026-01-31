@@ -287,7 +287,7 @@ export default function StreamerStats() {
         </div>
       </div>
 
-      <div className="yuze-glass rounded-[22px] p-5 space-y-4">
+      <div className="prom-streamer-stats-panel yuze-glass rounded-[22px] p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={starIcon} alt="" className="w-8 h-8" aria-hidden="true" />
@@ -364,7 +364,7 @@ export default function StreamerStats() {
         </button>
       </div>
 
-      <div className="yuze-glass-soft rounded-[20px] p-5">
+      <div className="prom-streamer-stats-panel yuze-glass-soft rounded-[20px] p-5">
         <div className="grid grid-cols-3 divide-x divide-white/10">
           <div className="flex items-center gap-3 pr-3">
             <div className="w-10 h-10 flex items-center justify-center">

@@ -314,24 +314,24 @@ export default function StreamerDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+      <div className="prom-viewer-stats-grid grid grid-cols-2 gap-3">
+        <div className="prom-viewer-stats-card yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={trophyIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Всего призов выдано</p>
           <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{totalPrizes}</p>
         </div>
-        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+        <div className="prom-viewer-stats-card yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={dollarSignIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Общая стоимость</p>
           <p className="text-xl font-['Space_Grotesk'] font-bold text-[#00FF9D]">{totalAmountLabel}</p>
         </div>
-        <div className="yuze-glass rounded-[20px] px-4 py-2 text-center">
+        <div className="prom-viewer-stats-card yuze-glass rounded-[20px] px-4 py-2 text-center">
           <img src={unicIcon} alt="" className="w-7 h-7 mx-auto mb-2" aria-hidden="true" />
           <p className="text-sm font-['Space_Grotesk'] text-white/85 mb-1">Уник. победители</p>
           <p className="text-xl font-['Space_Grotesk'] font-bold text-white">{uniqueWinners}</p>
         </div>
         <div
-          className="yuze-glass rounded-[20px] px-4 py-2 text-center hover:bg-white/[0.12] transition"
+          className="prom-viewer-stats-card yuze-glass rounded-[20px] px-4 py-2 text-center hover:bg-white/[0.12] transition"
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -412,7 +412,7 @@ export default function StreamerDetail() {
       )}
 
       {activeTab === "events" && (
-        <div className="space-y-2">
+        <div className="prom-viewer-events space-y-2">
           {events.length === 0 ? (
             <div className="yuze-glass rounded-[12px] px-4 py-3 text-[#b3b3ff]">
               События пока не настроены.
@@ -435,7 +435,7 @@ export default function StreamerDetail() {
       )}
 
       {activeTab === "conditions" && (
-        <div className="space-y-3">
+        <div className="prom-viewer-events space-y-3">
           <div className="yuze-glass-soft rounded-[14px] px-4 py-3 flex items-center gap-3">
             <img src={allConditionsMet ? insuranceIcon : checklistIcon} alt="" className="w-8 h-8" />
             <p className="text-white font-semibold">
