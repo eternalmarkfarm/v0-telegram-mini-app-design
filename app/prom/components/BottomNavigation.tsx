@@ -49,10 +49,10 @@ export default function BottomNavigation() {
   const navActiveGlow = 'rgba(52,137,255,0.7)';
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="prom-bottom-nav fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="mx-auto w-full max-w-md px-4">
         {/* Нижняя панель как на рефе */}
-        <div className="relative pb-0">
+        <div className="prom-bottom-nav-inner relative pb-0">
           <div
             className="absolute left-1/2 -translate-x-1/2 top-0 h-full bg-[#202436]/90 backdrop-blur-[22px] border border-white/5 rounded-t-[12px] rounded-b-none"
             style={{

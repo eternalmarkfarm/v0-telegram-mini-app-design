@@ -148,6 +148,122 @@
   container-type: inline-size;
 }
 
+.prom-streamer-card {
+  container-type: inline-size;
+}
+
+.prom-bottom-nav-inner {
+  container-type: inline-size;
+}
+
+@container (max-width: 360px) {
+  .prom-tracked-row {
+    grid-template-columns: 52px minmax(0, 1fr) max-content;
+    gap: 10px;
+  }
+
+  .prom-tracked-side {
+    grid-template-columns: 52px 40px 52px;
+    column-gap: 8px;
+  }
+
+  .prom-tracked-name {
+    font-size: 16px;
+  }
+
+  .prom-tracked-stat {
+    font-size: 14px;
+  }
+
+  .prom-streamer-row {
+    gap: 10px;
+  }
+
+  .prom-streamer-name {
+    font-size: 16px;
+  }
+
+  .prom-streamer-stats {
+    gap: 8px;
+  }
+
+  .prom-bottom-nav-inner .grid {
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+  }
+
+  .prom-bottom-nav-inner span.text-\[11px\] {
+    font-size: 10px;
+  }
+}
+
+@container (max-width: 320px) {
+  .prom-tracked-row {
+    grid-template-columns: 48px minmax(0, 1fr) max-content;
+    gap: 8px;
+  }
+
+  .prom-tracked-side {
+    grid-template-columns: 48px 36px 48px;
+    column-gap: 6px;
+  }
+
+  .prom-tracked-name {
+    font-size: 15px;
+  }
+
+  .prom-tracked-stat {
+    font-size: 13px;
+  }
+
+  .prom-streamer-name {
+    font-size: 15px;
+  }
+
+  .prom-streamer-stats {
+    gap: 6px;
+  }
+
+  .prom-bottom-nav-inner .grid {
+    grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+  }
+
+  .prom-bottom-nav-inner span.text-\[11px\] {
+    font-size: 9px;
+  }
+}
+
+@container (max-width: 280px) {
+  .prom-tracked-row {
+    grid-template-columns: 44px minmax(0, 1fr) max-content;
+    gap: 6px;
+  }
+
+  .prom-tracked-side {
+    grid-template-columns: 44px 32px 44px;
+    column-gap: 4px;
+  }
+
+  .prom-tracked-name {
+    font-size: 14px;
+  }
+
+  .prom-tracked-stat {
+    font-size: 12px;
+  }
+
+  .prom-streamer-name {
+    font-size: 14px;
+  }
+
+  .prom-streamer-stats {
+    gap: 4px;
+  }
+
+  .prom-bottom-nav-inner .grid {
+    grid-template-columns: 1fr 1fr 60px 1fr 1fr;
+  }
+}
+
 @container (max-width: 360px) {
   .prom-prize-grid {
     padding-right: 60px;
@@ -158,13 +274,6 @@
     right: 12px;
     width: 48px;
   }
-  .prom-prize-status {
-    margin-top: 4px;
-  }
-  .prom-prize-status {
-    width: 52px;
-  }
-
   .prom-status-badge {
     grid-template-rows: 48px 14px;
   }
@@ -203,13 +312,6 @@
     right: 10px;
     width: 40px;
   }
-  .prom-prize-status {
-    margin-top: 3px;
-  }
-  .prom-prize-status {
-    width: 44px;
-  }
-
   .prom-status-badge {
     grid-template-rows: 40px 12px;
   }
