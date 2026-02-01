@@ -115,9 +115,9 @@
 .prom-status-badge {
   display: grid;
   grid-template-rows: 56px 16px;
-  align-items: center;
+  align-items: start;
   justify-items: center;
-  gap: 2px;
+  gap: 0;
 }
 
 .prom-status-wrapper {
@@ -138,6 +138,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-top: -2px;
+  line-height: 1;
 }
 
 .tg-android .prom-prize-meta {
