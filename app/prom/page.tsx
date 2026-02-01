@@ -552,7 +552,10 @@ export default function Home() {
         ) : (
           <div className="yuze-glass rounded-[12px] p-8 text-center">
             <Eye className="w-16 h-16 mx-auto mb-4 text-[#5B4BFF] drop-shadow-[0_0_12px_rgba(91,75,255,0.5)]" />
-            <p className="text-[#b3b3ff]">Здесь будут отображаться отслеживаемые вами стримеры</p>
+            <p className="text-[#b3b3ff]">
+              Здесь будут отображаться отслеживаемые вами стримеры. Перейдите в
+              раздел On Air и нажмите иконку отслеживания у нужного стримера.
+            </p>
           </div>
         )}
       </div>

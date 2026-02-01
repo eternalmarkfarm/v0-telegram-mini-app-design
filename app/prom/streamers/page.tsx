@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { readCache, writeCache } from "@/lib/cache";
 import { REFRESH_LIVE } from "@/app/prom/lib/refresh";
+import { apiDelete, apiPost } from "@/lib/api";
+import { ensureAuth } from "@/lib/ensureAuth";
 
 const strPrizeIcon = "/prom/medal_new.svg";
 const dollarIcon = "/prom/dollar-sign.svg";
@@ -16,6 +18,7 @@ const offlineIcon = "/prom/user.svg";
 type StreamerItem = {
   id: number;
   nickname: string;
+  twitchLogin?: string | null;
   avatar?: string | null;
   viewers?: number | null;
   streamStartMs: number;
@@ -24,9 +27,14 @@ type StreamerItem = {
   isOnline: boolean;
 };
 
+const addUserIcon = "/prom/add-user.svg";
+const deleteUserIcon = "/prom/delete-user.svg";
+
 function StreamersContent() {
   const searchParams = useSearchParams();
   const [nowMs, setNowMs] = useState(Date.now());
+  const [trackingBusy, setTrackingBusy] = useState<number | null>(null);
+  const [trackedSet, setTrackedSet] = useState<Set<number>>(new Set());
   const [streamers, setStreamers] = useState<StreamerItem[]>(
     () => readCache<StreamerItem[]>("prom:streamers:list") ?? []
   );
@@ -46,6 +54,11 @@ function StreamersContent() {
 
   const { data: liveRes } = useSWR("/streamers/live", undefined, { refreshInterval: REFRESH_LIVE });
   const { data: listRes } = useSWR("/streamers", undefined, { refreshInterval: REFRESH_LIVE });
+  const { data: trackedRes } = useSWR("/viewer/tracked", undefined, { refreshInterval: 30000 });
+  useEffect(() => {
+    const next = new Set((trackedRes?.streamers ?? []).map((s: any) => s.id));
+    setTrackedSet(next);
+  }, [trackedRes]);
 
   const mergedStreamers = useMemo(() => {
     const live = liveRes?.streamers ?? [];
@@ -62,6 +75,7 @@ function StreamersContent() {
         return {
           id: s.id,
           nickname,
+          twitchLogin: s.twitch_login ?? liveRow?.twitch_login ?? null,
           avatar,
           viewers: liveRow?.viewer_count ?? 0,
           streamStartMs: startedAt || 0,
@@ -92,6 +106,30 @@ function StreamersContent() {
       hours: String(hours).padStart(2, "0"),
       minutes: String(minutes).padStart(2, "0"),
     };
+  };
+
+  const toggleTrack = async (streamer: StreamerItem) => {
+    if (!streamer?.id) return;
+    const isTracked = trackedSet.has(streamer.id);
+    try {
+      setTrackingBusy(streamer.id);
+      await ensureAuth();
+      if (isTracked) {
+        await apiDelete(`/viewer/tracked/${streamer.id}`);
+        setTrackedSet((prev) => {
+          const next = new Set(prev);
+          next.delete(streamer.id);
+          return next;
+        });
+      } else if (streamer.twitchLogin) {
+        await apiPost("/viewer/tracked", { twitch_login: streamer.twitchLogin });
+        setTrackedSet((prev) => new Set(prev).add(streamer.id));
+      }
+    } catch (e) {
+      console.error("Failed to toggle tracked:", e);
+    } finally {
+      setTrackingBusy(null);
+    }
   };
 
   return (
@@ -134,6 +172,26 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side flex items-end gap-4 -mt-2">
+                    <button
+                      type="button"
+                      onPointerDown={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleTrack(streamer);
+                      }}
+                      className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
+                        trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
+                      }`}
+                      aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
+                      disabled={trackingBusy === streamer.id}
+                    >
+                      <img
+                        src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
+                        alt=""
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </button>
                     {streamer.isOnline ? (
                       <div className="flex flex-col items-center gap-0 -mt-1 w-20">
                         <img
@@ -196,6 +254,26 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side flex items-end gap-4 -mt-2">
+                    <button
+                      type="button"
+                      onPointerDown={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleTrack(streamer);
+                      }}
+                      className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
+                        trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
+                      }`}
+                      aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
+                      disabled={trackingBusy === streamer.id}
+                    >
+                      <img
+                        src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
+                        alt=""
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </button>
                     <div className="flex items-center justify-start w-20 -ml-0.5">
                       <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                     </div>

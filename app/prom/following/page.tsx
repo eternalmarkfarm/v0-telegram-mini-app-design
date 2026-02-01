@@ -47,9 +47,13 @@ export default function Following() {
 
   const { data } = useSWR("/viewer/tracked", fetchTracked, { refreshInterval: REFRESH_TRACKED });
 
-  const mappedTracked = useMemo(() => {
+  useEffect(() => {
     const streamers = data?.streamers ?? [];
-    return streamers.map((s: any) => ({
+    if (streamers.length === 0) {
+      setTracked([]);
+      return;
+    }
+    const baseMapped = streamers.map((s: any) => ({
       id: s.id,
       nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
       avatar: s.profile_image_url || null,
@@ -58,12 +62,38 @@ export default function Following() {
       streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
       totalPrizes: 0,
       totalValue: "$0.00",
-    }));
-  }, [data]);
+    })) as TrackedStreamer[];
+    setTracked(baseMapped);
 
-  useEffect(() => {
-    setTracked(mappedTracked);
-  }, [mappedTracked]);
+    const hydrateStats = async () => {
+      try {
+        const top = streamers.slice(0, 3);
+        const statsResponses = await Promise.all(
+          top.map((s: any) => apiGetFresh(`/streamers/${s.id}`).catch(() => null))
+        );
+        const statsById = new Map<number, any>();
+        statsResponses.forEach((res: any) => {
+          if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
+        });
+        setTracked((prev) =>
+          prev.map((row) => {
+            const statsRow = statsById.get(row.id);
+            if (!statsRow) return row;
+            return {
+              ...row,
+              totalPrizes: statsRow?.total_prizes ?? row.totalPrizes ?? 0,
+              totalValue: statsRow?.total_amount
+                ? `$${Number(statsRow.total_amount).toFixed(2)}`
+                : row.totalValue ?? "$0.00",
+            };
+          })
+        );
+      } catch (e) {
+        console.error("Failed to load tracked stats:", e);
+      }
+    };
+    hydrateStats();
+  }, [data]);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {
