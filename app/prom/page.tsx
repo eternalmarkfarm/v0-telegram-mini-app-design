@@ -218,9 +218,22 @@ export default function Home() {
 
   useEffect(() => {
     if (!trackedRes?.streamers) return;
-    const hydrate = async () => {
+    const streamers = trackedRes.streamers ?? [];
+    const baseMapped = streamers.map((s: any) => ({
+      id: s.id,
+      nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
+      avatar: s.profile_image_url || null,
+      isOnline: Boolean(s.is_live),
+      viewers: s.viewer_count ?? null,
+      streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
+      totalPrizes: 0,
+      totalValue: "$0.00",
+    })) as TrackedStreamer[];
+    setTracked(baseMapped);
+    writeCache("prom:home:tracked", baseMapped);
+
+    const hydrateStats = async () => {
       try {
-        const streamers = trackedRes.streamers ?? [];
         const top = streamers.slice(0, 3);
         const statsResponses = await Promise.all(
           top.map((s: any) => apiGetFresh(`/streamers/${s.id}`).catch(() => null))
@@ -229,26 +242,26 @@ export default function Home() {
         statsResponses.forEach((res: any) => {
           if (res?.streamer?.id) statsById.set(res.streamer.id, res.stats);
         });
-        const mapped = streamers.map((s: any) => {
-          const statsRow = statsById.get(s.id);
-          return {
-            id: s.id,
-            nickname: s.twitch_display_name || s.display_name || s.twitch_login || `#${s.id}`,
-            avatar: s.profile_image_url || null,
-            isOnline: Boolean(s.is_live),
-            viewers: s.viewer_count ?? null,
-            streamStartMs: s.started_at ? Date.parse(s.started_at) : 0,
-            totalPrizes: statsRow?.total_prizes ?? 0,
-            totalValue: statsRow?.total_amount ? `$${Number(statsRow.total_amount).toFixed(2)}` : "$0.00",
-          } as TrackedStreamer;
+        setTracked((prev) => {
+          const merged = prev.map((row) => {
+            const statsRow = statsById.get(row.id);
+            if (!statsRow) return row;
+            return {
+              ...row,
+              totalPrizes: statsRow?.total_prizes ?? row.totalPrizes ?? 0,
+              totalValue: statsRow?.total_amount
+                ? `$${Number(statsRow.total_amount).toFixed(2)}`
+                : row.totalValue ?? "$0.00",
+            };
+          });
+          writeCache("prom:home:tracked", merged);
+          return merged;
         });
-        setTracked(mapped);
-        writeCache("prom:home:tracked", mapped);
       } catch (e) {
-        console.error("Failed to load tracked:", e);
+        console.error("Failed to load tracked stats:", e);
       }
     };
-    hydrate();
+    hydrateStats();
   }, [trackedRes]);
 
   useEffect(() => {
