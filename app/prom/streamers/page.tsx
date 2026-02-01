@@ -171,9 +171,9 @@ function StreamersContent() {
                     )}
                   </div>
 
-                  <div className="prom-streamer-side flex items-end gap-4 -mt-2">
+                  <div className="prom-streamer-side">
                     {streamer.isOnline ? (
-                      <div className="flex flex-col items-center gap-0 -mt-1 w-20">
+                      <div className="prom-streamer-status">
                         <img
                           src={liveStreamingIcon}
                           alt=""
@@ -187,7 +187,7 @@ function StreamersContent() {
                         </span>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-start w-20 -ml-0.5">
+                      <div className="prom-streamer-status">
                         <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                       </div>
                     )}
@@ -253,8 +253,8 @@ function StreamersContent() {
                     <h3 className="prom-streamer-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
                   </div>
 
-                  <div className="prom-streamer-side flex items-end gap-4 -mt-2">
-                    <div className="flex items-center justify-start w-20 -ml-0.5">
+                  <div className="prom-streamer-side">
+                    <div className="prom-streamer-status">
                       <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                     </div>
 

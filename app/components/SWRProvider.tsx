@@ -14,9 +14,9 @@ export default function SWRProvider({ children }: { children: ReactNode }) {
   return (
     <SWRConfig
       value={{
-        revalidateOnFocus: false,
-        refreshWhenHidden: false,
-        dedupingInterval: 5000,
+        revalidateOnFocus: true,
+        refreshWhenHidden: true,
+        dedupingInterval: 3000,
         fetcher: async (key: string) => {
           if (typeof key !== "string") return null;
           if (isAuthedPath(key)) {
