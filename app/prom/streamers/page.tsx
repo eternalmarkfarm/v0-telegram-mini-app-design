@@ -172,35 +172,36 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side">
-                    {streamer.isOnline ? (
-                      <div className="prom-streamer-status">
+                    <div className="prom-streamer-live">
+                      {streamer.isOnline ? (
                         <img
                           src={liveStreamingIcon}
                           alt=""
                           className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
                           aria-hidden="true"
                         />
-                        <span className="-mt-2 text-base font-semibold text-white">
-                          {formatDuration(streamer.streamStartMs, nowMs).hours}
-                          <span className="mx-0.5 blink-strong">:</span>
-                          {formatDuration(streamer.streamStartMs, nowMs).minutes}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="prom-streamer-status">
+                      ) : (
                         <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
-                      </div>
-                    )}
-
+                      )}
+                    </div>
                     {(streamer.totalPrizes !== null || streamer.totalValue) && (
-                      <div className="prom-streamer-stats grid grid-cols-[1fr_1fr_auto] gap-x-4 gap-y-1 text-center items-center">
-                        <div className={`flex flex-col items-center ${streamer.isOnline ? "" : "-ml-6"}`}>
-                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                          <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
-                          <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                      <div className="prom-streamer-meta-row">
+                        {streamer.isOnline && (
+                          <span className="prom-streamer-time text-base font-semibold text-white">
+                            {formatDuration(streamer.streamStartMs, nowMs).hours}
+                            <span className="mx-0.5 blink-strong">:</span>
+                            {formatDuration(streamer.streamStartMs, nowMs).minutes}
+                          </span>
+                        )}
+                        <div className="prom-streamer-stats">
+                          <div className="flex flex-col items-center">
+                            <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                            <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
+                            <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                          </div>
                         </div>
                         <button
                           type="button"
@@ -254,19 +255,21 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side">
-                    <div className="prom-streamer-status">
+                    <div className="prom-streamer-live">
                       <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                     </div>
 
                     {(streamer.totalPrizes !== null || streamer.totalValue) && (
-                      <div className="prom-streamer-stats grid grid-cols-[1fr_1fr_auto] gap-x-4 gap-y-1 text-center items-center">
-                        <div className="flex flex-col items-center -ml-6">
-                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                          <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
-                          <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                      <div className="prom-streamer-meta-row">
+                        <div className="prom-streamer-stats">
+                          <div className="flex flex-col items-center">
+                            <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                            <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
+                            <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
+                          </div>
                         </div>
                         <button
                           type="button"

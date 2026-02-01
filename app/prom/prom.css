@@ -170,22 +170,34 @@
 
 .prom-streamer-side {
   display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 4px;
+  justify-items: end;
+}
+
+.prom-streamer-live {
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prom-streamer-meta-row {
+  display: grid;
   grid-auto-flow: column;
   align-items: center;
   column-gap: 12px;
 }
 
-.prom-streamer-status {
-  width: 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.prom-streamer-time {
+  min-width: 52px;
+  text-align: center;
 }
 
 .prom-streamer-stats {
-  grid-template-columns: 48px 56px auto;
-  justify-items: center;
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 12px;
   align-items: center;
 }
 
@@ -263,7 +275,7 @@
     gap: 10px;
   }
 
-  .prom-streamer-status {
+  .prom-streamer-live {
     width: 56px;
   }
 
@@ -360,7 +372,7 @@
     font-size: 15px;
   }
 
-  .prom-streamer-status {
+  .prom-streamer-live {
     width: 52px;
   }
 
@@ -448,7 +460,7 @@
     font-size: 14px;
   }
 
-  .prom-streamer-status {
+  .prom-streamer-live {
     width: 48px;
   }
 
