@@ -89,6 +89,11 @@
   line-height: 1.05;
 }
 
+.prom-prize-dollar {
+  transform: scale(1.2);
+  transform-origin: center;
+}
+
 .prom-prize-card {
   position: relative;
 }

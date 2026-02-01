@@ -139,7 +139,7 @@ export default function PrizeCard({ prize }: { prize: PrizeData }) {
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[#b3b3ff] min-w-0">
                 <span className="w-4 h-4 shrink-0 flex items-center justify-center">
-                  <img src={dollarSignIcon} alt="Price" className="prom-prize-icon w-4 h-4" />
+                  <img src={dollarSignIcon} alt="Price" className="prom-prize-icon prom-prize-dollar w-4 h-4" />
                 </span>
                 <span className="prom-prize-meta prom-prize-price whitespace-nowrap">{prize.price}</span>
               </div>
