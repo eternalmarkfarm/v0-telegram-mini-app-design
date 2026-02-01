@@ -38,7 +38,6 @@ function StreamersContent() {
   const [streamers, setStreamers] = useState<StreamerItem[]>(
     () => readCache<StreamerItem[]>("prom:streamers:list") ?? []
   );
-  const [loaded, setLoaded] = useState<boolean>(streamers.length > 0);
   const base = "";
   const onlineOnly = searchParams.get("online") === "1";
   const visibleStreamers = onlineOnly ? streamers.filter((streamer) => streamer.isOnline) : streamers;
@@ -91,9 +90,10 @@ function StreamersContent() {
     if (mergedStreamers.length >= 0) {
       setStreamers(mergedStreamers);
       writeCache("prom:streamers:list", mergedStreamers);
-      setLoaded(true);
     }
   }, [mergedStreamers]);
+
+  const hasFetched = Boolean(listRes || liveRes);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {
@@ -139,7 +139,7 @@ function StreamersContent() {
       </h1>
 
       <div className="space-y-3">
-        {loaded && visibleStreamers.length === 0 ? (
+        {hasFetched && visibleStreamers.length === 0 ? (
           <div className="yuze-glass rounded-[24px] p-6 text-center text-[#b3b3ff]">
             Онлайн-стримеров пока нет.
           </div>

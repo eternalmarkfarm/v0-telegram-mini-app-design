@@ -178,7 +178,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto auto;
   grid-template-rows: auto auto;
-  column-gap: 8px;
+  column-gap: 6px;
   row-gap: 6px;
   align-items: center;
 }
@@ -211,7 +211,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
+  min-width: 36px;
   grid-row: 2;
 }
 
@@ -304,7 +304,7 @@
   }
 
   .prom-streamer-info-grid {
-    column-gap: 8px;
+    column-gap: 4px;
   }
 
   .prom-bottom-nav-inner .grid {
@@ -392,7 +392,7 @@
   }
 
   .prom-streamer-info-grid {
-    column-gap: 6px;
+    column-gap: 3px;
   }
 
   .prom-bottom-nav-inner .grid {
@@ -475,7 +475,7 @@
   }
 
   .prom-streamer-info-grid {
-    column-gap: 4px;
+    column-gap: 2px;
   }
 
   .prom-bottom-nav-inner .grid {
