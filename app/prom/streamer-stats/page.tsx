@@ -47,7 +47,6 @@ export default function StreamerStats() {
   const [totalSpent, setTotalSpent] = useState("$0.00");
   const [totalSkins, setTotalSkins] = useState("0");
   const [todayIssued, setTodayIssued] = useState("0");
-  const [issuedPrizes, setIssuedPrizes] = useState<PrizeData[]>([]);
   const [starsSummary, setStarsSummary] = useState<any>(null);
   const [tonWallet, setTonWallet] = useState("");
   const [savingWallet, setSavingWallet] = useState(false);
@@ -137,8 +136,11 @@ export default function StreamerStats() {
     const stats = profile?.stats ?? {};
     setTotalSpent(`$${Number(stats.total_amount ?? 0).toFixed(2)}`);
     setTotalSkins(String(stats.total_prizes ?? 0));
+  }, [profile]);
+
+  const issuedPrizes = useMemo(() => {
     const recent = profile?.recent_prizes ?? [];
-    const mapped = recent.map((item: any) => ({
+    return recent.map((item: any) => ({
       id: String(item.id),
       streamerName: profile?.streamer?.twitch_login || profile?.streamer?.display_name || "Streamer",
       winnerNick: item.twitch_login || "viewer",
@@ -150,7 +152,6 @@ export default function StreamerStats() {
       status: mapPrizeStatus(item.delivery_status),
       game: "dota",
     })) as PrizeData[];
-    setIssuedPrizes(mapped);
   }, [profile]);
 
   const handleSaveWallet = async () => {

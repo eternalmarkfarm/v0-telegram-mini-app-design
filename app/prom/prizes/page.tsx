@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from "next/navigation";
 import PrizeCard, { PrizeData } from '@/app/prom/components/PrizeCard';
 import { apiGetFresh, apiPost } from "@/lib/api";
@@ -17,9 +17,7 @@ const leftArrowIcon = "/prom/left-arrow.svg";
 export default function Prizes() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
-  const [items, setItems] = useState<PrizeData[]>([]);
   const { twitchLogin } = useViewerStatus();
-  const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
 
   const { data: profile } = useSWR("/viewer/profile", undefined, { refreshInterval: REFRESH_PROFILE });
 
@@ -49,16 +47,6 @@ export default function Prizes() {
       game: "dota",
     })) as PrizeData[];
   }, [prizeRes, profile, twitchLogin]);
-
-  useEffect(() => {
-    if (profile?.profile_image_url) setViewerAvatar(profile.profile_image_url);
-  }, [profile]);
-
-  useEffect(() => {
-    if (mappedItems.length > 0) {
-      setItems(mappedItems);
-    }
-  }, [mappedItems]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">
@@ -95,7 +83,7 @@ export default function Prizes() {
       </div>
 
       <div className="space-y-3">
-        {items.map((prize) => (
+        {mappedItems.map((prize) => (
           <PrizeCard key={prize.id} prize={prize} />
         ))}
       </div>

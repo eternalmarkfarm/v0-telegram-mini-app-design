@@ -62,9 +62,7 @@ export default function Home() {
     () => readCache<TrackedStreamer[]>("prom:home:tracked") ?? []
   );
   const [trackingBusy, setTrackingBusy] = useState<number | null>(null);
-  const [prizes, setPrizes] = useState<HomePrize[]>(
-    () => readCache<HomePrize[]>("prom:home:prizes") ?? []
-  );
+  const cachedPrizes = useMemo(() => readCache<HomePrize[]>("prom:home:prizes") ?? [], []);
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(cachedProfile?.profile_image_url ?? null);
   const [viewerDisplayName, setViewerDisplayName] = useState<string | null>(cachedProfile?.display_name ?? null);
   const needsConnections = !twitchLinked || !steamLinked;
@@ -298,11 +296,11 @@ export default function Home() {
     }
   }, [viewerProfile, viewerProfileKey]);
 
-  useEffect(() => {
-    if (!prizesRes?.items) return;
+  const prizes = useMemo(() => {
+    if (!prizesRes) return cachedPrizes;
     const avatar = viewerProfile?.profile_image_url ?? null;
     const items = prizesRes.items ?? [];
-    const mapped = items.map((item: any) => ({
+    return items.map((item: any) => ({
       id: String(item.id),
       streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
       winnerNick: twitchLogin || "you",
@@ -314,9 +312,13 @@ export default function Home() {
       status: mapPrizeStatus(item.delivery_status),
       game: "dota",
     })) as HomePrize[];
-    setPrizes(mapped);
-    writeCache("prom:home:prizes", mapped);
-  }, [prizesRes, viewerProfile, twitchLogin]);
+  }, [prizesRes, viewerProfile, twitchLogin, cachedPrizes]);
+
+  useEffect(() => {
+    if (prizesRes) {
+      writeCache("prom:home:prizes", prizes);
+    }
+  }, [prizesRes, prizes]);
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-6">
@@ -533,62 +535,60 @@ export default function Home() {
                     </div>
 
                   <div className="prom-streamer-main flex-1 min-w-0">
-                    <h3 className="prom-streamer-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
-                    </div>
-                    <div className="prom-streamer-side">
-                      <div className="prom-streamer-meta-grid">
-                        <div className="prom-streamer-meta-icon">
-                          {streamer.isOnline ? (
-                            <img
-                              src={liveStreamingIcon}
-                              alt=""
-                              className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
-                          )}
+                    <div className="prom-streamer-info-grid">
+                      <h3 className="prom-streamer-name text-white font-bold text-lg truncate">
+                        {streamer.nickname}
+                      </h3>
+                      <div className="prom-streamer-meta-icon prom-streamer-col-2">
+                        {streamer.isOnline ? (
+                          <img
+                            src={liveStreamingIcon}
+                            alt=""
+                            className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="prom-streamer-meta-icon prom-streamer-col-3">
+                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                      </div>
+                      <div className="prom-streamer-meta-icon prom-streamer-col-4">
+                        <img src={dollarIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                      </div>
+                      {streamer.isOnline && (
+                        <div className="prom-streamer-viewers flex items-center gap-1">
+                          <img src={eyeIcon} alt="" className="w-6 h-6" aria-hidden="true" />
+                          <span className="text-sm font-semibold text-white">{streamer.viewers ?? 0}</span>
                         </div>
-                        <div className="prom-streamer-meta-icon">
-                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                        </div>
-                        <div className="prom-streamer-meta-icon">
-                          <img src={dollarIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                        </div>
-                        <button
-                          type="button"
-                          onPointerDown={(e) => e.preventDefault()}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            toggleTrackHome(streamer);
-                          }}
-                          className="prom-streamer-track flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 bg-[#5B4BFF]/35"
-                          aria-label="Unfollow"
-                          disabled={trackingBusy === streamer.id}
-                        >
-                          <img src={deleteUserIcon} alt="" className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                        <div className="prom-streamer-meta-value">
-                          <div className="flex items-center justify-center gap-1 text-white">
-                            <img src={eyeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                            <span className="text-base font-semibold">{streamer.viewers ?? 0}</span>
-                            {streamer.isOnline && (
-                              <span className="text-base font-semibold">
-                                {formatDuration(streamer.streamStartMs, nowMs).hours}
-                                <span className="mx-0.5 blink-strong">:</span>
-                                {formatDuration(streamer.streamStartMs, nowMs).minutes}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="prom-streamer-meta-value text-base font-semibold text-white">
-                          {streamer.totalPrizes ?? 0}
-                        </div>
-                        <div className="prom-streamer-meta-value text-base font-semibold text-[#00FF9D]">
-                          {streamer.totalValue ?? "$0.00"}
-                        </div>
+                      )}
+                      <div className="prom-streamer-meta-value prom-streamer-col-2 text-base font-semibold text-white">
+                        {streamer.isOnline
+                          ? `${formatDuration(streamer.streamStartMs, nowMs).hours}:${formatDuration(streamer.streamStartMs, nowMs).minutes}`
+                          : "—"}
+                      </div>
+                      <div className="prom-streamer-meta-value prom-streamer-col-3 text-base font-semibold text-white">
+                        {streamer.totalPrizes ?? 0}
+                      </div>
+                      <div className="prom-streamer-meta-value prom-streamer-col-4 text-base font-semibold text-[#00FF9D]">
+                        {streamer.totalValue ?? "$0.00"}
                       </div>
                     </div>
+                  </div>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleTrackHome(streamer);
+                    }}
+                    className="prom-streamer-track flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 bg-[#5B4BFF]/35"
+                    aria-label="Unfollow"
+                    disabled={trackingBusy === streamer.id}
+                  >
+                    <img src={deleteUserIcon} alt="" className="h-5 w-5" aria-hidden="true" />
+                  </button>
                   </div>
                 </Link>
               ))}

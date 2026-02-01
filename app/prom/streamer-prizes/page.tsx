@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import PrizeCard, { PrizeData } from "@/app/prom/components/PrizeCard";
 import { apiGetFresh, apiPost } from "@/lib/api";
@@ -14,8 +14,6 @@ const leftArrowIcon = "/prom/left-arrow.svg";
 
 
 export default function StreamerPrizes() {
-  const [items, setItems] = useState<PrizeData[]>([]);
-
   const fetchMe = async () => {
     await ensureAuth();
     return apiGetFresh("/streamer/me");
@@ -52,11 +50,6 @@ export default function StreamerPrizes() {
     })) as PrizeData[];
   }, [prizeRes, me]);
 
-  useEffect(() => {
-    if (mappedItems.length > 0) {
-      setItems(mappedItems);
-    }
-  }, [mappedItems]);
   return (
     <div className="max-w-md mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
@@ -72,7 +65,7 @@ export default function StreamerPrizes() {
       </div>
 
       <div className="space-y-3">
-        {items.map((prize) => (
+        {mappedItems.map((prize) => (
           <PrizeCard key={prize.id} prize={prize} />
         ))}
       </div>
