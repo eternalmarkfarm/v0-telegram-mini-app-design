@@ -169,36 +169,36 @@
 }
 
 .prom-streamer-side {
-  display: grid;
-  grid-template-rows: auto auto;
-  row-gap: 4px;
-  justify-items: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.prom-streamer-live {
-  width: 64px;
+.prom-streamer-meta-grid {
+  display: grid;
+  grid-template-columns: 48px 48px 56px 40px;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  justify-items: center;
+}
+
+.prom-streamer-track {
+  grid-row: 1 / span 2;
+}
+
+.prom-streamer-meta-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.prom-streamer-meta-row {
-  display: grid;
-  grid-auto-flow: column;
+.prom-streamer-meta-value {
+  display: flex;
   align-items: center;
-  column-gap: 12px;
-}
-
-.prom-streamer-time {
-  min-width: 52px;
-  text-align: center;
-}
-
-.prom-streamer-stats {
-  display: grid;
-  grid-auto-flow: column;
-  column-gap: 12px;
-  align-items: center;
+  justify-content: center;
+  min-width: 44px;
 }
 
 .prom-streamer-stats-panel {
@@ -275,17 +275,13 @@
     gap: 10px;
   }
 
-  .prom-streamer-live {
-    width: 56px;
-  }
-
   .prom-streamer-name {
     font-size: 16px;
   }
 
-  .prom-streamer-stats {
-    gap: 8px;
-    grid-template-columns: 44px 54px auto;
+  .prom-streamer-meta-grid {
+    grid-template-columns: 44px 44px 52px 36px;
+    column-gap: 10px;
   }
 
   .prom-bottom-nav-inner .grid {
@@ -372,13 +368,9 @@
     font-size: 15px;
   }
 
-  .prom-streamer-live {
-    width: 52px;
-  }
-
-  .prom-streamer-stats {
-    gap: 6px;
-    grid-template-columns: 42px 52px auto;
+  .prom-streamer-meta-grid {
+    grid-template-columns: 40px 40px 48px 34px;
+    column-gap: 8px;
   }
 
   .prom-bottom-nav-inner .grid {
@@ -460,13 +452,9 @@
     font-size: 14px;
   }
 
-  .prom-streamer-live {
-    width: 48px;
-  }
-
-  .prom-streamer-stats {
-    gap: 4px;
-    grid-template-columns: 38px 48px auto;
+  .prom-streamer-meta-grid {
+    grid-template-columns: 36px 36px 44px 32px;
+    column-gap: 6px;
   }
 
   .prom-bottom-nav-inner .grid {

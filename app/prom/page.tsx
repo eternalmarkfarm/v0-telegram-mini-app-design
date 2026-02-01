@@ -534,43 +534,26 @@ export default function Home() {
 
                   <div className="prom-streamer-main flex-1 min-w-0">
                     <h3 className="prom-streamer-name text-white font-bold text-lg truncate">{streamer.nickname}</h3>
-                      {streamer.isOnline && (
-                        <div className="prom-streamer-viewers flex items-center gap-1 mt-1">
-                          <img src={eyeIcon} alt="" className="w-6 h-6" aria-hidden="true" />
-                          <span className="text-sm font-semibold text-white">{streamer.viewers ?? 0}</span>
-                        </div>
-                      )}
                     </div>
                     <div className="prom-streamer-side">
-                      <div className="prom-streamer-live">
-                        {streamer.isOnline ? (
-                          <img
-                            src={liveStreamingIcon}
-                            alt=""
-                            className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
-                        )}
-                      </div>
-                      <div className="prom-streamer-meta-row">
-                        {streamer.isOnline && (
-                          <span className="prom-streamer-time text-base font-semibold text-white">
-                            {formatDuration(streamer.streamStartMs, nowMs).hours}
-                            <span className="mx-0.5 blink-strong">:</span>
-                            {formatDuration(streamer.streamStartMs, nowMs).minutes}
-                          </span>
-                        )}
-                        <div className="prom-streamer-stats">
-                          <div className="flex flex-col items-center">
-                            <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
-                            <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? 0}</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
-                            <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "$0.00"}</p>
-                          </div>
+                      <div className="prom-streamer-meta-grid">
+                        <div className="prom-streamer-meta-icon">
+                          {streamer.isOnline ? (
+                            <img
+                              src={liveStreamingIcon}
+                              alt=""
+                              className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
+                          )}
+                        </div>
+                        <div className="prom-streamer-meta-icon">
+                          <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        </div>
+                        <div className="prom-streamer-meta-icon">
+                          <img src={dollarIcon} alt="" className="w-5 h-5" aria-hidden="true" />
                         </div>
                         <button
                           type="button"
@@ -579,12 +562,31 @@ export default function Home() {
                             e.preventDefault();
                             toggleTrackHome(streamer);
                           }}
-                          className="flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 bg-[#5B4BFF]/35"
+                          className="prom-streamer-track flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 bg-[#5B4BFF]/35"
                           aria-label="Unfollow"
                           disabled={trackingBusy === streamer.id}
                         >
                           <img src={deleteUserIcon} alt="" className="h-5 w-5" aria-hidden="true" />
                         </button>
+                        <div className="prom-streamer-meta-value">
+                          <div className="flex items-center justify-center gap-1 text-white">
+                            <img src={eyeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                            <span className="text-base font-semibold">{streamer.viewers ?? 0}</span>
+                            {streamer.isOnline && (
+                              <span className="text-base font-semibold">
+                                {formatDuration(streamer.streamStartMs, nowMs).hours}
+                                <span className="mx-0.5 blink-strong">:</span>
+                                {formatDuration(streamer.streamStartMs, nowMs).minutes}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="prom-streamer-meta-value text-base font-semibold text-white">
+                          {streamer.totalPrizes ?? 0}
+                        </div>
+                        <div className="prom-streamer-meta-value text-base font-semibold text-[#00FF9D]">
+                          {streamer.totalValue ?? "$0.00"}
+                        </div>
                       </div>
                     </div>
                   </div>
