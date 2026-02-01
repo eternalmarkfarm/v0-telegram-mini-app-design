@@ -308,6 +308,21 @@
     column-gap: 4px;
   }
 
+  .prom-streamer-live-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .prom-streamer-prize-icon,
+  .prom-streamer-dollar-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .prom-streamer-meta-number {
+    font-size: 14px;
+  }
+
   .prom-bottom-nav-inner .grid {
     grid-template-columns: 1fr 1fr 72px 1fr 1fr;
   }
@@ -396,6 +411,21 @@
     column-gap: 3px;
   }
 
+  .prom-streamer-live-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .prom-streamer-prize-icon,
+  .prom-streamer-dollar-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .prom-streamer-meta-number {
+    font-size: 13px;
+  }
+
   .prom-bottom-nav-inner .grid {
     grid-template-columns: 1fr 1fr 64px 1fr 1fr;
   }
@@ -477,6 +507,21 @@
 
   .prom-streamer-info-grid {
     column-gap: 2px;
+  }
+
+  .prom-streamer-live-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .prom-streamer-prize-icon,
+  .prom-streamer-dollar-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .prom-streamer-meta-number {
+    font-size: 12px;
   }
 
   .prom-bottom-nav-inner .grid {

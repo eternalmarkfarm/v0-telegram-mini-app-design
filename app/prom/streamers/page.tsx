@@ -171,34 +171,36 @@ function StreamersContent() {
                           <img
                             src={liveStreamingIcon}
                             alt=""
-                            className="w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
+                            className="prom-streamer-live-icon w-12 h-12 drop-shadow-[0_0_10px_rgba(91,75,255,0.75)]"
                             aria-hidden="true"
                           />
                         ) : (
-                          <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
+                          <img src={offlineIcon} alt="" className="prom-streamer-live-icon w-12 h-12" aria-hidden="true" />
                         )}
                       </div>
                       <div className="prom-streamer-meta-icon prom-streamer-col-3">
-                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        <img src={strPrizeIcon} alt="" className="prom-streamer-prize-icon w-5 h-5" aria-hidden="true" />
                       </div>
                       <div className="prom-streamer-meta-icon prom-streamer-col-4">
-                        <img src={dollarIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        <img src={dollarIcon} alt="" className="prom-streamer-dollar-icon w-5 h-5" aria-hidden="true" />
                       </div>
                       {streamer.isOnline && (
                         <div className="prom-streamer-viewers flex items-center gap-1">
                           <img src={eyeIcon} alt="" className="w-6 h-6" aria-hidden="true" />
-                          <span className="text-sm font-semibold text-white">{streamer.viewers ?? 0}</span>
+                          <span className="prom-streamer-meta-number text-base font-semibold text-white">
+                            {streamer.viewers ?? 0}
+                          </span>
                         </div>
                       )}
-                      <div className="prom-streamer-meta-value prom-streamer-col-2 text-base font-semibold text-white">
+                      <div className="prom-streamer-meta-value prom-streamer-col-2 text-base font-semibold text-white prom-streamer-meta-number">
                         {streamer.isOnline
                           ? `${formatDuration(streamer.streamStartMs, nowMs).hours}:${formatDuration(streamer.streamStartMs, nowMs).minutes}`
                           : "—"}
                       </div>
-                      <div className="prom-streamer-meta-value prom-streamer-col-3 text-base font-semibold text-white">
+                      <div className="prom-streamer-meta-value prom-streamer-col-3 text-base font-semibold text-white prom-streamer-meta-number">
                         {streamer.totalPrizes ?? "—"}
                       </div>
-                      <div className="prom-streamer-meta-value prom-streamer-col-4 text-base font-semibold text-[#00FF9D]">
+                      <div className="prom-streamer-meta-value prom-streamer-col-4 text-base font-semibold text-[#00FF9D] prom-streamer-meta-number">
                         {streamer.totalValue ?? "—"}
                       </div>
                     </div>
@@ -254,21 +256,21 @@ function StreamersContent() {
                         {streamer.nickname}
                       </h3>
                       <div className="prom-streamer-meta-icon prom-streamer-col-2">
-                        <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
+                        <img src={offlineIcon} alt="" className="prom-streamer-live-icon w-12 h-12" aria-hidden="true" />
                       </div>
                       <div className="prom-streamer-meta-icon prom-streamer-col-3">
-                        <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        <img src={strPrizeIcon} alt="" className="prom-streamer-prize-icon w-5 h-5" aria-hidden="true" />
                       </div>
                       <div className="prom-streamer-meta-icon prom-streamer-col-4">
-                        <img src={dollarIcon} alt="" className="w-5 h-5" aria-hidden="true" />
+                        <img src={dollarIcon} alt="" className="prom-streamer-dollar-icon w-5 h-5" aria-hidden="true" />
                       </div>
-                      <div className="prom-streamer-meta-value prom-streamer-col-2 text-base font-semibold text-white">
+                      <div className="prom-streamer-meta-value prom-streamer-col-2 text-base font-semibold text-white prom-streamer-meta-number">
                         —
                       </div>
-                      <div className="prom-streamer-meta-value prom-streamer-col-3 text-base font-semibold text-white">
+                      <div className="prom-streamer-meta-value prom-streamer-col-3 text-base font-semibold text-white prom-streamer-meta-number">
                         {streamer.totalPrizes ?? "—"}
                       </div>
-                      <div className="prom-streamer-meta-value prom-streamer-col-4 text-base font-semibold text-[#00FF9D]">
+                      <div className="prom-streamer-meta-value prom-streamer-col-4 text-base font-semibold text-[#00FF9D] prom-streamer-meta-number">
                         {streamer.totalValue ?? "—"}
                       </div>
                     </div>
