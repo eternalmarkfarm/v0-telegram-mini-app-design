@@ -54,6 +54,19 @@ export default function BottomNavigation() {
         {/* Нижняя панель как на рефе */}
         <div className="prom-bottom-nav-inner relative pb-0">
           <div
+            className="prom-bottom-nav-fallback absolute left-1/2 -translate-x-1/2 top-0 h-full rounded-t-[12px] rounded-b-none"
+            style={{
+              width: 'calc(100% + 32px)',
+              maxWidth: 'calc(28rem + 32px)',
+              WebkitMaskImage: diceCutoutMask,
+              maskImage: diceCutoutMask,
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskSize: '100% 100%',
+              maskSize: '100% 100%',
+            }}
+          ></div>
+          <div
             className="absolute left-1/2 -translate-x-1/2 top-0 h-full bg-[#202436]/90 backdrop-blur-[22px] border border-white/5 rounded-t-[12px] rounded-b-none"
             style={{
               width: 'calc(100% + 32px)',
