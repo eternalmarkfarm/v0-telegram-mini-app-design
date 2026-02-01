@@ -17,6 +17,14 @@
   scrollbar-gutter: stable;
 }
 
+.tg-ios body {
+  background-color: #0b0e1c;
+}
+
+.tg-ios .prom-root.ios-repaint {
+  transform: translateZ(0) scale(1.0001);
+}
+
 .prom-integrations-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

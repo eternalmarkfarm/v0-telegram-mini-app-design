@@ -20,13 +20,6 @@ export default function CosmicBackground() {
     window.addEventListener("resize", updateCanvasSize);
     window.addEventListener("orientationchange", updateCanvasSize);
 
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        updateCanvasSize();
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-
     const particles: Array<{
       x: number;
       y: number;
@@ -48,7 +41,9 @@ export default function CosmicBackground() {
     }
 
     let animationFrameId: number;
+    let running = true;
     const animate = () => {
+      if (!running) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
@@ -73,6 +68,19 @@ export default function CosmicBackground() {
     };
 
     animate();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        running = true;
+        updateCanvasSize();
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        running = false;
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       window.removeEventListener("resize", updateCanvasSize);

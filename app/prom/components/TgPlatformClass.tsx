@@ -33,7 +33,7 @@ export default function TgPlatformClass() {
     }
 
     const applyAppHeight = () => {
-      const height = window.innerHeight;
+      const height = window.visualViewport?.height ?? window.innerHeight;
       document.documentElement.style.setProperty("--app-height", `${height}px`);
       if (root) {
         (root as HTMLElement).style.setProperty("--app-height", `${height}px`);
@@ -41,23 +41,49 @@ export default function TgPlatformClass() {
       document.body.offsetHeight;
     };
 
+    const forceRepaint = () => {
+      if (!root) return;
+      root.classList.add("ios-repaint");
+      requestAnimationFrame(() => {
+        root.classList.remove("ios-repaint");
+      });
+    };
+
     applyAppHeight();
     const handleResize = () => applyAppHeight();
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
-        setTimeout(applyAppHeight, 60);
-        setTimeout(applyAppHeight, 300);
+        setTimeout(() => {
+          applyAppHeight();
+          forceRepaint();
+        }, 60);
+        setTimeout(() => {
+          applyAppHeight();
+          forceRepaint();
+        }, 300);
       }
     };
 
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
     document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pageshow", handleVisibility);
+
+    const tg = (window as any)?.Telegram?.WebApp;
+    if (tg?.onEvent) {
+      tg.onEvent("viewport_changed", handleResize);
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pageshow", handleVisibility);
+      if (tg?.offEvent) {
+        tg.offEvent("viewport_changed", handleResize);
+      }
     };
   }, []);
 
