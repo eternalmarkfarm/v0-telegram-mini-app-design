@@ -22,6 +22,7 @@ export default function Dice() {
     const items = res?.items ?? [];
     return items.map((item: any) => {
       const time = formatPrizeTime(item.created_at);
+      const deadline = item.trade_offer_expiry_at ? formatPrizeTime(item.trade_offer_expiry_at) : time;
       return {
         id: String(item.id),
         streamerName: item.streamer?.twitch_login || item.streamer?.display_name || "Streamer",
@@ -29,7 +30,7 @@ export default function Dice() {
         winnerAvatar: item.winner_profile_image_url || undefined,
         time,
         trigger: getEventLabel(item.event_key),
-        deadline: time,
+        deadline,
         price: item.skin_price ? String(item.skin_price) : "0.00",
         status: mapPrizeStatus(item.delivery_status),
         game: "dota",
