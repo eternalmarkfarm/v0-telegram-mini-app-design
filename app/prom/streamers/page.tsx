@@ -172,26 +172,6 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side flex items-end gap-4 -mt-2">
-                    <button
-                      type="button"
-                      onPointerDown={(e) => e.preventDefault()}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleTrack(streamer);
-                      }}
-                      className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
-                        trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
-                      }`}
-                      aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
-                      disabled={trackingBusy === streamer.id}
-                    >
-                      <img
-                        src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
-                        alt=""
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
                     {streamer.isOnline ? (
                       <div className="flex flex-col items-center gap-0 -mt-1 w-20">
                         <img
@@ -213,7 +193,7 @@ function StreamersContent() {
                     )}
 
                     {(streamer.totalPrizes !== null || streamer.totalValue) && (
-                      <div className="prom-streamer-stats grid grid-cols-2 gap-x-4 gap-y-1 text-center">
+                      <div className="prom-streamer-stats grid grid-cols-[1fr_1fr_auto] gap-x-4 gap-y-1 text-center items-center">
                         <div className={`flex flex-col items-center ${streamer.isOnline ? "" : "-ml-6"}`}>
                           <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
                           <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
@@ -222,6 +202,26 @@ function StreamersContent() {
                           <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
                           <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
                         </div>
+                        <button
+                          type="button"
+                          onPointerDown={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleTrack(streamer);
+                          }}
+                          className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
+                            trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
+                          }`}
+                          aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
+                          disabled={trackingBusy === streamer.id}
+                        >
+                          <img
+                            src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
+                            alt=""
+                            className="h-5 w-5"
+                            aria-hidden="true"
+                          />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -254,32 +254,12 @@ function StreamersContent() {
                   </div>
 
                   <div className="prom-streamer-side flex items-end gap-4 -mt-2">
-                    <button
-                      type="button"
-                      onPointerDown={(e) => e.preventDefault()}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleTrack(streamer);
-                      }}
-                      className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
-                        trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
-                      }`}
-                      aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
-                      disabled={trackingBusy === streamer.id}
-                    >
-                      <img
-                        src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
-                        alt=""
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
                     <div className="flex items-center justify-start w-20 -ml-0.5">
                       <img src={offlineIcon} alt="" className="w-12 h-12" aria-hidden="true" />
                     </div>
 
                     {(streamer.totalPrizes !== null || streamer.totalValue) && (
-                      <div className="prom-streamer-stats grid grid-cols-2 gap-x-4 gap-y-1 text-center">
+                      <div className="prom-streamer-stats grid grid-cols-[1fr_1fr_auto] gap-x-4 gap-y-1 text-center items-center">
                         <div className="flex flex-col items-center -ml-6">
                           <img src={strPrizeIcon} alt="" className="w-5 h-5" aria-hidden="true" />
                           <p className="text-base font-semibold text-white">{streamer.totalPrizes ?? "—"}</p>
@@ -288,6 +268,26 @@ function StreamersContent() {
                           <img src={dollarIcon} alt="" className="w-5 h-5 -mt-0.5" aria-hidden="true" />
                           <p className="mt-1 text-base font-semibold text-[#00FF9D]">{streamer.totalValue ?? "—"}</p>
                         </div>
+                        <button
+                          type="button"
+                          onPointerDown={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleTrack(streamer);
+                          }}
+                          className={`flex h-9 w-9 items-center justify-center rounded-[12px] border border-white/10 ${
+                            trackedSet.has(streamer.id) ? "bg-[#5B4BFF]/35" : "bg-[#5B4BFF]/20"
+                          }`}
+                          aria-label={trackedSet.has(streamer.id) ? "Unfollow" : "Follow"}
+                          disabled={trackingBusy === streamer.id}
+                        >
+                          <img
+                            src={trackedSet.has(streamer.id) ? deleteUserIcon : addUserIcon}
+                            alt=""
+                            className="h-5 w-5"
+                            aria-hidden="true"
+                          />
+                        </button>
                       </div>
                     )}
                   </div>

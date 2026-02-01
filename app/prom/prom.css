@@ -329,6 +329,7 @@
 
   .prom-streamer-stats {
     gap: 6px;
+    grid-template-columns: 1fr 1fr auto;
   }
 
   .prom-bottom-nav-inner .grid {
@@ -412,6 +413,7 @@
 
   .prom-streamer-stats {
     gap: 4px;
+    grid-template-columns: 1fr 1fr auto;
   }
 
   .prom-bottom-nav-inner .grid {
