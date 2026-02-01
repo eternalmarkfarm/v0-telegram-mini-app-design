@@ -41,8 +41,12 @@ export function apiGet(path: string) {
 }
 
 export function apiGetFresh(path: string) {
-  return apiRequest(path, {
+  const separator = path.includes("?") ? "&" : "?";
+  const pathWithTs = `${path}${separator}_t=${Date.now()}`;
+
+  return apiRequest(pathWithTs, {
     method: "GET",
+    cache: "no-store",
     headers: {
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "Pragma": "no-cache",
