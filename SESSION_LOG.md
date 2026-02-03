@@ -68,3 +68,25 @@
   - inventory warning is sent on trade URL save,
   - winners with private inventory are skipped and rerolled,
   - giveaways proceed without manual intervention.
+
+### Root‑cause: repeated winners (recent_ids empty)
+- Logs for 16:10–16:14 show `recent_ids=[]` despite eligible_count=3.
+- Cause confirmed: race condition + late reward creation.
+  - `recent_ids` were read before `giveaway_rewards` rows were created.
+  - When purchases failed, rewards were never created, keeping `recent_ids` empty.
+- Fix applied in code: reserve winners by creating `giveaway_rewards` immediately with `pending`, then update after purchase.
+  - This removes the race and keeps `recent_ids` populated even if purchase fails.
+
+## 2026-02-02
+
+### Concept Discussion: E-sports Prediction Market (Polymarket-style)
+- **Idea**: Creating a trading platform for Dota 2 / CS2 match outcomes inside a Telegram Mini App.
+- **Key Difference**: Trading "Shares" (probability 0-100%) instead of binary betting. Users can sell positions mid-match.
+- **Architecture Vision**:
+  - **Oracles**: Real-time data from PandaScore/Grid/Valve APIs.
+  - **Engine**: Hybrid approach recommended (Off-chain matching for UX speed, On-chain TON for settlement) vs Pure On-chain.
+  - **UI**: Live match charts, "Portfolio" instead of betting slip.
+- **Legal & Compliance Risks**:
+  - **Gambling License**: Required for real-money operations in most jurisdictions.
+  - **App Store/Google Play**: Strict anti-gambling policies; risk of app removal.
+  - **Strategy**: Often starts as "DeFi protocol" (smart contracts only, no centralized backend money handling) with Geo-blocking (e.g., USA) and optional KYC for larger amounts.
