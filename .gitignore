@@ -30,3 +30,8 @@ next-env.d.ts
 LIS-SKINS.ru-Public-User-API.yaml
 
 /proM
+
+# python/uv
+**/.venv/
+**/.venv
+.uv/
