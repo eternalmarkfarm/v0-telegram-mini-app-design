@@ -51,8 +51,12 @@ function StreamersContent() {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const { data: liveRes } = useSWR("/streamers/live", undefined, { refreshInterval: REFRESH_LIVE });
-  const { data: listRes } = useSWR("/streamers", undefined, { refreshInterval: REFRESH_LIVE });
+  const { data: liveRes, isLoading: liveLoading } = useSWR("/streamers/live", undefined, {
+    refreshInterval: REFRESH_LIVE,
+  });
+  const { data: listRes, isLoading: listLoading } = useSWR("/streamers", undefined, {
+    refreshInterval: REFRESH_LIVE,
+  });
   const { data: trackedRes } = useSWR("/viewer/tracked", undefined, { refreshInterval: 30000 });
   useEffect(() => {
     const next = new Set((trackedRes?.streamers ?? []).map((s: any) => s.id));
@@ -87,13 +91,16 @@ function StreamersContent() {
   }, [liveRes, listRes]);
 
   useEffect(() => {
-    if (mergedStreamers.length >= 0) {
-      setStreamers(mergedStreamers);
-      writeCache("prom:streamers:list", mergedStreamers);
-    }
-  }, [mergedStreamers]);
+    const hasLive = Array.isArray(liveRes?.streamers);
+    const hasList = Array.isArray(listRes?.streamers);
+    // Avoid overwriting cached list with empty data during initial load or transient gaps.
+    if (!hasLive && !hasList) return;
+    if (mergedStreamers.length === 0 && streamers.length > 0) return;
+    setStreamers(mergedStreamers);
+    writeCache("prom:streamers:list", mergedStreamers);
+  }, [mergedStreamers, liveRes, listRes, streamers.length]);
 
-  const hasFetched = Boolean(listRes || liveRes);
+  const dataReady = Boolean(liveRes && listRes);
 
   const formatDuration = (startMs: number, currentMs: number) => {
     if (!startMs) {
@@ -139,7 +146,7 @@ function StreamersContent() {
       </h1>
 
       <div className="space-y-3">
-        {hasFetched && visibleStreamers.length === 0 ? (
+        {dataReady && !liveLoading && !listLoading && visibleStreamers.length === 0 ? (
           <div className="yuze-glass rounded-[24px] p-6 text-center text-[#b3b3ff]">
             Онлайн-стримеров пока нет.
           </div>
