@@ -19,7 +19,6 @@ type LiveStreamer = {
   nickname: string;
   avatar?: string | null;
   matchStartMs: number;
-  matchClockSeconds?: number | null;
   matchId?: number | null;
   matchStatus?: string | null;
 };
@@ -51,12 +50,6 @@ export default function DiceStreamers() {
         : s.started_at
           ? Date.parse(s.started_at)
           : 0,
-      matchClockSeconds:
-        typeof s.match_clock_time === "number"
-          ? s.match_clock_time
-          : s.match_clock_time
-            ? Number.parseInt(String(s.match_clock_time), 10)
-            : null,
       matchId: s.match_id ?? null,
       matchStatus: s.match_status ?? null,
     }));
@@ -76,15 +69,6 @@ export default function DiceStreamers() {
     };
   };
 
-  const formatClock = (seconds: number) => {
-    const totalSeconds = Math.max(0, Math.floor(seconds));
-    const minutes = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return {
-      minutes: String(minutes).padStart(2, "0"),
-      seconds: String(secs).padStart(2, "0"),
-    };
-  };
 
   const handleSend = async (streamer: LiveStreamer) => {
     try {
@@ -191,13 +175,9 @@ export default function DiceStreamers() {
                 <span className="text-white font-semibold text-base">{streamer.nickname}</span>
                 {streamer.matchStatus === "live" ? (
                   <span className="text-[12px] text-white/70 font-medium">
-                    {streamer.matchClockSeconds != null
-                      ? formatClock(streamer.matchClockSeconds).minutes
-                      : formatDuration(streamer.matchStartMs, nowMs).hours}
+                    {formatDuration(streamer.matchStartMs, nowMs).hours}
                     <span className="mx-0.5 blink-strong">:</span>
-                    {streamer.matchClockSeconds != null
-                      ? formatClock(streamer.matchClockSeconds).seconds
-                      : formatDuration(streamer.matchStartMs, nowMs).minutes}
+                    {formatDuration(streamer.matchStartMs, nowMs).minutes}
                   </span>
                 ) : (
                   <span className="text-[12px] text-white/50 font-medium">Матч не идет</span>
