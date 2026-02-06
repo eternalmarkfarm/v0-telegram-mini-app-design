@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
+import { getToken } from "@/lib/api";
 const softwareIcon = "/prom/block.svg";
 const fireIcon = "/prom/fire.svg";
 const statisticsIcon = "/prom/statistics.svg";
@@ -19,7 +20,14 @@ export default function StreamPanel() {
 
   const handleConfigDownload = async () => {
     try {
-      const res = await fetch("/api/streamer/gsi-installer");
+      const token = getToken();
+      const res = await fetch("/api/streamer/gsi-installer", {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || `HTTP ${res.status}`);
+      }
       const text = await res.text();
       const blob = new Blob([text], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
