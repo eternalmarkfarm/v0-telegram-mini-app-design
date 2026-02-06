@@ -21,7 +21,48 @@ type LiveStreamer = {
   matchStartMs: number;
   matchId?: number | null;
   matchStatus?: string | null;
+  dotaMatchId?: number | null;
 };
+
+type WinrateRow = {
+  account_id: number | null;
+  name: string;
+  winrate: number | null;
+  matches: number;
+};
+
+function MatchWinrates({ matchId }: { matchId?: number | null }) {
+  const { data, isLoading } = useSWR(
+    matchId ? `/dota/match/winrates?match_id=${matchId}` : null
+  );
+
+  const players: WinrateRow[] = data?.players ?? [];
+  if (!matchId) return null;
+  if (isLoading) {
+    return (
+      <div className="mt-2 text-[11px] text-white/50">
+        Загрузка винрейта...
+      </div>
+    );
+  }
+  if (!players.length) return null;
+
+  return (
+    <div className="mt-2 rounded-[10px] bg-white/5 border border-white/10 px-3 py-2">
+      <div className="text-[11px] text-white/60 mb-1">Winrate за 30 дней</div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[12px] text-white/85">
+        {players.map((p, idx) => (
+          <div key={`${p.account_id ?? "x"}-${idx}`} className="flex items-center justify-between gap-2">
+            <span className="truncate">{p.name || "Unknown"}</span>
+            <span className="text-white/70">
+              {typeof p.winrate === "number" ? `${p.winrate}%` : "—"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DiceStreamers() {
   const router = useRouter();
@@ -52,6 +93,7 @@ export default function DiceStreamers() {
           : 0,
       matchId: s.match_id ?? null,
       matchStatus: s.match_status ?? null,
+      dotaMatchId: s.dota_match_id ?? null,
     }));
   }, [data]);
 
@@ -163,39 +205,42 @@ export default function DiceStreamers() {
             key={streamer.id}
             className="yuze-glass rounded-[12px] px-5 py-4 flex items-center justify-between"
           >
-            <div className="flex items-center gap-3 -ml-4">
-              <div className="relative w-12 h-12 rounded-[12px] overflow-hidden border border-white/20 bg-gradient-to-br from-[#101426] to-[#1a2140]">
-                {streamer.avatar ? (
-                  <img src={streamer.avatar} alt={streamer.nickname} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-xs text-[#b3b3ff]">Avatar</span>
-                )}
+            <div className="flex-1 -ml-4">
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 rounded-[12px] overflow-hidden border border-white/20 bg-gradient-to-br from-[#101426] to-[#1a2140]">
+                  {streamer.avatar ? (
+                    <img src={streamer.avatar} alt={streamer.nickname} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs text-[#b3b3ff]">Avatar</span>
+                  )}
+                </div>
+                <div className="flex flex-col -mt-0.5">
+                  <span className="text-white font-semibold text-base">{streamer.nickname}</span>
+                  {streamer.matchStatus === "live" ? (
+                    <span className="text-[12px] text-white/70 font-medium">
+                      {formatDuration(streamer.matchStartMs, nowMs).hours}
+                      <span className="mx-0.5 blink-strong">:</span>
+                      {formatDuration(streamer.matchStartMs, nowMs).minutes}
+                    </span>
+                  ) : (
+                    <span className="text-[12px] text-white/50 font-medium">Матч не идет</span>
+                  )}
+                </div>
+                <img src={starDon} alt="" className="w-8 h-8 ml-1" aria-hidden="true" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="0"
+                  className="w-16 h-8 ml-2 rounded-[6px] bg-white/10 border border-white/15 text-white text-sm px-2 text-center outline-none"
+                  value={amounts[streamer.id] ?? ""}
+                  onChange={(e) =>
+                    setAmounts((prev) => ({ ...prev, [streamer.id]: e.target.value }))
+                  }
+                  disabled={streamer.matchStatus !== "live"}
+                />
               </div>
-              <div className="flex flex-col -mt-0.5">
-                <span className="text-white font-semibold text-base">{streamer.nickname}</span>
-                {streamer.matchStatus === "live" ? (
-                  <span className="text-[12px] text-white/70 font-medium">
-                    {formatDuration(streamer.matchStartMs, nowMs).hours}
-                    <span className="mx-0.5 blink-strong">:</span>
-                    {formatDuration(streamer.matchStartMs, nowMs).minutes}
-                  </span>
-                ) : (
-                  <span className="text-[12px] text-white/50 font-medium">Матч не идет</span>
-                )}
-              </div>
-              <img src={starDon} alt="" className="w-8 h-8 ml-1" aria-hidden="true" />
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="0"
-                className="w-16 h-8 ml-2 rounded-[6px] bg-white/10 border border-white/15 text-white text-sm px-2 text-center outline-none"
-                value={amounts[streamer.id] ?? ""}
-                onChange={(e) =>
-                  setAmounts((prev) => ({ ...prev, [streamer.id]: e.target.value }))
-                }
-                disabled={streamer.matchStatus !== "live"}
-              />
+              <MatchWinrates matchId={streamer.dotaMatchId ?? null} />
             </div>
             <button
               type="button"

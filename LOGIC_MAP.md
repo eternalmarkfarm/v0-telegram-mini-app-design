@@ -112,6 +112,33 @@ This document is the canonical logic map for the project. Any future change shou
 - `lis_skins_purchases`, `lis_skins_status_log`
 - `viewer_twitch_status`, `viewer_tracked_streamers`
 
+## Tournament Prediction Market (New 2.0)
+
+### Concept
+A skill-based trading tournament where users compete to grow a virtual portfolio during a single esports match.
+- **Pay-to-Play**: Participation requires an entry fee (Stars).
+- **Fair Start**: All players start with equal ephemeral currency (e.g. 100 Tournament Coins).
+- **No Cashout**: Tournament Coins cannot be withdrawn. They exist only for the match duration.
+- **Rewards**: Success is measured by ROI. High ROI grants "Sweepstakes Tickets" for weekly skin giveaways.
+
+### Core Loop
+1. **Lobby**: User pays Stars -> Enters Match Lobby.
+2. **Match Start**: User gets 100 Coins.
+3. **Live Trading**:
+   - Price of Team Shares (0-100) floats based on GSI Win Probability.
+   - User Buys/Sells shares (Long/Short).
+4. **Settlement**:
+   - Match ends. Winning Team Shares = 100, Losing = 0.
+   - User's Final Balance is calculated.
+   - **Conversion**: `Tickets = f(Final Balance, Difficulty)`.
+   - Coins are burned.
+5. **Sweeps**: User uses Tickets to enter weekly raffles.
+
+### Regulatory Defense (Anti-Gambling)
+- **No Direct Prize Purchase**: Users buy "Entertainment/Tournament Entry", not a lottery ticket.
+- **Skill Element**: Winning tickets depends on trading skill (reading the game), not chance.
+- **AMOE**: Free method of entry (e.g. daily login bonus) prevents "Consideration" classification.
+
 ## Pre-Change Check List
 
 1) Does the change affect event dedup?

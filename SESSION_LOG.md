@@ -90,3 +90,21 @@
   - **Gambling License**: Required for real-money operations in most jurisdictions.
   - **App Store/Google Play**: Strict anti-gambling policies; risk of app removal.
   - **Strategy**: Often starts as "DeFi protocol" (smart contracts only, no centralized backend money handling) with Geo-blocking (e.g., USA) and optional KYC for larger amounts.
+
+## 2026-02-03 & 04
+
+### Planning: CyberSport Prediction Market (Deep Dive)
+- **Core Concept**: P2P Trading (Polymarket-style) for Streamer matches.
+- **Economic Loop**:
+  - `Stars` (In-App Purchase) -> `Credits` (In-Game Currency).
+  - `Credits` -> **Prediction Market** (Multiply capital).
+  - `Credits` -> **Super Drop Tickets** (Burn for Weekly Skin Raffle).
+  - *Key*: No direct cash-out. Solves Store compliance.
+- **Data Strategy (The "Oracle" Problem)**:
+  - **Verdict**: Use **Game State Integration (GSI)**.
+  - *Why*: Steam GC has 2-min delay (unusable). Twitch has 15s delay. GSI is instant (0ms).
+  - *Scope*: GSI provides Match Winner & Score. It does *not* provide full Enemy Inventory (Fog of War), so complex AI probabilities are abandoned in favor of pure P2P pricing.
+- **Gamification Layer**:
+  - Hiding "Order Book" complexity behind a "Tug of War" (Boost/Crush) UI.
+  - **Leagues**: Rank based on trading profit (MMR). Top ranks get free Drop Tickets.
+  - **Social**: "Copy Trading" (Follow Whales) and PVP Duels.
