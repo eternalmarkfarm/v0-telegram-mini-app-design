@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
-import { getToken } from "@/lib/api";
+import { apiGet, getToken } from "@/lib/api";
 const softwareIcon = "/prom/block.svg";
 const fireIcon = "/prom/fire.svg";
 const statisticsIcon = "/prom/statistics.svg";
@@ -20,24 +20,11 @@ export default function StreamPanel() {
 
   const handleConfigDownload = async () => {
     try {
-      const token = getToken();
-      const res = await fetch("/api/streamer/gsi-installer", {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || `HTTP ${res.status}`);
-      }
-      const text = await res.text();
-      const blob = new Blob([text], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "install_gsi.cmd";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      if (!getToken()) throw new Error("Missing token");
+      const res = await apiGet("/streamer/gsi-installer-link");
+      if (!res?.url) throw new Error("No download url");
+      // Telegram WebView can block blob downloads, so use a direct navigation.
+      window.location.href = res.url;
     } catch (e) {
       console.error("Failed to download GSI installer:", e);
     }
