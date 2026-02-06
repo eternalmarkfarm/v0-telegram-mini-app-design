@@ -23,8 +23,18 @@ export default function StreamPanel() {
       if (!getToken()) throw new Error("Missing token");
       const res = await apiGet("/streamer/gsi-installer-link");
       if (!res?.url) throw new Error("No download url");
-      // Telegram WebView can block blob downloads, so use a direct navigation.
-      window.location.href = res.url;
+      const url = res.url as string;
+      // Telegram WebView can block blob downloads, so open the direct URL.
+      const tg = (window as any)?.Telegram?.WebApp;
+      if (tg?.openLink) {
+        tg.openLink(url);
+        return;
+      }
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.click();
     } catch (e) {
       console.error("Failed to download GSI installer:", e);
     }
