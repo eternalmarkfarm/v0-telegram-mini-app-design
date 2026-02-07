@@ -1,0 +1,10 @@
+{
+  "player_resource": {
+    "pattern": "48 8B 0D ?? ?? ?? ?? 48 85 C9 74 0F",
+    "offset": 3,
+    "relative": true
+  },
+  "player_steamid_offset": 0,
+  "player_steamid_stride": 8,
+  "max_players": 10
+}

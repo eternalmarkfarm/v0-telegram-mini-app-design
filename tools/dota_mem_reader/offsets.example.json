@@ -1,0 +1,6 @@
+{
+  "player_resource_ptr": 0,
+  "player_steamid_offset": 0,
+  "player_steamid_stride": 8,
+  "max_players": 10
+}
