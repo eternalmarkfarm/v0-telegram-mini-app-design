@@ -69,6 +69,9 @@ export default function StreamerDashboard() {
   const [seTestNote, setSeTestNote] = useState<string | null>(null);
   const [followersToday, setFollowersToday] = useState<{ has_data: boolean; count_today: number } | null>(null);
   const [followersTodayLoading, setFollowersTodayLoading] = useState(false);
+  const [chatMinutes, setChatMinutes] = useState(60);
+  const [chatSaving, setChatSaving] = useState(false);
+  const [chatSaved, setChatSaved] = useState(false);
 
   const formatDate = (value?: string | null) => {
     if (!value) return null;
@@ -91,6 +94,9 @@ export default function StreamerDashboard() {
       setStreamer(r.streamer);
       if (r?.streamer?.telegram_channel_url) {
         setTgChannel(r.streamer.telegram_channel_url);
+      }
+      if (typeof r?.streamer?.chat_recent_minutes === "number") {
+        setChatMinutes(r.streamer.chat_recent_minutes);
       }
       if (r?.streamer?.streamelements_channel_id) {
         setSeChannelId(r.streamer.streamelements_channel_id);
@@ -191,6 +197,28 @@ export default function StreamerDashboard() {
       }
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  const saveChatMinutes = async () => {
+    setChatSaving(true);
+    setChatSaved(false);
+    setErr(null);
+    try {
+      await ensureAuth();
+      const minutes = Math.max(1, Math.min(Number(chatMinutes) || 60, 1440));
+      const res = await apiPost("/streamer/chat-settings", { chat_recent_minutes: minutes });
+      if (typeof res?.chat_recent_minutes === "number") {
+        setChatMinutes(res.chat_recent_minutes);
+      }
+      setChatSaved(true);
+    } catch (e: any) {
+      const message = String(e?.message ?? e);
+      setErr(message);
+      const tg = (window as any).Telegram?.WebApp;
+      tg?.showAlert?.(message);
+    } finally {
+      setChatSaving(false);
     }
   };
 
@@ -880,6 +908,46 @@ export default function StreamerDashboard() {
               <Download className="h-5 w-5 mr-2" />
               {t.downloadConfig}
             </Button>
+
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm p-4 space-y-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {language === "ru"
+                    ? "Период активности чата"
+                    : "Chat activity window"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {language === "ru"
+                    ? "Зритель считается активным, если писал в чат за последние N минут."
+                    : "Viewer is active if they wrote to chat within the last N minutes."}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  max={1440}
+                  value={chatMinutes}
+                  onChange={(e) => setChatMinutes(e.target.value ? Number(e.target.value) : 60)}
+                  className="w-full h-10 rounded-md border border-border/60 bg-background px-3 text-sm text-foreground"
+                />
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  {language === "ru" ? "мин" : "min"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">
+                  {chatSaved
+                    ? language === "ru"
+                      ? "Сохранено"
+                      : "Saved"
+                    : null}
+                </div>
+                <Button size="sm" variant="secondary" onClick={saveChatMinutes} disabled={chatSaving}>
+                  {chatSaving ? (language === "ru" ? "Сохранение..." : "Saving...") : language === "ru" ? "Сохранить" : "Save"}
+                </Button>
+              </div>
+            </Card>
 
             <Button
               variant="destructive"

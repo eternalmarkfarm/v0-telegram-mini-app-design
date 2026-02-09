@@ -59,6 +59,7 @@ type Eligibility = {
   is_tracked?: boolean;
   is_follower?: boolean;
   chat_recent?: boolean;
+  chat_recent_minutes?: number;
   has_twitch?: boolean;
   has_steam?: boolean;
 };
@@ -228,7 +229,11 @@ export default function StreamerDetail() {
   };
 
   const conditions = [
-    { id: "chat", name: "Хотя бы одно сообщение в чате стримера за последние {N} мин", completed: Boolean(eligibility?.chat_recent) },
+    {
+      id: "chat",
+      name: `Хотя бы одно сообщение в чате стримера за последние ${eligibility?.chat_recent_minutes ?? 60} мин`,
+      completed: Boolean(eligibility?.chat_recent),
+    },
     { id: "follow", name: "Подписка на канал", completed: Boolean(eligibility?.is_follower) },
     { id: "twitch", name: "Twitch привязан", completed: Boolean(eligibility?.has_twitch) },
     { id: "steam", name: "Steam привязан", completed: Boolean(eligibility?.has_steam) },
