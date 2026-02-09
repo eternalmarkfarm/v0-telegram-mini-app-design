@@ -325,13 +325,13 @@ export default function Home() {
       {/* Шапка с кнопкой Support */}
       <div className="flex items-center justify-between">
         <button
-          className="flex items-center gap-2 text-[#5B4BFF] font-bold drop-shadow-[0_0_12px_rgba(91,75,255,0.6)]"
+          className="flex items-center gap-2 text-[#4098F7] font-bold drop-shadow-[0_0_12px_rgba(64,152,247,0.6)]"
           onClick={() => {
             const url = "https://t.me/StreamersDrop_Support_Bot";
             window.open(url, "_blank", "noopener,noreferrer");
           }}
         >
-          <Headphones className="w-5 h-5 text-[#5B4BFF] drop-shadow-[0_0_12px_rgba(91,75,255,0.9)]" />
+          <Headphones className="w-5 h-5 text-[#4098F7] drop-shadow-[0_0_12px_rgba(64,152,247,0.9)]" />
           <span>Support</span>
         </button>
       </div>
