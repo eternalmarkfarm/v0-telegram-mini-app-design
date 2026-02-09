@@ -2,6 +2,15 @@
 
 These rules are intended to keep changes professional, systematic, and product‑grade.
 
+## Assistant quality rules (global)
+- **Schema‑first:** validate configs/manifests/migrations against official schema or docs before coding.
+- **Convention‑first:** follow official or project file/entry naming conventions unless explicitly agreed.
+- **Assume‑nothing:** when multiple valid options exist, ask or mirror the user’s baseline example.
+- **Single source of truth:** prefer user‑provided working templates over generic defaults.
+- **Critical path check:** verify entrypoints, required keys, and startup flows before handoff.
+- **Minimal change set:** keep fixes and new features separated; land a working baseline first.
+- **Explicit feedback loop:** confirm observed runtime output/errors before further changes.
+
 ## Before making changes
 - Provide a short **strategy** (1–2 paragraphs) with 2–3 possible approaches.
 - Call out **risks and tradeoffs**.

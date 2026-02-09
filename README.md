@@ -1,5 +1,7 @@
 # Telegram mini app design
 
+- STRATZ plan notes: `NOTES_STRATZ.md`
+
 *Automatically synced with your [v0.app](https://v0.app) deployments*
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/nksepte-7245s-projects/v0-telegram-mini-app-design)

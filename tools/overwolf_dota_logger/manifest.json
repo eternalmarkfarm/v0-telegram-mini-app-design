@@ -6,7 +6,9 @@
     "author": "StreamDrop",
     "version": "0.1.0",
     "minimum_overwolf_version": "0.268.0",
-    "description": "Logs Overwolf GEP roster/match_info and events for Dota 2."
+    "description": "Logs Overwolf GEP roster/match_info and events for Dota 2.",
+    "icon": "icon.png",
+    "icon_gray": "icon_gray.png"
   },
   "data": {
     "start_window": "log_window",
@@ -23,9 +25,20 @@
   "permissions": [
     "GameInfo",
     "GameEvents",
-    "Extensions"
+    "Hotkeys"
   ],
   "windows": {
+    "background": {
+      "file": "background/index.html",
+      "is_background_page": true,
+      "transparent": true,
+      "resizable": false,
+      "show_in_taskbar": false,
+      "size": {
+        "width": 1,
+        "height": 1
+      }
+    },
     "log_window": {
       "file": "window/index.html",
       "transparent": false,
@@ -39,16 +52,6 @@
       "min_size": {
         "width": 420,
         "height": 480
-      }
-    },
-    "background": {
-      "file": "background/index.html",
-      "transparent": true,
-      "resizable": false,
-      "show_in_taskbar": false,
-      "size": {
-        "width": 1,
-        "height": 1
       }
     }
   }

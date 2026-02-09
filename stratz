@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+STRATZ_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTdWJqZWN0IjoiMzg3ZDU4NDctMTBhOC00M2UyLTlkMjYtMjlhODUzNGRiMmQwIiwiU3RlYW1JZCI6IjEzNDA1ODI4IiwiQVBJVXNlciI6InRydWUiLCJuYmYiOjE3NzA1NTI1NDcsImV4cCI6MTgwMjA4ODU0NywiaWF0IjoxNzcwNTUyNTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdHJhdHouY29tIn0.75nt_Zg_YONoJXU1BOA3MTqsln778Iq45oXBbctlNeQ"
+API="https://api.stratz.com/graphql"
+
+q_schema='{"query":"{ __schema { queryType { name } } }"}'
+
+q_type() {
+  local name="$1"
+  cat <<JSON
+{"query":"query(\$name:String!){ __type(name:\$name){ name fields { name type { name kind ofType { name kind } } } } }","variables":{"name":"$name"}}
+JSON
+}
+
+req() {
+  local payload="$1"
+  curl -s "$API" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $STRATZ_TOKEN" \
+    --data-raw "$payload"
+}
+
+echo "=== schema ==="
+req "$q_schema" | jq .
+
+for t in PlayerType SteamAccountType MatchType MatchPlayerType HeroType HeroStatsType; do
+  echo "=== $t ==="
+  req "$(q_type "$t")" | jq .
+done

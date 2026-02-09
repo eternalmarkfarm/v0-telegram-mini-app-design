@@ -1,0 +1,1076 @@
+{
+  "PlayerHeroPerformanceMatchesRequestType": {
+    "data": {
+      "__type": {
+        "name": "PlayerHeroPerformanceMatchesRequestType",
+        "inputFields": [
+          {
+            "name": "matchGroupOrderBy",
+            "type": {
+              "name": "FilterMatchGroupOrderByEnum",
+              "kind": "ENUM",
+              "ofType": null
+            }
+          },
+          {
+            "name": "orderBy",
+            "type": {
+              "name": "FindMatchPlayerOrderBy",
+              "kind": "ENUM",
+              "ofType": null
+            }
+          },
+          {
+            "name": "matchIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "leagueId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "leagueIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "seriesId",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "teamId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isParsed",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isLeague",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isTeam",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "minDuration",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "maxDuration",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "startDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "endDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gameModeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "lobbyTypeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "gameVersionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "minGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "maxGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "regionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "rankIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isStats",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "heroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Short",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "laneIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "roleIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "positionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "MatchPlayerPositionType",
+                "kind": "ENUM"
+              }
+            }
+          },
+          {
+            "name": "awardIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isParty",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isRadiant",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "partyCounts",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "hasAward",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "withFriendSteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemySteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withFriendHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemyHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "take",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "skip",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "PlayerMatchesRequestType": {
+    "data": {
+      "__type": {
+        "name": "PlayerMatchesRequestType",
+        "inputFields": [
+          {
+            "name": "matchIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "leagueId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "leagueIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "seriesId",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "teamId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "teamIdSteamAccount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isParsed",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "startDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "endDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gameModeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "lobbyTypeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "gameVersionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "regionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "rankIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "bracketIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isStats",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "heroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Short",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "laneIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "roleIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "positionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "MatchPlayerPositionType",
+                "kind": "ENUM"
+              }
+            }
+          },
+          {
+            "name": "awardIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isParty",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hasAward",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "withFriendSteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemySteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withFriendHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemyHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isVictory",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isRadiant",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "minGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "maxGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "minImp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "maxImp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "playerList",
+            "type": {
+              "name": "FindMatchPlayerList",
+              "kind": "ENUM",
+              "ofType": null
+            }
+          },
+          {
+            "name": "take",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "skip",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "after",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "before",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "orderBy",
+            "type": {
+              "name": "FindMatchPlayerOrderBy",
+              "kind": "ENUM",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "PlayerMatchesGroupByRequestType": {
+    "data": {
+      "__type": {
+        "name": "PlayerMatchesGroupByRequestType",
+        "inputFields": [
+          {
+            "name": "playerList",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "FindMatchPlayerList",
+                "kind": "ENUM"
+              }
+            }
+          },
+          {
+            "name": "groupBy",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "FindMatchPlayerGroupBy",
+                "kind": "ENUM"
+              }
+            }
+          },
+          {
+            "name": "matchIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "leagueId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "leagueIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "seriesId",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "teamId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isParsed",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "startDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "endDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isLeague",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gameModeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "lobbyTypeIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Byte",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "gameVersionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "regionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "rankIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "bracketIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isStats",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "heroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Short",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "laneIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "roleIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "positionIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "MatchPlayerPositionType",
+                "kind": "ENUM"
+              }
+            }
+          },
+          {
+            "name": "awardIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "isParty",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isVictory",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "isRadiant",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hasAward",
+            "type": {
+              "name": "Boolean",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "withFriendSteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemySteamAccountIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Long",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withFriendHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "withEnemyHeroIds",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "minGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "maxGameVersionId",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "take",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "skip",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

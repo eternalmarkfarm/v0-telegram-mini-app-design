@@ -1,0 +1,752 @@
+{
+  "PlayerCardHoverType": {
+    "data": {
+      "__type": {
+        "name": "PlayerCardHoverType",
+        "fields": [
+          {
+            "name": "steamAccount",
+            "type": {
+              "name": "SteamAccountType",
+              "kind": "OBJECT",
+              "ofType": null
+            }
+          },
+          {
+            "name": "lastUpdateDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "matchCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "coreCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "supportCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "imp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "heroes",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "PlayerCardHoverHeroType",
+                "kind": "OBJECT"
+              }
+            }
+          },
+          {
+            "name": "activity",
+            "type": {
+              "name": "Byte",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "PlayerPerformanceType": {
+    "data": {
+      "__type": {
+        "name": "PlayerPerformanceType",
+        "fields": [
+          {
+            "name": "heroId",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Short",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "matchCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "winCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "streak",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "maxStreak",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "imp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "rank",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "mmrTier",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "mmrBracket",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "awardMatchCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "mvpCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "topCoreCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "topSupportCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "kills",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "killsAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "deaths",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "deathsAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "assists",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "assistsAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "cs",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "csAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gpm",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gpmAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "xpm",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "xpmAverage",
+            "type": {
+              "name": "Decimal",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "composition",
+            "type": {
+              "name": "PlayerPerformanceCompositionType",
+              "kind": "OBJECT",
+              "ofType": null
+            }
+          },
+          {
+            "name": "position",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "PlayerPerformancePositionType",
+                "kind": "OBJECT"
+              }
+            }
+          },
+          {
+            "name": "pickOrder",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "PlayerHeroesPerformanceType": {
+    "data": {
+      "__type": {
+        "name": "PlayerHeroesPerformanceType",
+        "fields": [
+          {
+            "name": "heroId",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Short",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "hero",
+            "type": {
+              "name": "HeroType",
+              "kind": "OBJECT",
+              "ofType": null
+            }
+          },
+          {
+            "name": "winCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "kDA",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgKills",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgDeaths",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgAssists",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "duration",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "imp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "best",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "matchCount",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "goldPerMinute",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "experiencePerMinute",
+            "type": {
+              "name": null,
+              "kind": "NON_NULL",
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          },
+          {
+            "name": "positionScore",
+            "type": {
+              "name": null,
+              "kind": "LIST",
+              "ofType": {
+                "name": "PlayerHeroesPerformanceScoreType",
+                "kind": "OBJECT"
+              }
+            }
+          },
+          {
+            "name": "lastPlayedDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "MatchGroupByType": {
+    "data": {
+      "__type": {
+        "name": "MatchGroupByType",
+        "fields": null
+      }
+    }
+  },
+  "MatchGroupByMatchCountType": {
+    "data": {
+      "__type": null
+    }
+  },
+  "MatchGroupByHeroType": {
+    "data": {
+      "__type": {
+        "name": "MatchGroupByHeroType",
+        "fields": [
+          {
+            "name": "heroId",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hero",
+            "type": {
+              "name": "HeroType",
+              "kind": "OBJECT",
+              "ofType": null
+            }
+          },
+          {
+            "name": "matchCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "winCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgImp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgGoldPerMinute",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgExperiencePerMinute",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgKDA",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgKills",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgDeaths",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgAssists",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgTowerDamage",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "lastMatchDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "firstMatchDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "MatchGroupByLobbyType": {
+    "data": {
+      "__type": null
+    }
+  },
+  "MatchGroupByGameModeType": {
+    "data": {
+      "__type": {
+        "name": "MatchGroupByGameModeType",
+        "fields": [
+          {
+            "name": "gameMode",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "matchCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "winCount",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgImp",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgGoldPerMinute",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgExperiencePerMinute",
+            "type": {
+              "name": "Int",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgKDA",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgKills",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgDeaths",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgAssists",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "avgTowerDamage",
+            "type": {
+              "name": "Float",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "lastMatchDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          },
+          {
+            "name": "firstMatchDateTime",
+            "type": {
+              "name": "Long",
+              "kind": "SCALAR",
+              "ofType": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

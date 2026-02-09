@@ -1,0 +1,152 @@
+{
+  "FindMatchPlayerGroupBy": {
+    "name": "FindMatchPlayerGroupBy",
+    "enumValues": [
+      {
+        "name": "HERO"
+      },
+      {
+        "name": "FACTION"
+      },
+      {
+        "name": "KILLS"
+      },
+      {
+        "name": "DEATHS"
+      },
+      {
+        "name": "ASSISTS"
+      },
+      {
+        "name": "IS_LEAVER"
+      },
+      {
+        "name": "LEVEL"
+      },
+      {
+        "name": "IS_PARTY"
+      },
+      {
+        "name": "IS_RANDOM"
+      },
+      {
+        "name": "LANE"
+      },
+      {
+        "name": "ROLE"
+      },
+      {
+        "name": "IS_INTENTIONAL_FEEDING"
+      },
+      {
+        "name": "AWARD"
+      },
+      {
+        "name": "ROAM_LANE"
+      },
+      {
+        "name": "IS_VICTORY"
+      },
+      {
+        "name": "DURATION_MINUTES"
+      },
+      {
+        "name": "CLUSTER"
+      },
+      {
+        "name": "REGION"
+      },
+      {
+        "name": "LOBBY_TYPE"
+      },
+      {
+        "name": "IS_LEAGUE"
+      },
+      {
+        "name": "IS_SERIES"
+      },
+      {
+        "name": "GAME_MODE"
+      },
+      {
+        "name": "IS_STATS"
+      },
+      {
+        "name": "GAME_VERSION"
+      },
+      {
+        "name": "TEAM"
+      },
+      {
+        "name": "HERO_PERFORMANCE"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID_HERO_ID"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID_WITH_TEAM"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID_HERO_ID_WITH_TEAM"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID_AGAINST_TEAM"
+      },
+      {
+        "name": "STEAM_ACCOUNT_ID_HERO_ID_AGAINST_TEAM"
+      },
+      {
+        "name": "LEAGUE_ID"
+      },
+      {
+        "name": "POSITION"
+      },
+      {
+        "name": "DATE_DAY"
+      },
+      {
+        "name": "TOTAL_KILLS"
+      },
+      {
+        "name": "GOLD_PER_MINUTE"
+      },
+      {
+        "name": "DATE_DAY_HERO"
+      },
+      {
+        "name": "HOUR"
+      }
+    ]
+  },
+  "FindMatchPlayerList": {
+    "name": "FindMatchPlayerList",
+    "enumValues": [
+      {
+        "name": "ALL"
+      },
+      {
+        "name": "SINGLE"
+      },
+      {
+        "name": "WITH"
+      },
+      {
+        "name": "AGAINST"
+      }
+    ]
+  },
+  "FindMatchPlayerOrderBy": {
+    "name": "FindMatchPlayerOrderBy",
+    "enumValues": [
+      {
+        "name": "DESC"
+      },
+      {
+        "name": "ASC"
+      }
+    ]
+  }
+}

@@ -108,3 +108,5 @@
   - Hiding "Order Book" complexity behind a "Tug of War" (Boost/Crush) UI.
   - **Leagues**: Rank based on trading profit (MMR). Top ranks get free Drop Tickets.
   - **Social**: "Copy Trading" (Follow Whales) and PVP Duels.
+## STRATZ Plan
+- Notes: `NOTES_STRATZ.md`

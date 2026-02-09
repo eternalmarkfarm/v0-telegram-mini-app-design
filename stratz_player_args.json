@@ -1,0 +1,261 @@
+{
+  "data": {
+    "__type": {
+      "name": "PlayerType",
+      "fields": [
+        {
+          "name": "steamAccountId",
+          "args": []
+        },
+        {
+          "name": "identity",
+          "args": []
+        },
+        {
+          "name": "steamAccount",
+          "args": []
+        },
+        {
+          "name": "matchCount",
+          "args": []
+        },
+        {
+          "name": "winCount",
+          "args": []
+        },
+        {
+          "name": "imp",
+          "args": []
+        },
+        {
+          "name": "firstMatchDate",
+          "args": []
+        },
+        {
+          "name": "lastMatchDate",
+          "args": []
+        },
+        {
+          "name": "lastMatchRegionId",
+          "args": []
+        },
+        {
+          "name": "ranks",
+          "args": [
+            {
+              "name": "seasonRankIds",
+              "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                  "name": "Byte",
+                  "kind": "SCALAR"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "leaderboardRanks",
+          "args": [
+            {
+              "name": "skip",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            {
+              "name": "take",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "badges",
+          "args": []
+        },
+        {
+          "name": "names",
+          "args": [
+            {
+              "name": "skip",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            {
+              "name": "take",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "behaviorScore",
+          "args": []
+        },
+        {
+          "name": "team",
+          "args": []
+        },
+        {
+          "name": "guildMember",
+          "args": []
+        },
+        {
+          "name": "activity",
+          "args": []
+        },
+        {
+          "name": "isFollowed",
+          "args": []
+        },
+        {
+          "name": "simpleSummary",
+          "args": []
+        },
+        {
+          "name": "performance",
+          "args": []
+        },
+        {
+          "name": "heroPerformance",
+          "args": [
+            {
+              "name": "heroId",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                  "name": "Short",
+                  "kind": "SCALAR"
+                }
+              }
+            },
+            {
+              "name": "request",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                  "name": "PlayerHeroPerformanceMatchesRequestType",
+                  "kind": "INPUT_OBJECT"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "heroesPerformance",
+          "args": [
+            {
+              "name": "request",
+              "type": {
+                "name": "PlayerHeroPerformanceMatchesRequestType",
+                "kind": "INPUT_OBJECT",
+                "ofType": null
+              }
+            },
+            {
+              "name": "take",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            {
+              "name": "skip",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "matches",
+          "args": [
+            {
+              "name": "request",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                  "name": "PlayerMatchesRequestType",
+                  "kind": "INPUT_OBJECT"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "matchesGroupBy",
+          "args": [
+            {
+              "name": "request",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                  "name": "PlayerMatchesGroupByRequestType",
+                  "kind": "INPUT_OBJECT"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "dotaPlus",
+          "args": []
+        },
+        {
+          "name": "heroStreaks",
+          "args": [
+            {
+              "name": "request",
+              "type": {
+                "name": "PlayerMatchesRequestType",
+                "kind": "INPUT_OBJECT",
+                "ofType": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "feats",
+          "args": [
+            {
+              "name": "take",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            {
+              "name": "skip",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
