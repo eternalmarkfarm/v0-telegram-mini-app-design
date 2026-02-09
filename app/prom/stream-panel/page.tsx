@@ -15,15 +15,16 @@ const trophyIcon = "/prom/trophy.svg";
 
 
 export default function StreamPanel() {
-  const [isGsiOpen, setIsGsiOpen] = useState(true);
+  const [isGsiOpen, setIsGsiOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const { data, loading } = useStreamerMe();
-  const [chatMinutes, setChatMinutes] = useState(60);
+  const [chatMinutes, setChatMinutes] = useState("60");
   const [chatSaving, setChatSaving] = useState(false);
   const [chatSaved, setChatSaved] = useState(false);
 
   useEffect(() => {
     if (typeof data?.streamer?.chat_recent_minutes === "number") {
-      setChatMinutes(data.streamer.chat_recent_minutes);
+      setChatMinutes(String(data.streamer.chat_recent_minutes));
     }
   }, [data?.streamer?.chat_recent_minutes]);
 
@@ -62,7 +63,7 @@ export default function StreamPanel() {
       const minutes = Math.max(1, Math.min(Number(chatMinutes) || 60, 1440));
       const res = await apiPost("/streamer/chat-settings", { chat_recent_minutes: minutes });
       if (typeof res?.chat_recent_minutes === "number") {
-        setChatMinutes(res.chat_recent_minutes);
+        setChatMinutes(String(res.chat_recent_minutes));
       }
       setChatSaved(true);
     } catch (e) {
@@ -205,33 +206,48 @@ export default function StreamPanel() {
         </div>
       </Link>
 
-      <div className="yuze-glass rounded-[24px] p-6 space-y-4">
-        <div>
-          <h3 className="text-lg font-bold text-white">Период активности чата</h3>
-          <p className="text-sm text-[#b3b3ff] mt-1">
-            Зритель считается активным, если писал в чат за последние N минут.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <input
-            type="number"
-            min={1}
-            max={1440}
-            value={chatMinutes}
-            onChange={(e) => setChatMinutes(e.target.value ? Number(e.target.value) : 60)}
-            className="flex-1 h-10 rounded-[12px] border border-white/10 bg-white/5 px-3 text-sm text-white"
+      <div className="yuze-glass rounded-[24px] p-6">
+        <button
+          type="button"
+          onClick={() => setIsChatOpen((prev) => !prev)}
+          className="w-full flex items-center gap-3 text-left"
+          aria-expanded={isChatOpen}
+        >
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-white">Период активности чата</h3>
+            <p className="text-sm text-[#b3b3ff] mt-1">
+              Зритель считается активным, если писал в чат за последние N минут.
+            </p>
+          </div>
+          <ChevronDown
+            className={`w-5 h-5 text-[#b3b3ff] transition-transform ${isChatOpen ? 'rotate-180' : ''}`}
           />
-          <span className="text-sm text-[#b3b3ff]">мин</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-[#7aa7ff]">{chatSaved ? "Сохранено" : ""}</span>
-          <button
-            onClick={handleChatMinutesSave}
-            className="h-9 px-4 rounded-[12px] bg-white/10 text-sm text-white hover:bg-white/20 transition"
-            disabled={chatSaving}
-          >
-            {chatSaving ? "Сохранение..." : "Сохранить"}
-          </button>
+        </button>
+
+        <div
+          className={`transition-all duration-300 ${
+            isChatOpen ? 'mt-4 max-h-40 opacity-100' : 'mt-0 max-h-0 opacity-0'
+          } overflow-hidden`}
+        >
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              min={1}
+              max={1440}
+              value={chatMinutes}
+              onChange={(e) => setChatMinutes(e.target.value)}
+              className="flex-1 h-10 rounded-[12px] border border-white/10 bg-white/5 px-3 text-sm text-white"
+            />
+            <span className="text-sm text-[#b3b3ff]">мин</span>
+            <button
+              onClick={handleChatMinutesSave}
+              className="h-9 px-4 rounded-[12px] bg-white/10 text-sm text-white hover:bg-white/20 transition"
+              disabled={chatSaving}
+            >
+              {chatSaving ? "Сохранение..." : "Сохранить"}
+            </button>
+          </div>
+          <div className="mt-2 text-xs text-[#7aa7ff]">{chatSaved ? "Сохранено" : ""}</div>
         </div>
       </div>
 
