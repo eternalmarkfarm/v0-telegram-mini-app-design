@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from "next/link";
 import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { useStreamerMe } from "@/app/prom/lib/useStreamerMe";
-import { apiGet, getToken } from "@/lib/api";
+import { apiGet, apiPost, getToken } from "@/lib/api";
 const softwareIcon = "/prom/block.svg";
 const fireIcon = "/prom/fire.svg";
 const statisticsIcon = "/prom/statistics.svg";
@@ -17,6 +17,15 @@ const trophyIcon = "/prom/trophy.svg";
 export default function StreamPanel() {
   const [isGsiOpen, setIsGsiOpen] = useState(true);
   const { data, loading } = useStreamerMe();
+  const [chatMinutes, setChatMinutes] = useState(60);
+  const [chatSaving, setChatSaving] = useState(false);
+  const [chatSaved, setChatSaved] = useState(false);
+
+  useEffect(() => {
+    if (typeof data?.streamer?.chat_recent_minutes === "number") {
+      setChatMinutes(data.streamer.chat_recent_minutes);
+    }
+  }, [data?.streamer?.chat_recent_minutes]);
 
   const handleConfigDownload = async () => {
     try {
@@ -43,6 +52,23 @@ export default function StreamPanel() {
   const handleDeletePanel = () => {
     if (confirm('Вы уверены, что хотите удалить кабинет стримера?')) {
       console.log('Deleting panel...');
+    }
+  };
+
+  const handleChatMinutesSave = async () => {
+    try {
+      setChatSaving(true);
+      setChatSaved(false);
+      const minutes = Math.max(1, Math.min(Number(chatMinutes) || 60, 1440));
+      const res = await apiPost("/streamer/chat-settings", { chat_recent_minutes: minutes });
+      if (typeof res?.chat_recent_minutes === "number") {
+        setChatMinutes(res.chat_recent_minutes);
+      }
+      setChatSaved(true);
+    } catch (e) {
+      console.error("Failed to save chat minutes:", e);
+    } finally {
+      setChatSaving(false);
     }
   };
 
@@ -178,6 +204,36 @@ export default function StreamPanel() {
           </div>
         </div>
       </Link>
+
+      <div className="yuze-glass rounded-[24px] p-6 space-y-4">
+        <div>
+          <h3 className="text-lg font-bold text-white">Период активности чата</h3>
+          <p className="text-sm text-[#b3b3ff] mt-1">
+            Зритель считается активным, если писал в чат за последние N минут.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <input
+            type="number"
+            min={1}
+            max={1440}
+            value={chatMinutes}
+            onChange={(e) => setChatMinutes(e.target.value ? Number(e.target.value) : 60)}
+            className="flex-1 h-10 rounded-[12px] border border-white/10 bg-white/5 px-3 text-sm text-white"
+          />
+          <span className="text-sm text-[#b3b3ff]">мин</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-[#7aa7ff]">{chatSaved ? "Сохранено" : ""}</span>
+          <button
+            onClick={handleChatMinutesSave}
+            className="h-9 px-4 rounded-[12px] bg-white/10 text-sm text-white hover:bg-white/20 transition"
+            disabled={chatSaving}
+          >
+            {chatSaving ? "Сохранение..." : "Сохранить"}
+          </button>
+        </div>
+      </div>
 
       <button
         onClick={handleDeletePanel}

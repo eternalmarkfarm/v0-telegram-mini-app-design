@@ -12,6 +12,7 @@ export type StreamerMe = {
     twitch_login?: string | null;
     twitch_user_id?: string | null;
     twitch_linked_at?: string | null;
+    chat_recent_minutes?: number;
   } | null;
   events?: Array<{ event_key: string; enabled: boolean }>;
 };
