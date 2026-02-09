@@ -236,7 +236,7 @@ export default function StreamPanel() {
               max={1440}
               value={chatMinutes}
               onChange={(e) => setChatMinutes(e.target.value)}
-              className="flex-1 h-10 rounded-[12px] border border-white/10 bg-white/5 px-3 text-sm text-white"
+              className="no-number-spin flex-1 h-10 rounded-[12px] border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:border-[#5B4BFF] transition-colors"
             />
             <span className="text-sm text-[#b3b3ff]">мин</span>
             <button
