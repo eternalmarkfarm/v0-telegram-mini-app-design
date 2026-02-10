@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { readCache, writeCache } from "@/lib/cache";
-import { REFRESH_LIVE } from "@/app/prom/lib/refresh";
+import { REFRESH_LIVE, REFRESH_LIVE_OFFLINE } from "@/app/prom/lib/refresh";
 import { apiDelete, apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 
@@ -51,11 +51,17 @@ function StreamersContent() {
     return () => window.clearInterval(intervalId);
   }, []);
 
+  const liveRefreshInterval = (data: any) => {
+    const hasLive = Array.isArray(data?.streamers) && data.streamers.length > 0;
+    return hasLive ? REFRESH_LIVE : REFRESH_LIVE_OFFLINE;
+  };
+
   const { data: liveRes, isLoading: liveLoading } = useSWR("/streamers/live", undefined, {
-    refreshInterval: REFRESH_LIVE,
+    refreshInterval: liveRefreshInterval,
   });
   const { data: listRes, isLoading: listLoading } = useSWR("/streamers", undefined, {
-    refreshInterval: REFRESH_LIVE,
+    // Streamer list changes rarely; keep it low-frequency.
+    refreshInterval: REFRESH_LIVE_OFFLINE,
   });
   const { data: trackedRes } = useSWR("/viewer/tracked", undefined, { refreshInterval: 30000 });
   useEffect(() => {
@@ -155,7 +161,7 @@ function StreamersContent() {
             {onlineStreamers.map((streamer) => (
               <Link
                 key={streamer.id}
-                href={`${base}/streamers/${streamer.id}`}
+                href={`${base}/streamer/${streamer.id}`}
                 className="prom-streamer-card block yuze-glass rounded-[12px] px-5 py-3 hover:bg-white/[0.14] transition-all duration-300"
               >
                 <div className="prom-streamer-row flex items-center gap-3 -ml-2">
@@ -244,7 +250,7 @@ function StreamersContent() {
             {offlineStreamers.map((streamer) => (
               <Link
                 key={streamer.id}
-                href={`${base}/streamers/${streamer.id}`}
+                href={`${base}/streamer/${streamer.id}`}
                 className="prom-streamer-card block yuze-glass rounded-[12px] px-5 py-3 hover:bg-white/[0.14] transition-all duration-300"
               >
                 <div className="prom-streamer-row flex items-center gap-3 -ml-2">

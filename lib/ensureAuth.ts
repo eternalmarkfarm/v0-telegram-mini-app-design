@@ -1,6 +1,6 @@
 "use client";
 
-import { apiPost, getToken, setToken } from "@/lib/api";
+import { authTelegram, getToken } from "@/lib/api";
 
 export async function ensureAuth(): Promise<string> {
   const existing = getToken();
@@ -13,8 +13,5 @@ export async function ensureAuth(): Promise<string> {
     );
   }
 
-  const res = await apiPost("/auth/telegram", { initData });
-  if (!res?.token) throw new Error("auth/telegram не вернул token");
-  setToken(res.token);
-  return res.token;
+  return authTelegram(initData);
 }

@@ -10,6 +10,7 @@ import { useViewerStatus } from "@/app/prom/lib/useViewerStatus";
 import { formatPrizeTime, mapPrizeStatus } from "@/app/prom/lib/prize-utils";
 import useSWR from "swr";
 import { REFRESH_PRIZES, REFRESH_PROFILE } from "@/app/prom/lib/refresh";
+import { readCache, writeCache } from "@/lib/cache";
 const rewardIcon = "/prom/medal_new.svg";
 const leftArrowIcon = "/prom/left-arrow.svg";
 
@@ -23,7 +24,12 @@ export default function Prizes() {
 
   const fetchPrizes = async () => {
     await ensureAuth();
-    await apiPost("/viewer/prizes/refresh", {});
+    // Status refresh is expensive (hits Lis-Skins). Throttle it.
+    const refreshedRecently = readCache<boolean>("prom:viewer:prizes:refresh", 60 * 1000);
+    if (!refreshedRecently) {
+      await apiPost("/viewer/prizes/refresh", {});
+      writeCache("prom:viewer:prizes:refresh", true);
+    }
     return apiGetFresh("/viewer/prizes?limit=30");
   };
 

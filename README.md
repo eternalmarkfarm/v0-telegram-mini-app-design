@@ -42,31 +42,57 @@ Frontend:
 - Telegram WebApp SDK
 
 Backend:
-- FastAPI (single `app.py`)
+- FastAPI (single-file app: `backend/backendDrop/app.py`)
 - PostgreSQL
 - Twitch EventSub (WebSocket transport)
 - Dota 2 GSI ingestion + custom event engine
 - Lis-Skins API integration
 
 ### Frontend Routes
-- `app/page.tsx`: Viewer home (public stats, recent prizes, tracked streamers)
-- `app/prizes/page.tsx`: Viewer prize history (full list)
-- `app/rules/page.tsx`: Participation rules
-- `app/live/page.tsx`: Live streamers
-- `app/tracked/page.tsx`: Tracked streamers management
-- `app/streamer/page.tsx`: Streamer dashboard
-- `app/streamer/events/page.tsx`: Streamer event settings
-- `app/streamer/lis-skins/page.tsx`: Lis-Skins settings + test purchase
-- `app/streamer/[id]/page.tsx`: Viewer streamer page
-- `app/streamer/[id]/prizes/page.tsx`: Streamer prizes list
-- `app/twitch/callback/page.tsx`: Twitch OAuth callback
+Routing model (as implemented):
+- The primary UI implementation lives under `app/prom/*`.
+- Most root pages under `app/*` are thin re-exports of the matching `app/prom/*` page, so the **canonical URLs are root paths** (e.g. `/prizes`, `/dice`, `/streamers`).
+- `/prom/*` mirrors the same pages (kept as an alias/duplicate route tree).
+- `/legacy/*` is the old UI and is intentionally not wrapped by the Prom layout (see `app/components/RouteLayoutSwitch.tsx`).
+
+Canonical routes (URL -> file):
+- `/` -> `app/page.tsx` (re-export of `app/prom/page.tsx`)
+- `/prizes` -> `app/prizes/page.tsx`
+- `/following` -> `app/following/page.tsx`
+- `/streamers` -> `app/streamers/page.tsx`
+- `/streamer/[streamerId]` -> `app/streamer/[streamerId]/page.tsx` (viewer-facing streamer page)
+- `/streamers/[streamerId]` -> `app/streamers/[streamerId]/page.tsx` (alias; redirected to `/streamer/[streamerId]`)
+- `/streamer/[streamerId]/participants` -> `app/streamer/[streamerId]/participants/page.tsx`
+- `/dice` -> `app/dice/page.tsx`
+- `/dice/streamers` -> `app/dice/streamers/page.tsx`
+- `/dice/streamer/[streamerId]` -> `app/dice/streamer/[streamerId]/page.tsx`
+- `/stream-panel` -> `app/stream-panel/page.tsx` (streamer cabinet)
+- `/begin-streamer` -> `app/begin-streamer/page.tsx`
+- `/streamer-events` -> `app/streamer-events/page.tsx`
+- `/streamer-integrations` -> `app/streamer-integrations/page.tsx`
+- `/streamer-stats` -> `app/streamer-stats/page.tsx`
+- `/streamer-prizes` -> `app/streamer-prizes/page.tsx`
+- `/superdrop` -> `app/superdrop/page.tsx`
+- `/superdrop-settings` -> `app/superdrop-settings/page.tsx`
+
+Legacy routes (URL -> file):
+- `/legacy` -> `app/legacy/page.tsx`
+- `/legacy/prizes` -> `app/legacy/prizes/page.tsx`
+- `/legacy/rules` -> `app/legacy/rules/page.tsx`
+- `/legacy/live` -> `app/legacy/live/page.tsx`
+- `/legacy/tracked` -> `app/legacy/tracked/page.tsx`
+- `/legacy/settings` -> `app/legacy/settings/page.tsx`
+- `/legacy/streamer` -> `app/legacy/streamer/page.tsx`
 
 ### Key UI Components
-- `components/account-linking.tsx`: Twitch + Steam linking UI
-- `components/statistics.tsx`: Public stats (total prizes, total amount)
-- `components/recent-prizes.tsx`: Last 3 prizes across all streamers
-- `components/my-prizes.tsx`: Viewer prize list block and /prizes page
-- `components/tracked-streamers.tsx`, `components/live-streamers.tsx`
+Prom UI (current):
+- `app/prom/components/Layout.tsx`: App shell + navigation
+- `app/prom/components/PrizeCard.tsx`: Prize card (used across Home/Prizes/Streamer)
+- `app/prom/_shared/StreamerDetail.tsx`: Shared streamer detail page (used by `/streamer/[streamerId]` and its alias)
+- `app/prom/lib/*`: refresh intervals, cache helpers, viewer/streamer hooks
+
+Older/legacy components (still in repo):
+- `components/account-linking.tsx`, `components/statistics.tsx`, `components/recent-prizes.tsx`, `components/my-prizes.tsx`
 
 ### Backend Responsibilities
 GSI:

@@ -15,7 +15,9 @@ export default function SWRProvider({ children }: { children: ReactNode }) {
     <SWRConfig
       value={{
         revalidateOnFocus: true,
-        refreshWhenHidden: true,
+        // Telegram WebView often keeps the page "alive" in background.
+        // Avoid background polling to reduce battery/network usage.
+        refreshWhenHidden: false,
         dedupingInterval: 3000,
         fetcher: async (key: string) => {
           if (typeof key !== "string") return null;

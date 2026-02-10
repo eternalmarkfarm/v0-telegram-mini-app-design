@@ -16,6 +16,8 @@ import {
   REFRESH_PRIZES,
   REFRESH_PROFILE,
   REFRESH_TRACKED,
+  REFRESH_PRIZES_OFFLINE,
+  REFRESH_TRACKED_OFFLINE,
 } from "@/app/prom/lib/refresh";
 const twitchAvatar = "/prom/twitch_avatar.webp";
 const steamLogo = "/prom/social.png";
@@ -196,7 +198,10 @@ export default function Home() {
   };
 
   const { data: trackedRes } = useSWR("/viewer/tracked", fetchTracked, {
-    refreshInterval: REFRESH_TRACKED,
+    refreshInterval: (res: any) => {
+      const anyLive = Array.isArray(res?.streamers) && res.streamers.some((s: any) => Boolean(s?.is_live));
+      return anyLive ? REFRESH_TRACKED : REFRESH_TRACKED_OFFLINE;
+    },
   });
 
   const fetchViewerProfile = async () => {
@@ -210,12 +215,22 @@ export default function Home() {
 
   const fetchViewerPrizes = async () => {
     await ensureAuth();
-    await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
+    // Status refresh is expensive (hits Lis-Skins). Throttle it.
+    const refreshedRecently = readCache<boolean>("prom:viewer:prizes:refresh", 60 * 1000);
+    if (!refreshedRecently) {
+      await apiPost("/viewer/prizes/refresh", {}).catch(() => {});
+      writeCache("prom:viewer:prizes:refresh", true);
+    }
     return apiGetFresh("/viewer/prizes?limit=3");
   };
 
+  const anyTrackedLive = useMemo(() => {
+    const items = trackedRes?.streamers ?? [];
+    return Array.isArray(items) && items.some((s: any) => Boolean(s?.is_live));
+  }, [trackedRes]);
+
   const { data: prizesRes } = useSWR("/viewer/prizes?limit=3", fetchViewerPrizes, {
-    refreshInterval: REFRESH_PRIZES,
+    refreshInterval: anyTrackedLive ? REFRESH_PRIZES : REFRESH_PRIZES_OFFLINE,
   });
 
   useEffect(() => {

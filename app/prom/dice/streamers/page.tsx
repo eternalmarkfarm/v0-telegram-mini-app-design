@@ -7,7 +7,7 @@ import StarsBurst from "@/app/prom/components/StarsBurst";
 import { apiPost } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import useSWR from "swr";
-import { REFRESH_LIVE } from "@/app/prom/lib/refresh";
+import { REFRESH_LIVE, REFRESH_LIVE_OFFLINE } from "@/app/prom/lib/refresh";
 
 const leftArrowIcon = "/prom/left-arrow.svg";
 const star = "/prom/star.svg";
@@ -79,7 +79,12 @@ export default function DiceStreamers() {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const { data } = useSWR("/streamers/live", undefined, { refreshInterval: REFRESH_LIVE });
+  const liveRefreshInterval = (res: any) => {
+    const hasLive = Array.isArray(res?.streamers) && res.streamers.length > 0;
+    return hasLive ? REFRESH_LIVE : REFRESH_LIVE_OFFLINE;
+  };
+
+  const { data } = useSWR("/streamers/live", undefined, { refreshInterval: liveRefreshInterval });
 
   const mappedStreamers = useMemo(() => {
     return (data?.streamers ?? []).map((s: any) => ({

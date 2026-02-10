@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { apiGetFresh } from "@/lib/api";
 import { ensureAuth } from "@/lib/ensureAuth";
 import useSWR from "swr";
-import { REFRESH_TRACKED } from "@/app/prom/lib/refresh";
+import { REFRESH_TRACKED, REFRESH_TRACKED_OFFLINE } from "@/app/prom/lib/refresh";
 const followersIcon = "/prom/group.svg";
 const strPrizeIcon = "/prom/str_prize.svg";
 const dollarIcon = "/prom/dollar.svg";
@@ -45,7 +45,12 @@ export default function Following() {
     return apiGetFresh("/viewer/tracked");
   };
 
-  const { data } = useSWR("/viewer/tracked", fetchTracked, { refreshInterval: REFRESH_TRACKED });
+  const trackedRefreshInterval = (res: any) => {
+    const anyLive = Array.isArray(res?.streamers) && res.streamers.some((s: any) => Boolean(s?.is_live));
+    return anyLive ? REFRESH_TRACKED : REFRESH_TRACKED_OFFLINE;
+  };
+
+  const { data } = useSWR("/viewer/tracked", fetchTracked, { refreshInterval: trackedRefreshInterval });
 
   useEffect(() => {
     const streamers = data?.streamers ?? [];
