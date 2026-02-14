@@ -56,3 +56,21 @@ groups:
         annotations:
           summary: "FastAPI high p95 latency"
           description: "p95 latency is above 1.5s for 10 minutes."
+
+      - alert: BackendDown
+        expr: up{job="fastapi_backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "FastAPI backend down"
+          description: "Target {{ $labels.instance }} is down for job fastapi_backend."
+
+      - alert: PostgresExporterDown
+        expr: up{job="postgres_exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postgres exporter down"
+          description: "Target {{ $labels.instance }} is down for job postgres_exporter."
