@@ -202,6 +202,20 @@ sudo systemctl restart miniapp-backend
 sudo journalctl -u miniapp-backend -f
 ```
 
+### Monitoring
+Server monitoring stack is prepared in `monitoring/`:
+- Prometheus + Alertmanager + Grafana
+- Node Exporter + Postgres Exporter + Blackbox Exporter
+
+Quick start:
+```
+cd monitoring
+cp .env.example .env
+docker compose --env-file .env up -d
+```
+
+Full setup notes: `monitoring/README.md`
+
 ### DB Migrations (manual)
 Examples used in this project:
 ```
