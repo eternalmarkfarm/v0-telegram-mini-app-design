@@ -17,6 +17,7 @@ services:
     image: prom/alertmanager:v0.28.0
     restart: unless-stopped
     network_mode: host
+    user: "0:0"
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager

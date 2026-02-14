@@ -70,3 +70,4 @@ Grafana:
 - Grafana uses port `3300` by default to avoid conflict with Next.js on `3000`.
 - Keep Prometheus/Alertmanager/exporter ports closed from public internet; expose only Grafana through HTTPS + auth.
 - Alertmanager runtime config is read from `alertmanager/alertmanager.generated.yml` (generated from `.env`).
+- Alertmanager service runs as root in compose to avoid bind-mount permission issues when project lives under `/home/...`.

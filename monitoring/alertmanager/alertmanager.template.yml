@@ -9,7 +9,7 @@ receivers:
   - name: telegram
     telegram_configs:
       - bot_token: "__ALERTMANAGER_TG_BOT_TOKEN__"
-        chat_id: "__ALERTMANAGER_TG_CHAT_ID__"
+        chat_id: !!int __ALERTMANAGER_TG_CHAT_ID__
         send_resolved: true
         parse_mode: HTML
         message: |
