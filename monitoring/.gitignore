@@ -1,4 +1,5 @@
 prometheus/data/
 alertmanager/data/
+alertmanager/alertmanager.generated.yml
 grafana/data/
 .env

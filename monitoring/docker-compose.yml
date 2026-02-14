@@ -20,12 +20,8 @@ services:
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager
-      - --config.expand-env
-    environment:
-      ALERTMANAGER_TG_BOT_TOKEN: ${ALERTMANAGER_TG_BOT_TOKEN:-}
-      ALERTMANAGER_TG_CHAT_ID: ${ALERTMANAGER_TG_CHAT_ID:-}
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.generated.yml:/etc/alertmanager/alertmanager.yml:ro
       - ./alertmanager/data:/alertmanager
 
   grafana:
