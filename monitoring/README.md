@@ -23,6 +23,9 @@ cp .env.example .env
 Edit `.env`:
 - set a strong `GRAFANA_ADMIN_PASSWORD`
 - set `POSTGRES_EXPORTER_DSN` to your real DB credentials
+- set Telegram alert params:
+  - `ALERTMANAGER_TG_BOT_TOKEN`
+  - `ALERTMANAGER_TG_CHAT_ID`
 
 ## 2) (Optional) Adjust probe URLs
 Edit `prometheus/prometheus.yml` job `blackbox_http` and replace targets:
@@ -35,6 +38,12 @@ with your production URLs.
 ```bash
 cd monitoring
 docker compose --env-file .env up -d
+```
+
+Reload only Alertmanager after config changes:
+```bash
+docker compose --env-file .env up -d alertmanager
+docker compose logs alertmanager --tail=80
 ```
 
 ## 4) Verify

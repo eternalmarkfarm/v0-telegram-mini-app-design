@@ -1,9 +1,22 @@
 route:
-  receiver: default
+  receiver: telegram
   group_by: ["alertname", "job"]
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 2h
+  group_wait: 10s
+  group_interval: 2m
+  repeat_interval: 1h
 
 receivers:
-  - name: default
+  - name: telegram
+    telegram_configs:
+      - bot_token: ${ALERTMANAGER_TG_BOT_TOKEN}
+        chat_id: ${ALERTMANAGER_TG_CHAT_ID}
+        send_resolved: true
+        parse_mode: HTML
+        message: |
+          <b>{{ .Status | toUpper }}</b>: {{ .CommonLabels.alertname }}
+          {{- if .CommonAnnotations.summary }}
+          {{ .CommonAnnotations.summary }}
+          {{- end }}
+          {{- if .CommonAnnotations.description }}
+          {{ .CommonAnnotations.description }}
+          {{- end }}
